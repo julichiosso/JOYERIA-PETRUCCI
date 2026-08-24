@@ -1,21 +1,9 @@
-import Fastify from 'fastify';
+import { buildApp } from './app.js';
 import { env } from './config/env.js';
-import { prisma } from './infra/prisma.js';
-
-const app = Fastify({
-  logger: true,
-});
-
-app.get('/health', async () => {
-  return { status: 'ok' };
-});
-
-app.get('/health/db', async () => {
-  const count = await prisma.user.count();
-  return { status: 'ok', userCount: count };
-});
 
 const start = async () => {
+  const app = await buildApp();
+
   try {
     await app.listen({ port: env.PORT, host: '0.0.0.0' });
   } catch (err) {

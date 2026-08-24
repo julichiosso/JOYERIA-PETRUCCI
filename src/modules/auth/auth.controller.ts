@@ -1,6 +1,6 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { authService, InvalidCredentialsError, InvalidRefreshTokenError } from './auth.service.js';
-import type { LoginSchema, RefreshSchema } from './auth.schema.js';
+import type { LoginSchema  } from './auth.schema.js';
 
 const REFRESH_COOKIE_NAME = 'refreshToken';
 const REFRESH_COOKIE_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 días, igual al expiry del token
