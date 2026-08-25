@@ -10,6 +10,7 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod';
 import { authRoutes } from './modules/auth/auth.routes.js';
+import { AppError } from './shared/errors/index.js';   // <-- nuevo
 
 export async function buildApp() {
   const app = Fastify({
@@ -21,8 +22,8 @@ export async function buildApp() {
 
   await app.register(helmet);
   await app.register(cors, {
-    origin: true, // ajustar a dominios específicos cuando tengamos el frontend definido
-    credentials: true, // necesario para que las cookies viajen cross-origin
+    origin: true,
+    credentials: true,
   });
   await app.register(cookie);
   await app.register(rateLimit, {
@@ -32,9 +33,26 @@ export async function buildApp() {
 
   await app.register(authRoutes, { prefix: '/auth' });
   await app.register(productAdminRoutes, { prefix: '/admin/products' });
-await app.register(productCatalogRoutes, { prefix: '/catalog/products' });
+  await app.register(productCatalogRoutes, { prefix: '/catalog/products' });
+
   app.get('/health', async () => {
     return { status: 'ok' };
+  });
+
+  // ---------- Error handler global ----------  <-- nuevo, antes del return app;
+  app.setErrorHandler((error, request, reply) => {
+    if (error instanceof AppError) {
+      return reply.status(error.statusCode).send({
+        error: error.message,
+        ...(error.reason ? { reason: error.reason } : {}),
+        ...(error.meta ? { ...error.meta } : {}),
+      });
+    }
+
+    request.log.error(error);
+    return reply.status(500).send({
+      error: 'Error interno del servidor',
+    });
   });
 
   return app;
