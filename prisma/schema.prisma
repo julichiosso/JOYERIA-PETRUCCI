@@ -80,11 +80,11 @@ model Category {
   tenantId    String   @default("default")
 
   name        String
-  slug        String   @unique
+  slug        String
   description String?
 
   parentId    String?
-  parent      Category?  @relation("CategoryToParent", fields: [parentId], references: [id])
+  parent      Category?  @relation("CategoryToParent", fields: [parentId], references: [id], onDelete: Restrict)
   children    Category[] @relation("CategoryToParent")
 
   isProtected Boolean  @default(false)
@@ -96,7 +96,9 @@ model Category {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@unique([tenantId, slug])
   @@index([tenantId])
   @@index([parentId])
+  @@index([tenantId, isActive])
   @@map("categories")
 }
