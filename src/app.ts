@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import cookie from '@fastify/cookie';
+import { productAdminRoutes, productCatalogRoutes } from './modules/products/product.routes.js';
 import {
   serializerCompiler,
   validatorCompiler,
@@ -30,7 +31,8 @@ export async function buildApp() {
   });
 
   await app.register(authRoutes, { prefix: '/auth' });
-
+  await app.register(productAdminRoutes, { prefix: '/admin/products' });
+await app.register(productCatalogRoutes, { prefix: '/catalog/products' });
   app.get('/health', async () => {
     return { status: 'ok' };
   });
