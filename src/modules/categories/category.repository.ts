@@ -1,5 +1,5 @@
 // src/modules/categories/category.repository.ts
-import { prisma } from '../../infra/prisma/prisma.ts';
+import { prisma } from '../../infra/prisma.js';
 import type { CreateCategoryInput, UpdateCategoryInput } from './category.schema.ts';
 
 const TENANT_ID = 'default'; // TODO: reemplazar cuando exista contexto multi-tenant real

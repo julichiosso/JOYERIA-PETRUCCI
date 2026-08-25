@@ -1,6 +1,7 @@
 // src/modules/categories/category.schema.ts
 import { z } from 'zod';
 
+
 // ---------- Params ----------
 export const categoryParamsSchema = z.object({
   id: z.string().cuid(),
