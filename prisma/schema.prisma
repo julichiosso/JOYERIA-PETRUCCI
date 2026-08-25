@@ -39,22 +39,6 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
-model Category {
-  id        String   @id @default(cuid())
-  tenantId  String   @default("default")
-  name      String
-  slug      String   @unique
-  parentId  String?
-  parent    Category?  @relation("CategoryToParent", fields: [parentId], references: [id])
-  children  Category[] @relation("CategoryToParent")
-  products  Product[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([tenantId])
-  @@index([parentId])
-  @@map("categories")
-}
 
 model Product {
   id               String   @id @default(cuid())
@@ -96,12 +80,12 @@ model Category {
   tenantId    String   @default("default")
 
   name        String
-  slug        String
+  slug        String   @unique
   description String?
 
   parentId    String?
-  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  children    Category[] @relation("CategoryHierarchy")
+  parent      Category?  @relation("CategoryToParent", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryToParent")
 
   isProtected Boolean  @default(false)
   isActive    Boolean  @default(true)
@@ -112,7 +96,7 @@ model Category {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@unique([tenantId, slug])
-  @@index([tenantId, parentId])
+  @@index([tenantId])
+  @@index([parentId])
   @@map("categories")
 }
