@@ -89,3 +89,30 @@ model ProductImage {
   @@index([productId])
   @@map("product_images")
 }
+
+
+model Category {
+  id          String   @id @default(cuid())
+  tenantId    String   @default("default")
+
+  name        String
+  slug        String
+  description String?
+
+  parentId    String?
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryHierarchy")
+
+  isProtected Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+
+  products    Product[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([tenantId, slug])
+  @@index([tenantId, parentId])
+  @@map("categories")
+}
