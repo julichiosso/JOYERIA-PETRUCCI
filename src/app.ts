@@ -10,7 +10,8 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod';
 import { authRoutes } from './modules/auth/auth.routes.js';
-import { AppError } from './shared/errors/index.js';   // <-- nuevo
+import { AppError } from './shared/errors/index.js';
+import { categoryAdminRoutes, categoryCatalogRoutes } from './modules/categories/category.router.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -34,12 +35,13 @@ export async function buildApp() {
   await app.register(authRoutes, { prefix: '/auth' });
   await app.register(productAdminRoutes, { prefix: '/admin/products' });
   await app.register(productCatalogRoutes, { prefix: '/catalog/products' });
+  await app.register(categoryAdminRoutes, { prefix: '/admin/categories' });
+  await app.register(categoryCatalogRoutes, { prefix: '/catalog/categories' });
 
   app.get('/health', async () => {
     return { status: 'ok' };
   });
 
-  // ---------- Error handler global ----------  <-- nuevo, antes del return app;
   app.setErrorHandler((error, request, reply) => {
     if (error instanceof AppError) {
       return reply.status(error.statusCode).send({

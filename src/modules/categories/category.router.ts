@@ -7,7 +7,7 @@ import {
   updateCategorySchema,
   categoryParamsSchema,
 } from './category.schema.js';
-import { requireAuth } from '../../shared/middlewares/require-auth.js';
+import { requireAuth } from '../../shared/middlewares/auth.middleware.js';
 
 // ---------- Admin: protegidas con requireAuth ----------
 export async function categoryAdminRoutes(app: FastifyInstance) {
