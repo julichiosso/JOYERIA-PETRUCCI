@@ -29,6 +29,29 @@ async function main() {
   });
 
   console.log(`✅ Usuario admin creado/existente: ${user.email}`);
+
+  const rootCategories = [
+    { name: 'Joyería', slug: 'joyeria' },
+    { name: 'Marroquinería', slug: 'marroquineria' },
+    { name: 'Mates', slug: 'mates' },
+    { name: 'Trabajos personalizados', slug: 'trabajos-personalizados' },
+  ];
+
+  for (const [index, cat] of rootCategories.entries()) {
+    await prisma.category.upsert({
+      where: { slug: cat.slug },
+      update: {},
+      create: {
+        name: cat.name,
+        slug: cat.slug,
+        isProtected: true,
+        isActive: true,
+        sortOrder: index,
+      },
+    });
+  }
+
+  console.log(`✅ Categorías raíz creadas/existentes: ${rootCategories.map(c => c.name).join(', ')}`);
 }
 
 main()
