@@ -37,19 +37,25 @@ async function main() {
     { name: 'Trabajos personalizados', slug: 'trabajos-personalizados' },
   ];
 
-  for (const [index, cat] of rootCategories.entries()) {
-    await prisma.category.upsert({
-      where: { slug: cat.slug },
-      update: {},
-      create: {
-        name: cat.name,
+for (const [index, cat] of rootCategories.entries()) {
+  await prisma.category.upsert({
+    where: {
+      tenantId_slug: {
+        tenantId: 'default',
         slug: cat.slug,
-        isProtected: true,
-        isActive: true,
-        sortOrder: index,
       },
-    });
-  }
+    },
+    update: {},
+    create: {
+      name: cat.name,
+      slug: cat.slug,
+      tenantId: 'default',
+      isProtected: true,
+      isActive: true,
+      sortOrder: index,
+    },
+  });
+}
 
   console.log(`✅ Categorías raíz creadas/existentes: ${rootCategories.map(c => c.name).join(', ')}`);
 }
