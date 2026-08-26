@@ -39,6 +39,12 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
+enum ProductStatus {
+  ACTIVE
+  DRAFT
+  OUT_OF_STOCK
+}
+
 
 model Product {
   id               String   @id @default(cuid())
@@ -46,8 +52,8 @@ model Product {
   name             String
   slug             String   @unique
   description      String?
-  price            Decimal  @db.Decimal(10, 2)
-  available        Boolean  @default(true)
+    price            Decimal?      @db.Decimal(10, 2)
+  status           ProductStatus @default(DRAFT)
   variantLabel     String?
   categoryId       String
   category         Category @relation(fields: [categoryId], references: [id])
