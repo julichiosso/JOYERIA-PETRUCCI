@@ -1,8 +1,10 @@
+import type { ProductStatus } from '@prisma/client';
+
 export interface CreateProductInput {
   name: string;
   description?: string;
-  price: number;
-  available: boolean;
+  price?: number;
+  status: ProductStatus;
   variantLabel?: string;
   categoryId: string;
   metaTitle?: string;
@@ -13,7 +15,7 @@ export interface UpdateProductInput {
   name?: string;
   description?: string;
   price?: number;
-  available?: boolean;
+  status?: ProductStatus;
   variantLabel?: string;
   categoryId?: string;
   metaTitle?: string;
@@ -25,8 +27,8 @@ export interface ProductWithCategory {
   name: string;
   slug: string;
   description: string | null;
-  price: string; // Decimal serializado como string
-  available: boolean;
+  price: string | null; // Decimal serializado como string, null si no tiene precio fijo
+  status: ProductStatus;
   variantLabel: string | null;
   metaTitle: string | null;
   metaDescription: string | null;

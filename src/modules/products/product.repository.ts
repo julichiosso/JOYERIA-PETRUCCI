@@ -64,15 +64,15 @@ export const productRepository = {
     await prisma.product.delete({ where: { id } });
   },
 
-  async list(params: {
+   async list(params: {
     categoryId?: string;
-    available?: boolean;
+    status?: string;
     skip: number;
     take: number;
   }) {
     const where: Prisma.ProductWhereInput = {
       ...(params.categoryId ? { categoryId: params.categoryId } : {}),
-      ...(params.available !== undefined ? { available: params.available } : {}),
+      ...(params.status !== undefined ? { status: params.status as Prisma.ProductWhereInput['status'] } : {}),
     };
 
     const [items, total] = await Promise.all([

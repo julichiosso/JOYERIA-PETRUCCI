@@ -31,7 +31,7 @@ export const productService = {
       slug,
       description: input.description,
       price: input.price,
-      available: input.available,
+      status: input.status,
       variantLabel: input.variantLabel,
       metaTitle: input.metaTitle,
       metaDescription: input.metaDescription,
@@ -51,7 +51,7 @@ export const productService = {
       ...(input.name ? { name: input.name, slug } : {}),
       ...(input.description !== undefined ? { description: input.description } : {}),
       ...(input.price !== undefined ? { price: input.price } : {}),
-      ...(input.available !== undefined ? { available: input.available } : {}),
+      ...(input.status !== undefined ? { status: input.status } : {}),
       ...(input.variantLabel !== undefined ? { variantLabel: input.variantLabel } : {}),
       ...(input.metaTitle !== undefined ? { metaTitle: input.metaTitle } : {}),
       ...(input.metaDescription !== undefined ? { metaDescription: input.metaDescription } : {}),
@@ -83,11 +83,11 @@ export const productService = {
     await productRepository.delete(id);
   },
 
-  async list(params: { categoryId?: string; available?: boolean; page: number; limit: number }) {
+  async list(params: { categoryId?: string; status?: string; page: number; limit: number }) {
     const skip = (params.page - 1) * params.limit;
     const { items, total } = await productRepository.list({
       categoryId: params.categoryId,
-      available: params.available,
+      status: params.status,
       skip,
       take: params.limit,
     });

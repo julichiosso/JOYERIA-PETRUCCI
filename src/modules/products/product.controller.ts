@@ -77,7 +77,7 @@ export const productController = {
   ) {
     try {
       const product = await productService.getBySlug(request.params.slug);
-      if (!product.available) {
+            if (product.status === 'DRAFT') {
         return reply.status(404).send({ error: 'Producto no encontrado' });
       }
       return reply.status(200).send(product);
@@ -90,11 +90,16 @@ export const productController = {
   },
 
   // Catálogo público: solo lista productos disponibles
-  async listPublic(
-    request: FastifyRequest<{ Querystring: ProductListQuery }>,
+    async listPublic(
+    request: FastifyRequest<{ Querystring: Omit<ProductListQuery, 'status'> }>,
     reply: FastifyReply
   ) {
-    const result = await productService.list({ ...request.query, available: true });
-    return reply.status(200).send(result);
+    const { categoryId, page, limit } = request.query;
+    const activeItems = await productService.list({ categoryId, page, limit });
+    const visibleItems = {
+      ...activeItems,
+      items: activeItems.items.filter((p) => p.status !== 'DRAFT'),
+    };
+    return reply.status(200).send(visibleItems);
   },
 };
