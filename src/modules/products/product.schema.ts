@@ -7,6 +7,7 @@ export const createProductSchema = z.object({
   description: z.string().max(2000).optional(),
   price: z.number().positive('El precio debe ser mayor a 0').optional(),
   status: productStatusEnum.default('DRAFT'),
+  showPrice: z.boolean().default(false),
   variantLabel: z.string().max(100).optional(),
   categoryId: z.string().min(1, 'La categoría es requerida'),
   metaTitle: z.string().max(70, 'El metaTitle no debería superar 70 caracteres para SEO').optional(),

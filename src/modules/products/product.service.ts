@@ -165,7 +165,7 @@ async function generateUniqueSlug(name: string, excludeId?: string): Promise<str
 }
 
 export const productService = {
-  async create(input: CreateProductInput) {
+    async create(input: CreateProductInput) {
     const slug = await generateUniqueSlug(input.name);
 
     return productRepository.create({
@@ -174,6 +174,7 @@ export const productService = {
       description: input.description,
       price: input.price,
       status: input.status,
+      showPrice: input.showPrice,
       variantLabel: input.variantLabel,
       metaTitle: input.metaTitle,
       metaDescription: input.metaDescription,
@@ -189,11 +190,12 @@ export const productService = {
 
     const slug = input.name ? await generateUniqueSlug(input.name, id) : undefined;
 
-    return productRepository.update(id, {
+        return productRepository.update(id, {
       ...(input.name ? { name: input.name, slug } : {}),
       ...(input.description !== undefined ? { description: input.description } : {}),
       ...(input.price !== undefined ? { price: input.price } : {}),
       ...(input.status !== undefined ? { status: input.status } : {}),
+      ...(input.showPrice !== undefined ? { showPrice: input.showPrice } : {}),
       ...(input.variantLabel !== undefined ? { variantLabel: input.variantLabel } : {}),
       ...(input.metaTitle !== undefined ? { metaTitle: input.metaTitle } : {}),
       ...(input.metaDescription !== undefined ? { metaDescription: input.metaDescription } : {}),
@@ -214,10 +216,14 @@ export const productService = {
     if (!product) {
       throw new ProductNotFoundError();
     }
-    // 1. Garantiza que metaTitle y metaDescription nunca sean null.
-    const withMeta = withSeoFallbacks(product);
-    // 2. Construye los objetos JSON-LD a partir del producto ya resuelto.
-    const jsonLd = buildJsonLd(product, withMeta);
+
+    // Si el dueño no habilitó mostrar el precio, lo ocultamos del todo
+    // en la respuesta pública — no solo "no se muestra en el frontend",
+    // el dato real ni siquiera viaja en el JSON.
+    const productForPublic = product.showPrice ? product : { ...product, price: null };
+
+    const withMeta = withSeoFallbacks(productForPublic);
+    const jsonLd = buildJsonLd(productForPublic, withMeta);
     return { ...withMeta, jsonLd };
   },
 
