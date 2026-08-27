@@ -5,6 +5,7 @@ export interface CreateProductInput {
   description?: string;
   price?: number;
   status: ProductStatus;
+  showPrice: boolean;
   variantLabel?: string;
   categoryId: string;
   metaTitle?: string;
@@ -16,6 +17,7 @@ export interface UpdateProductInput {
   description?: string;
   price?: number;
   status?: ProductStatus;
+  showPrice?: boolean;
   variantLabel?: string;
   categoryId?: string;
   metaTitle?: string;
@@ -27,8 +29,9 @@ export interface ProductWithCategory {
   name: string;
   slug: string;
   description: string | null;
-  price: string | null; // Decimal serializado como string, null si no tiene precio fijo
+  price: string | null;
   status: ProductStatus;
+  showPrice: boolean;
   variantLabel: string | null;
   metaTitle: string | null;
   metaDescription: string | null;
@@ -108,4 +111,4 @@ export interface PublicProductResponse extends ProductWithCategory {
   metaDescription: string;
   /** Datos estructurados schema.org listos para inyectar en <script type="application/ld+json"> */
   jsonLd: JsonLdEnvelope;
-}
+}

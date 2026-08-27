@@ -47,21 +47,22 @@ enum ProductStatus {
 
 
 model Product {
-  id               String   @id @default(cuid())
-  tenantId         String   @default("default")
+  id               String        @id @default(cuid())
+  tenantId         String        @default("default")
   name             String
-  slug             String   @unique
+  slug             String        @unique
   description      String?
-    price            Decimal?      @db.Decimal(10, 2)
+  price            Decimal?      @db.Decimal(10, 2)
+  showPrice        Boolean       @default(false)
   status           ProductStatus @default(DRAFT)
   variantLabel     String?
   categoryId       String
-  category         Category @relation(fields: [categoryId], references: [id])
+  category         Category      @relation(fields: [categoryId], references: [id])
   images           ProductImage[]
   metaTitle        String?
   metaDescription  String?
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   @@index([tenantId])
   @@index([categoryId])
