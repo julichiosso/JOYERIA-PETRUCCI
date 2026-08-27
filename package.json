@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/julichiosso/JOYERIA-PETRUCCI#readme",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1119.0",
     "@fastify/cookie": "^11.1.2",
     "@fastify/cors": "^11.3.0",
     "@fastify/helmet": "^13.1.1",
