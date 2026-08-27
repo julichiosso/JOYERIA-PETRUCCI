@@ -15,6 +15,7 @@ import { categoryAdminRoutes, categoryCatalogRoutes } from './modules/categories
 import { sitemapRoutes } from './modules/catalog/sitemap.routes.js';
 import multipart from '@fastify/multipart';
 import { mediaRoutes } from './modules/media/media.routes.js';
+import { storeConfigAdminRoutes, storeConfigCatalogRoutes } from './modules/store-config/store-config.routes.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -50,6 +51,8 @@ export async function buildApp() {
   await app.register(categoryCatalogRoutes, { prefix: '/catalog/categories' });
   await app.register(sitemapRoutes, { prefix: '/catalog' });
   await app.register(mediaRoutes, { prefix: '/admin/media' });
+  await app.register(storeConfigAdminRoutes, { prefix: '/admin/store-config' });
+  await app.register(storeConfigCatalogRoutes, { prefix: '/catalog/store-config' });
 
   app.get('/health', async () => {
     return { status: 'ok' };

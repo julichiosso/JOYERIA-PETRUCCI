@@ -109,3 +109,19 @@ model Category {
   @@index([tenantId, isActive])
   @@map("categories")
 }
+
+model StoreConfig {
+  id                      String   @id @default(cuid())
+  tenantId                String   @unique @default("default")
+  storeName               String
+  whatsappNumber          String
+  whatsappMessageTemplate String?
+  instagramUrl            String?
+  facebookUrl             String?
+  address                 String?
+  businessHours           String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@map("store_config")
+}

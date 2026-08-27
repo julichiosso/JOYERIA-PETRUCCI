@@ -37,6 +37,25 @@ async function main() {
     { name: 'Trabajos personalizados', slug: 'trabajos-personalizados' },
   ];
 
+    const whatsappNumber = process.env.SEED_WHATSAPP_NUMBER;
+  const storeName = process.env.SEED_STORE_NAME ?? 'Joyería Petrucci';
+
+  if (!whatsappNumber) {
+    throw new Error('Definí SEED_WHATSAPP_NUMBER en tu .env antes de correr el seed (formato: 5493407123456)');
+  }
+
+  await prisma.storeConfig.upsert({
+    where: { tenantId: 'default' },
+    update: {},
+    create: {
+      tenantId: 'default',
+      storeName,
+      whatsappNumber,
+    },
+  });
+
+  console.log(`✅ Configuración de tienda creada/existente: ${storeName}`);
+
 for (const [index, cat] of rootCategories.entries()) {
   await prisma.category.upsert({
     where: {
