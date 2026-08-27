@@ -1,6 +1,148 @@
 import { productRepository } from './product.repository.js';
 import { slugify } from '../../shared/utils/slugify.js';
-import type { CreateProductInput, UpdateProductInput } from './product.types.js';
+import type { CreateProductInput, UpdateProductInput, JsonLdEnvelope } from './product.types.js';
+
+// ---------------------------------------------------------------------------
+// SEO helpers
+// ---------------------------------------------------------------------------
+
+type ProductWithCategory = Awaited<ReturnType<typeof productRepository.findBySlug>>;
+
+/**
+ * Garantiza que `metaTitle` y `metaDescription` nunca sean null
+ * en el catálogo público.
+ *
+ * Reglas de fallback:
+ *  - metaTitle      → "{name} | Petrucci"  (truncado a 70 chars)
+ *  - metaDescription → primeros 155 chars de `description`,
+ *                      o "{name} en Petrucci Joyería — {categoria}"
+ *
+ * Solo se aplica en la ruta pública; los endpoints de admin devuelven
+ * los valores crudos para que el equipo sepa qué campos están vacíos.
+ */
+function withSeoFallbacks<T extends NonNullable<ProductWithCategory>>(
+  product: T
+): Omit<T, 'metaTitle' | 'metaDescription'> & { metaTitle: string; metaDescription: string } {
+  const categoryName = product.category?.name ?? '';
+  const parentName   = product.category?.parent?.name ?? '';
+
+  const fullCategory = parentName
+    ? `${parentName} › ${categoryName}`
+    : categoryName;
+
+  const metaTitle = product.metaTitle?.trim() ||
+    `${product.name} | Petrucci`.slice(0, 70);
+
+  let metaDescription = product.metaDescription?.trim() || '';
+  if (!metaDescription) {
+    if (product.description) {
+      // Limpia saltos de línea y recorta a 155 chars
+      metaDescription = product.description
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 155);
+      if (product.description.replace(/\s+/g, ' ').trim().length > 155) {
+        metaDescription = metaDescription.trimEnd() + '…';
+      }
+    } else {
+      metaDescription = fullCategory
+        ? `${product.name} en Petrucci Joyería — ${fullCategory}.`
+        : `${product.name} en Petrucci Joyería.`;
+      metaDescription = metaDescription.slice(0, 160);
+    }
+  }
+
+  return { ...product, metaTitle, metaDescription };
+}
+
+/**
+ * Construye los objetos JSON-LD (schema.org) que el frontend inyecta
+ * en `<script type="application/ld+json">`.
+ *
+ * Requiere `FRONTEND_URL` en el entorno (ej. https://petrucci.com).
+ * Si no está configurada cae a cadena vacía y las URLs quedarán relativas
+ * — mejor que crashear en producción.
+ *
+ * Mapeo ProductStatus → schema.org availability:
+ *  ACTIVE        → InStock
+ *  OUT_OF_STOCK  → OutOfStock
+ *  DRAFT         → nunca llega aquí (controller devuelve 404 antes)
+ */
+function buildJsonLd(
+  product: NonNullable<ProductWithCategory>,
+  resolvedMeta: { metaTitle: string; metaDescription: string },
+): JsonLdEnvelope {
+  const baseUrl = (process.env['FRONTEND_URL'] ?? '').replace(/\/$/, '');
+
+  const parentSlug   = product.category?.parent?.slug ?? null;
+  const categorySlug = product.category?.slug ?? '';
+  const productSlug  = product.slug;
+
+  // URL canónica del producto: /parent/category/slug  o  /category/slug
+  const productPath = parentSlug
+    ? `/${parentSlug}/${categorySlug}/${productSlug}`
+    : `/${categorySlug}/${productSlug}`;
+
+  // Breadcrumb items
+  const breadcrumbItems: JsonLdEnvelope['breadcrumb']['itemListElement'] = [];
+  let position = 1;
+
+  if (parentSlug && product.category?.parent) {
+    breadcrumbItems.push({
+      '@type': 'ListItem',
+      position: position++,
+      name: product.category.parent.name,
+      item: `${baseUrl}/${parentSlug}`,
+    });
+  }
+
+  if (product.category) {
+    breadcrumbItems.push({
+      '@type': 'ListItem',
+      position: position++,
+      name: product.category.name,
+      item: parentSlug
+        ? `${baseUrl}/${parentSlug}/${categorySlug}`
+        : `${baseUrl}/${categorySlug}`,
+    });
+  }
+
+  breadcrumbItems.push({
+    '@type': 'ListItem',
+    position: position++,
+    name: product.name,
+    item: `${baseUrl}${productPath}`,
+  });
+
+  // Offer (solo si hay precio)
+  const offer: JsonLdEnvelope['product']['offers'] | undefined = product.price
+    ? {
+        '@type': 'Offer',
+        price: product.price.toString(),
+        priceCurrency: 'ARS',
+        availability:
+          product.status === 'OUT_OF_STOCK'
+            ? 'https://schema.org/OutOfStock'
+            : 'https://schema.org/InStock',
+      }
+    : undefined;
+
+  return {
+    product: {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.name,
+      ...(resolvedMeta.metaDescription ? { description: resolvedMeta.metaDescription } : {}),
+      image: product.images.map((img) => img.url),
+      ...(offer ? { offers: offer } : {}),
+    },
+    breadcrumb: {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: breadcrumbItems,
+    },
+  };
+}
 
 class ProductNotFoundError extends Error {
   constructor() {
@@ -72,7 +214,11 @@ export const productService = {
     if (!product) {
       throw new ProductNotFoundError();
     }
-    return product;
+    // 1. Garantiza que metaTitle y metaDescription nunca sean null.
+    const withMeta = withSeoFallbacks(product);
+    // 2. Construye los objetos JSON-LD a partir del producto ya resuelto.
+    const jsonLd = buildJsonLd(product, withMeta);
+    return { ...withMeta, jsonLd };
   },
 
   async delete(id: string): Promise<void> {

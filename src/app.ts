@@ -12,6 +12,7 @@ import {
 import { authRoutes } from './modules/auth/auth.routes.js';
 import { AppError } from './shared/errors/index.js';
 import { categoryAdminRoutes, categoryCatalogRoutes } from './modules/categories/category.router.js';
+import { sitemapRoutes } from './modules/catalog/sitemap.routes.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -37,6 +38,7 @@ export async function buildApp() {
   await app.register(productCatalogRoutes, { prefix: '/catalog/products' });
   await app.register(categoryAdminRoutes, { prefix: '/admin/categories' });
   await app.register(categoryCatalogRoutes, { prefix: '/catalog/categories' });
+  await app.register(sitemapRoutes, { prefix: '/catalog' });
 
   app.get('/health', async () => {
     return { status: 'ok' };
