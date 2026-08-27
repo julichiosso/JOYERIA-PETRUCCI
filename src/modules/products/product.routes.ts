@@ -6,6 +6,10 @@ import {
   productIdParamSchema,
   productSlugParamSchema,
   productListQuerySchema,
+  createVariantSchema,
+  updateVariantSchema,
+  variantIdParamSchema,
+  reorderVariantsSchema,
 } from './product.schema.js';
 import { requireAuth } from '../../shared/middlewares/auth.middleware.js';
 
@@ -26,6 +30,41 @@ export async function productAdminRoutes(app: FastifyInstance) {
   );
 
   app.delete('/:id', { schema: { params: productIdParamSchema } }, productController.delete);
+
+  // Variantes
+  app.post(
+    '/:id/variants',
+    { schema: { params: productIdParamSchema, body: createVariantSchema } },
+    productController.addVariant
+  );
+
+  app.patch(
+    '/variants/:variantId',
+    {
+      schema: {
+        params: variantIdParamSchema,
+        body: updateVariantSchema,
+      },
+    },
+    productController.updateVariant
+  );
+
+  app.delete(
+    '/variants/:variantId',
+    { schema: { params: variantIdParamSchema } },
+    productController.deleteVariant
+  );
+
+  app.post(
+    '/:id/variants/reorder',
+    {
+      schema: {
+        params: productIdParamSchema,
+        body: reorderVariantsSchema,
+      },
+    },
+    productController.reorderVariants
+  );
 }
 
 // Rutas de catálogo público — sin autenticación, solo lectura

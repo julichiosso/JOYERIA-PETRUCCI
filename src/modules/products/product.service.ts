@@ -1,152 +1,17 @@
 import { productRepository } from './product.repository.js';
 import { slugify } from '../../shared/utils/slugify.js';
-import type { CreateProductInput, UpdateProductInput, JsonLdEnvelope } from './product.types.js';
+import { withSeoFallbacks, buildJsonLd } from './product.seo.js';
+import { NotFoundError, BadRequestError, ConflictError } from '../../shared/errors/index.js';
+import type {
+  CreateProductInput,
+  UpdateProductInput,
+  CreateVariantInput,
+  UpdateVariantInput,
+} from './product.types.js';
 
-// ---------------------------------------------------------------------------
-// SEO helpers
-// ---------------------------------------------------------------------------
-
-type ProductWithCategory = Awaited<ReturnType<typeof productRepository.findBySlug>>;
-
-/**
- * Garantiza que `metaTitle` y `metaDescription` nunca sean null
- * en el catálogo público.
- *
- * Reglas de fallback:
- *  - metaTitle      → "{name} | Petrucci"  (truncado a 70 chars)
- *  - metaDescription → primeros 155 chars de `description`,
- *                      o "{name} en Petrucci Joyería — {categoria}"
- *
- * Solo se aplica en la ruta pública; los endpoints de admin devuelven
- * los valores crudos para que el equipo sepa qué campos están vacíos.
- */
-function withSeoFallbacks<T extends NonNullable<ProductWithCategory>>(
-  product: T
-): Omit<T, 'metaTitle' | 'metaDescription'> & { metaTitle: string; metaDescription: string } {
-  const categoryName = product.category?.name ?? '';
-  const parentName   = product.category?.parent?.name ?? '';
-
-  const fullCategory = parentName
-    ? `${parentName} › ${categoryName}`
-    : categoryName;
-
-  const metaTitle = product.metaTitle?.trim() ||
-    `${product.name} | Petrucci`.slice(0, 70);
-
-  let metaDescription = product.metaDescription?.trim() || '';
-  if (!metaDescription) {
-    if (product.description) {
-      // Limpia saltos de línea y recorta a 155 chars
-      metaDescription = product.description
-        .replace(/\s+/g, ' ')
-        .trim()
-        .slice(0, 155);
-      if (product.description.replace(/\s+/g, ' ').trim().length > 155) {
-        metaDescription = metaDescription.trimEnd() + '…';
-      }
-    } else {
-      metaDescription = fullCategory
-        ? `${product.name} en Petrucci Joyería — ${fullCategory}.`
-        : `${product.name} en Petrucci Joyería.`;
-      metaDescription = metaDescription.slice(0, 160);
-    }
-  }
-
-  return { ...product, metaTitle, metaDescription };
-}
-
-/**
- * Construye los objetos JSON-LD (schema.org) que el frontend inyecta
- * en `<script type="application/ld+json">`.
- *
- * Requiere `FRONTEND_URL` en el entorno (ej. https://petrucci.com).
- * Si no está configurada cae a cadena vacía y las URLs quedarán relativas
- * — mejor que crashear en producción.
- *
- * Mapeo ProductStatus → schema.org availability:
- *  ACTIVE        → InStock
- *  OUT_OF_STOCK  → OutOfStock
- *  DRAFT         → nunca llega aquí (controller devuelve 404 antes)
- */
-function buildJsonLd(
-  product: NonNullable<ProductWithCategory>,
-  resolvedMeta: { metaTitle: string; metaDescription: string },
-): JsonLdEnvelope {
-  const baseUrl = (process.env['FRONTEND_URL'] ?? '').replace(/\/$/, '');
-
-  const parentSlug   = product.category?.parent?.slug ?? null;
-  const categorySlug = product.category?.slug ?? '';
-  const productSlug  = product.slug;
-
-  // URL canónica del producto: /parent/category/slug  o  /category/slug
-  const productPath = parentSlug
-    ? `/${parentSlug}/${categorySlug}/${productSlug}`
-    : `/${categorySlug}/${productSlug}`;
-
-  // Breadcrumb items
-  const breadcrumbItems: JsonLdEnvelope['breadcrumb']['itemListElement'] = [];
-  let position = 1;
-
-  if (parentSlug && product.category?.parent) {
-    breadcrumbItems.push({
-      '@type': 'ListItem',
-      position: position++,
-      name: product.category.parent.name,
-      item: `${baseUrl}/${parentSlug}`,
-    });
-  }
-
-  if (product.category) {
-    breadcrumbItems.push({
-      '@type': 'ListItem',
-      position: position++,
-      name: product.category.name,
-      item: parentSlug
-        ? `${baseUrl}/${parentSlug}/${categorySlug}`
-        : `${baseUrl}/${categorySlug}`,
-    });
-  }
-
-  breadcrumbItems.push({
-    '@type': 'ListItem',
-    position: position++,
-    name: product.name,
-    item: `${baseUrl}${productPath}`,
-  });
-
-  // Offer (solo si hay precio)
-  const offer: JsonLdEnvelope['product']['offers'] | undefined = product.price
-    ? {
-        '@type': 'Offer',
-        price: product.price.toString(),
-        priceCurrency: 'ARS',
-        availability:
-          product.status === 'OUT_OF_STOCK'
-            ? 'https://schema.org/OutOfStock'
-            : 'https://schema.org/InStock',
-      }
-    : undefined;
-
-  return {
-    product: {
-      '@context': 'https://schema.org',
-      '@type': 'Product',
-      name: product.name,
-      ...(resolvedMeta.metaDescription ? { description: resolvedMeta.metaDescription } : {}),
-      image: product.images.map((img) => img.url),
-      ...(offer ? { offers: offer } : {}),
-    },
-    breadcrumb: {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: breadcrumbItems,
-    },
-  };
-}
-
-class ProductNotFoundError extends Error {
-  constructor() {
-    super('Producto no encontrado');
+export class ProductNotFoundError extends NotFoundError {
+  constructor(message = 'Producto no encontrado') {
+    super(message);
     this.name = 'ProductNotFoundError';
   }
 }
@@ -165,7 +30,7 @@ async function generateUniqueSlug(name: string, excludeId?: string): Promise<str
 }
 
 export const productService = {
-    async create(input: CreateProductInput) {
+  async create(input: CreateProductInput) {
     const slug = await generateUniqueSlug(input.name);
 
     return productRepository.create({
@@ -190,7 +55,7 @@ export const productService = {
 
     const slug = input.name ? await generateUniqueSlug(input.name, id) : undefined;
 
-        return productRepository.update(id, {
+    return productRepository.update(id, {
       ...(input.name ? { name: input.name, slug } : {}),
       ...(input.description !== undefined ? { description: input.description } : {}),
       ...(input.price !== undefined ? { price: input.price } : {}),
@@ -219,8 +84,14 @@ export const productService = {
 
     // Si el dueño no habilitó mostrar el precio, lo ocultamos del todo
     // en la respuesta pública — no solo "no se muestra en el frontend",
-    // el dato real ni siquiera viaja en el JSON.
-    const productForPublic = product.showPrice ? product : { ...product, price: null };
+    // el dato real ni siquiera viaja en el JSON (incluyendo variantes).
+    const productForPublic = product.showPrice
+      ? product
+      : {
+          ...product,
+          price: null,
+          variants: product.variants.map((v) => ({ ...v, price: null })),
+        };
 
     const withMeta = withSeoFallbacks(productForPublic);
     const jsonLd = buildJsonLd(productForPublic, withMeta);
@@ -254,6 +125,110 @@ export const productService = {
       },
     };
   },
-};
 
-export { ProductNotFoundError };
+  // ---------- Variants ----------
+  async addVariant(productId: string, input: CreateVariantInput) {
+    const product = await productRepository.findById(productId);
+    if (!product) {
+      throw new ProductNotFoundError();
+    }
+
+    const existingName = await productRepository.findVariantByName(productId, input.name);
+    if (existingName) {
+      throw new ConflictError(
+        `Ya existe una variante con el nombre "${input.name}" en este producto`,
+        { reason: 'DUPLICATE_VARIANT_NAME' }
+      );
+    }
+
+    if (input.sku) {
+      const skuTaken = await productRepository.skuExists(input.sku);
+      if (skuTaken) {
+        throw new ConflictError(`El SKU "${input.sku}" ya está en uso`, {
+          reason: 'DUPLICATE_SKU',
+        });
+      }
+    }
+
+    const currentMaxOrder = product.variants.reduce(
+      (max, v) => Math.max(max, v.order),
+      -1
+    );
+
+    return productRepository.createVariant({
+      productId,
+      name: input.name,
+      sku: input.sku ?? null,
+      price: input.price ?? null,
+      stock: input.stock ?? 0,
+      isAvailable: input.isAvailable ?? true,
+      order: input.order ?? currentMaxOrder + 1,
+    });
+  },
+
+  async updateVariant(variantId: string, input: UpdateVariantInput) {
+    const variant = await productRepository.findVariantById(variantId);
+    if (!variant) {
+      throw new NotFoundError('Variante no encontrada');
+    }
+
+    if (input.name && input.name !== variant.name) {
+      const existingName = await productRepository.findVariantByName(
+        variant.productId,
+        input.name
+      );
+      if (existingName && existingName.id !== variantId) {
+        throw new ConflictError(
+          `Ya existe una variante con el nombre "${input.name}" en este producto`,
+          { reason: 'DUPLICATE_VARIANT_NAME' }
+        );
+      }
+    }
+
+    if (input.sku && input.sku !== variant.sku) {
+      const skuTaken = await productRepository.skuExists(input.sku, variantId);
+      if (skuTaken) {
+        throw new ConflictError(`El SKU "${input.sku}" ya está en uso`, {
+          reason: 'DUPLICATE_SKU',
+        });
+      }
+    }
+
+    return productRepository.updateVariant(variantId, {
+      ...(input.name !== undefined ? { name: input.name } : {}),
+      ...(input.sku !== undefined ? { sku: input.sku } : {}),
+      ...(input.price !== undefined ? { price: input.price } : {}),
+      ...(input.stock !== undefined ? { stock: input.stock } : {}),
+      ...(input.isAvailable !== undefined ? { isAvailable: input.isAvailable } : {}),
+      ...(input.order !== undefined ? { order: input.order } : {}),
+    });
+  },
+
+  async deleteVariant(variantId: string): Promise<void> {
+    const variant = await productRepository.findVariantById(variantId);
+    if (!variant) {
+      throw new NotFoundError('Variante no encontrada');
+    }
+    await productRepository.deleteVariant(variantId);
+  },
+
+  async reorderVariants(productId: string, variantIds: string[]): Promise<void> {
+    const product = await productRepository.findById(productId);
+    if (!product) {
+      throw new ProductNotFoundError();
+    }
+
+    const validIds = new Set(product.variants.map((v) => v.id));
+    const allValid = variantIds.every((id) => validIds.has(id));
+
+    if (!allValid || variantIds.length !== product.variants.length) {
+      throw new BadRequestError(
+        'La lista de IDs no coincide exactamente con las variantes del producto'
+      );
+    }
+
+    await Promise.all(
+      variantIds.map((id, index) => productRepository.updateVariantOrder(id, index))
+    );
+  },
+};

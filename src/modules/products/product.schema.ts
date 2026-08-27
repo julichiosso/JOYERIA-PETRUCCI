@@ -40,3 +40,43 @@ export const productListQuerySchema = z.object({
 });
 
 export type ProductListQuery = z.infer<typeof productListQuerySchema>;
+
+// ---------- Variant Schemas ----------
+
+export const createVariantSchema = z.object({
+  name: z.string().trim().min(1, 'El nombre de la variante es requerido').max(100),
+  sku: z.string().trim().min(1).max(50).optional(),
+  price: z.number().positive('El precio debe ser mayor a 0').optional().nullable(),
+  stock: z.number().int().min(0).default(0),
+  isAvailable: z.boolean().default(true),
+  order: z.number().int().min(0).optional(),
+});
+
+export type CreateVariantSchema = z.infer<typeof createVariantSchema>;
+
+export const updateVariantSchema = z
+  .object({
+    name: z.string().trim().min(1).max(100).optional(),
+    sku: z.string().trim().min(1).max(50).optional().nullable(),
+    price: z.number().positive('El precio debe ser mayor a 0').optional().nullable(),
+    stock: z.number().int().min(0).optional(),
+    isAvailable: z.boolean().optional(),
+    order: z.number().int().min(0).optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: 'Debe enviar al menos un campo para actualizar',
+  });
+
+export type UpdateVariantSchema = z.infer<typeof updateVariantSchema>;
+
+export const variantIdParamSchema = z.object({
+  variantId: z.string().min(1, 'El variantId es requerido'),
+});
+
+export type VariantIdParam = z.infer<typeof variantIdParamSchema>;
+
+export const reorderVariantsSchema = z.object({
+  variantIds: z.array(z.string().min(1)).min(1, 'Debe incluir al menos una variante'),
+});
+
+export type ReorderVariantsInput = z.infer<typeof reorderVariantsSchema>;

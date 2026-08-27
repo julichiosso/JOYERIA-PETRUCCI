@@ -26,6 +26,8 @@ export const storeConfigController = {
       facebookUrl: config.facebookUrl,
       address: config.address,
       businessHours: config.businessHours,
+      returnPolicy: config.returnPolicy,
+      shippingInfo: config.shippingInfo,
     });
   },
 };

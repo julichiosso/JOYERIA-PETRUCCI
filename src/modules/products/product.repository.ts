@@ -13,9 +13,22 @@ const productWithRelations = {
         },
       },
     },
-images: {
+    images: {
       orderBy: { order: 'asc' as const },
       select: { id: true, url: true, thumbnailUrl: true, altText: true, order: true },
+    },
+    variants: {
+      orderBy: { order: 'asc' as const },
+      select: {
+        id: true,
+        productId: true,
+        name: true,
+        sku: true,
+        price: true,
+        stock: true,
+        isAvailable: true,
+        order: true,
+      },
     },
   },
 } satisfies Prisma.ProductDefaultArgs;
@@ -89,8 +102,8 @@ export const productRepository = {
     return { items, total };
   },
 
-
-    async createImage(data: {
+  // ---------- Images ----------
+  async createImage(data: {
     productId: string;
     url: string;
     thumbnailUrl: string;
@@ -118,6 +131,59 @@ export const productRepository = {
   async updateImageOrder(imageId: string, order: number): Promise<void> {
     await prisma.productImage.update({
       where: { id: imageId },
+      data: { order },
+    });
+  },
+
+  // ---------- Variants ----------
+  async createVariant(data: {
+    productId: string;
+    name: string;
+    sku?: string | null;
+    price?: number | null;
+    stock?: number;
+    isAvailable?: boolean;
+    order?: number;
+  }) {
+    return prisma.productVariant.create({ data });
+  },
+
+  async findVariantById(variantId: string) {
+    return prisma.productVariant.findUnique({ where: { id: variantId } });
+  },
+
+  async findVariantByName(productId: string, name: string) {
+    return prisma.productVariant.findUnique({
+      where: {
+        productId_name: { productId, name },
+      },
+    });
+  },
+
+  async skuExists(sku: string, excludeId?: string): Promise<boolean> {
+    const count = await prisma.productVariant.count({
+      where: {
+        sku,
+        ...(excludeId ? { id: { not: excludeId } } : {}),
+      },
+    });
+    return count > 0;
+  },
+
+  async updateVariant(variantId: string, data: Prisma.ProductVariantUpdateInput) {
+    return prisma.productVariant.update({
+      where: { id: variantId },
+      data,
+    });
+  },
+
+  async deleteVariant(variantId: string): Promise<void> {
+    await prisma.productVariant.delete({ where: { id: variantId } });
+  },
+
+  async updateVariantOrder(variantId: string, order: number): Promise<void> {
+    await prisma.productVariant.update({
+      where: { id: variantId },
       data: { order },
     });
   },

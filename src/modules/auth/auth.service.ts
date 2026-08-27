@@ -3,22 +3,23 @@ import bcrypt from 'bcrypt';
 import crypto from 'node:crypto';
 import { authRepository } from './auth.repository.js';
 import { env } from '../../config/env.js';
+import { UnauthorizedError } from '../../shared/errors/index.js';
 import type { LoginInput, AuthTokens, JwtPayload, AuthenticatedUser } from './auth.types.js';
 
 const ACCESS_TOKEN_EXPIRY = '15m';
 const REFRESH_TOKEN_EXPIRY_DAYS = 7;
 const BCRYPT_ROUNDS = 12;
 
-class InvalidCredentialsError extends Error {
-  constructor() {
-    super('Credenciales inválidas');
+class InvalidCredentialsError extends UnauthorizedError {
+  constructor(message = 'Credenciales inválidas') {
+    super(message);
     this.name = 'InvalidCredentialsError';
   }
 }
 
-class InvalidRefreshTokenError extends Error {
-  constructor() {
-    super('Refresh token inválido o expirado');
+class InvalidRefreshTokenError extends UnauthorizedError {
+  constructor(message = 'Refresh token inválido o expirado') {
+    super(message);
     this.name = 'InvalidRefreshTokenError';
   }
 }

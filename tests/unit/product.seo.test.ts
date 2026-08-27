@@ -29,6 +29,7 @@ describe('Product SEO & JSON-LD (productService.getBySlug)', () => {
       slug: 'anillo-solitario-oro-18k',
       description: 'Hermoso anillo con diamante brillante de alta pureza.',
       price: '150000.00' as any,
+      showPrice: true,
       status: 'ACTIVE',
       variantLabel: null,
       metaTitle: null,
@@ -45,8 +46,8 @@ describe('Product SEO & JSON-LD (productService.getBySlug)', () => {
         },
       },
       images: [
-        { id: 'img-1', url: 'https://cdn.example.com/img1.jpg', order: 0 },
-      ],
+  { id: 'img-1', url: 'https://cdn.example.com/img1.jpg', thumbnailUrl: null, altText: null, order: 0 },
+],
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -91,6 +92,7 @@ describe('Product SEO & JSON-LD (productService.getBySlug)', () => {
       slug: 'reloj-cronografo',
       description: 'Reloj suizo automático',
       price: '500000.00' as any,
+      showPrice: true,
       status: 'OUT_OF_STOCK',
       variantLabel: null,
       metaTitle: 'Reloj Cronógrafo Suizo - Edición Limitada',

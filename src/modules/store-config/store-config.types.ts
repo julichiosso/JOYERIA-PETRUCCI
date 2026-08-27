@@ -6,6 +6,8 @@ export interface UpdateStoreConfigInput {
   facebookUrl?: string;
   address?: string;
   businessHours?: string;
+  returnPolicy?: string;
+  shippingInfo?: string;
 }
 
 export interface StoreConfigResult {
@@ -17,5 +19,7 @@ export interface StoreConfigResult {
   facebookUrl: string | null;
   address: string | null;
   businessHours: string | null;
+  returnPolicy: string | null;
+  shippingInfo: string | null;
   updatedAt: Date;
 }

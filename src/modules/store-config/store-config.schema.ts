@@ -23,6 +23,8 @@ export const updateStoreConfigSchema = z
     facebookUrl: z.string().trim().url('Debe ser una URL válida').optional(),
     address: z.string().trim().max(200).optional(),
     businessHours: z.string().trim().max(300).optional(),
+    returnPolicy: z.string().trim().max(2000).optional(),
+    shippingInfo: z.string().trim().max(2000).optional(),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: 'Debe enviar al menos un campo para actualizar',

@@ -24,6 +24,35 @@ export interface UpdateProductInput {
   metaDescription?: string;
 }
 
+export interface ProductVariantResult {
+  id: string;
+  productId: string;
+  name: string;
+  sku: string | null;
+  price: string | null; // Decimal serializado como string, null si usa el precio base del producto
+  stock: number;
+  isAvailable: boolean;
+  order: number;
+}
+
+export interface CreateVariantInput {
+  name: string;
+  sku?: string;
+  price?: number | null;
+  stock?: number;
+  isAvailable?: boolean;
+  order?: number;
+}
+
+export interface UpdateVariantInput {
+  name?: string;
+  sku?: string | null;
+  price?: number | null;
+  stock?: number;
+  isAvailable?: boolean;
+  order?: number;
+}
+
 export interface ProductWithCategory {
   id: string;
   name: string;
@@ -48,18 +77,21 @@ export interface ProductWithCategory {
   images: {
     id: string;
     url: string;
+    thumbnailUrl: string | null;
+    altText: string | null;
     order: number;
   }[];
+  variants: ProductVariantResult[];
 }
 
 // ---------------------------------------------------------------------------
 // JSON-LD / schema.org types
 // ---------------------------------------------------------------------------
 
-/** schema.org/Offer embebido en un Product */
 export interface JsonLdOffer {
   '@type': 'Offer';
-  price: string;
+  /** Ausente cuando el producto tiene showPrice: false — el precio real nunca se expone. */
+  price?: string;
   priceCurrency: 'ARS';
   availability: 'https://schema.org/InStock' | 'https://schema.org/OutOfStock';
 }

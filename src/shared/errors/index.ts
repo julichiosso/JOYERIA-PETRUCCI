@@ -20,6 +20,12 @@ export class BadRequestError extends AppError {
   }
 }
 
+export class UnauthorizedError extends AppError {
+  constructor(message: string, meta?: Record<string, unknown>) {
+    super(message, 401, meta);
+  }
+}
+
 export class NotFoundError extends AppError {
   constructor(message: string, meta?: Record<string, unknown>) {
     super(message, 404, meta);
