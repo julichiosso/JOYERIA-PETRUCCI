@@ -1,5 +1,6 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { productService, ProductNotFoundError } from './product.service.js';
+import { storeConfigService } from '../store-config/store-config.service.js';
 import type {
   CreateProductSchema,
   UpdateProductSchema,
@@ -71,16 +72,32 @@ export const productController = {
   },
 
   // Catálogo público: solo trae productos disponibles, por slug
+    // Catálogo público: solo trae productos disponibles, por slug
   async getPublicBySlug(
     request: FastifyRequest<{ Params: ProductSlugParam }>,
     reply: FastifyReply
   ) {
     try {
       const product = await productService.getBySlug(request.params.slug);
-            if (product.status === 'DRAFT') {
+      if (product.status === 'DRAFT') {
         return reply.status(404).send({ error: 'Producto no encontrado' });
       }
-      return reply.status(200).send(product);
+
+      const baseUrl = (process.env.FRONTEND_URL ?? '').replace(/\/$/, '');
+      const parentSlug = product.category?.parent?.slug;
+      const categorySlug = product.category?.slug ?? '';
+      const productPath = parentSlug
+        ? `/${parentSlug}/${categorySlug}/${product.slug}`
+        : `/${categorySlug}/${product.slug}`;
+      const productUrl = `${baseUrl}${productPath}`;
+
+      const whatsappLink = await storeConfigService.buildWhatsappLink({
+        productName: product.name,
+        price: product.price !== null ? product.price.toString() : null,
+        productUrl,
+      });
+
+      return reply.status(200).send({ ...product, whatsappLink });
     } catch (err) {
       if (err instanceof ProductNotFoundError) {
         return reply.status(404).send({ error: err.message });
