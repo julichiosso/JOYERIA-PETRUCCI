@@ -13,9 +13,9 @@ const productWithRelations = {
         },
       },
     },
-    images: {
+images: {
       orderBy: { order: 'asc' as const },
-      select: { id: true, url: true, order: true },
+      select: { id: true, url: true, thumbnailUrl: true, altText: true, order: true },
     },
   },
 } satisfies Prisma.ProductDefaultArgs;
@@ -88,4 +88,38 @@ export const productRepository = {
 
     return { items, total };
   },
+
+
+    async createImage(data: {
+    productId: string;
+    url: string;
+    thumbnailUrl: string;
+    altText: string | null;
+    order: number;
+  }) {
+    return prisma.productImage.create({ data });
+  },
+
+  async findImageById(imageId: string) {
+    return prisma.productImage.findUnique({ where: { id: imageId } });
+  },
+
+  async deleteImage(imageId: string): Promise<void> {
+    await prisma.productImage.delete({ where: { id: imageId } });
+  },
+
+  async updateImageAltText(imageId: string, altText: string) {
+    return prisma.productImage.update({
+      where: { id: imageId },
+      data: { altText },
+    });
+  },
+
+  async updateImageOrder(imageId: string, order: number): Promise<void> {
+    await prisma.productImage.update({
+      where: { id: imageId },
+      data: { order },
+    });
+  },
 };
+

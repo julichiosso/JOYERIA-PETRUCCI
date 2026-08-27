@@ -13,6 +13,8 @@ import { authRoutes } from './modules/auth/auth.routes.js';
 import { AppError } from './shared/errors/index.js';
 import { categoryAdminRoutes, categoryCatalogRoutes } from './modules/categories/category.router.js';
 import { sitemapRoutes } from './modules/catalog/sitemap.routes.js';
+import multipart from '@fastify/multipart';
+import { mediaRoutes } from './modules/media/media.routes.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -28,6 +30,14 @@ export async function buildApp() {
     credentials: true,
   });
   await app.register(cookie);
+
+  await app.register(multipart, {
+    limits: {
+      fileSize: 10 * 1024 * 1024, // 10MB por archivo
+      files: 10, // máximo 10 archivos por request
+    },
+  });
+
   await app.register(rateLimit, {
     max: 100,
     timeWindow: '1 minute',
@@ -39,6 +49,7 @@ export async function buildApp() {
   await app.register(categoryAdminRoutes, { prefix: '/admin/categories' });
   await app.register(categoryCatalogRoutes, { prefix: '/catalog/categories' });
   await app.register(sitemapRoutes, { prefix: '/catalog' });
+  await app.register(mediaRoutes, { prefix: '/admin/media' });
 
   app.get('/health', async () => {
     return { status: 'ok' };
