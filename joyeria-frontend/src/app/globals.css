@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   PETRUCCI — Design Tokens
+   Todos los colores, tipografías y valores de la marca viven acá.
+   El resto del código solo referencia estas variables.
+───────────────────────────────────────────────────────────────────────────── */
+
+@theme {
+  /* Colores de marca */
+  --color-petrucci-black:  #1A1A1A;   /* Texto principal */
+  --color-petrucci-cream:  #FAF8F5;   /* Fondo global (blanco hueso) */
+  --color-petrucci-gold:   #A8875A;   /* Acento dorado, CTAs, hovers */
+  --color-petrucci-gray:   #8C8578;   /* Textos secundarios, placeholders */
+  --color-petrucci-border: #E8E4DE;   /* Bordes sutiles */
+  --color-petrucci-white:  #FFFFFF;
+
+  /* Fuentes */
+  --font-display: var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
+  --font-body:    var(--font-inter), 'Inter', system-ui, sans-serif;
+
+  /* Espaciado base */
+  --spacing-section: 5rem;    /* gap estándar entre secciones */
+  --spacing-container: 1.5rem; /* padding horizontal del contenedor en mobile */
+
+  /* Transiciones */
+  --ease-petrucci: cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   BASE GLOBAL
+───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --background: var(--color-petrucci-cream);
+  --foreground: var(--color-petrucci-black);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  min-height: 100dvh;
+}
+
+/* Tipografía de display — títulos, nombres de productos */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 400; /* Cormorant Garamond luce mejor en peso regular */
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+/* Evitar que las imágenes rompan el layout */
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Focus visible accesible (Lighthouse: Accessibility) */
+:focus-visible {
+  outline: 2px solid var(--color-petrucci-gold);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Selección de texto con color de marca */
+::selection {
+  background-color: var(--color-petrucci-gold);
+  color: var(--color-petrucci-white);
+}
+
+/* Ocultar scrollbar manteniendo funcionalidad (sección de chips mobile) */
+.scrollbar-hide {
+  -ms-overflow-style: none;   /* IE / Edge */
+  scrollbar-width: none;      /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;              /* Chrome / Safari / Opera */
+}
