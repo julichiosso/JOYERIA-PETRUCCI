@@ -1,0 +1,62 @@
+{
+  "name": "joyeria-backend",
+  "version": "1.0.0",
+  "description": "JOYERIA-PETRUCCI",
+  "main": "dist/server.js",
+  "type": "module",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "seed": "tsx prisma/seed.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/julichiosso/JOYERIA-PETRUCCI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/julichiosso/JOYERIA-PETRUCCI/issues"
+  },
+  "homepage": "https://github.com/julichiosso/JOYERIA-PETRUCCI#readme",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1119.0",
+    "@fastify/cookie": "^11.1.2",
+    "@fastify/cors": "^11.3.0",
+    "@fastify/helmet": "^13.1.1",
+    "@fastify/multipart": "^10.1.1",
+    "@fastify/rate-limit": "^11.2.0",
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "fastify": "^5.12.1",
+    "fastify-type-provider-zod": "^7.0.0",
+    "file-type": "^22.0.2",
+    "jsonwebtoken": "^9.0.3",
+    "sharp": "^0.35.4",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^26.3.0",
+    "@types/sharp": "^0.31.1",
+    "@vitest/coverage-v8": "^4.1.11",
+    "prisma": "^7.9.1",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.11"
+  },
+  "overrides": {
+    "deepmerge-ts": "^8.0.0"
+  }
+}
