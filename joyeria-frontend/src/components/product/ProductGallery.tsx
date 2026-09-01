@@ -14,6 +14,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import type { ProductImage } from "@/types/product";
+import { getImageUrl } from "@/lib/utils";
 
 interface ProductGalleryProps {
   images: ProductImage[];
@@ -43,7 +44,7 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
       <div className="relative aspect-square bg-petrucci-border overflow-hidden rounded-sm">
         <Image
           key={activeIndex} // fuerza re-mount para la transición
-          src={activeImage.url}
+          src={getImageUrl(activeImage.url)}
           alt={activeImage.altText ?? `${productName} — foto ${activeIndex + 1}`}
           fill
           priority={activeIndex === 0}
@@ -75,7 +76,7 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
               `}
             >
               <Image
-                src={img.thumbnailUrl ?? img.url}
+                src={getImageUrl(img.thumbnailUrl ?? img.url)}
                 alt={img.altText ?? `Foto ${index + 1} de ${productName}`}
                 fill
                 quality={60}

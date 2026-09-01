@@ -29,11 +29,24 @@ async function generateUniqueSlug(name: string, excludeId?: string): Promise<str
   return candidateSlug;
 }
 
+import { getPublicUrl } from '../../infra/storage/storage.service.js';
+
+function formatProductImages<T extends { images: { id: string; url: string; thumbnailUrl: string | null; altText: string | null; order: number }[] }>(product: T): T {
+  return {
+    ...product,
+    images: product.images.map((img) => ({
+      ...img,
+      url: getPublicUrl(img.url),
+      thumbnailUrl: img.thumbnailUrl ? getPublicUrl(img.thumbnailUrl) : null,
+    })),
+  };
+}
+
 export const productService = {
   async create(input: CreateProductInput) {
     const slug = await generateUniqueSlug(input.name);
 
-    return productRepository.create({
+    const product = await productRepository.create({
       name: input.name,
       slug,
       description: input.description,
@@ -45,6 +58,8 @@ export const productService = {
       metaDescription: input.metaDescription,
       category: { connect: { id: input.categoryId } },
     });
+
+    return formatProductImages(product);
   },
 
   async update(id: string, input: UpdateProductInput) {
@@ -55,7 +70,7 @@ export const productService = {
 
     const slug = input.name ? await generateUniqueSlug(input.name, id) : undefined;
 
-    return productRepository.update(id, {
+    const updated = await productRepository.update(id, {
       ...(input.name ? { name: input.name, slug } : {}),
       ...(input.description !== undefined ? { description: input.description } : {}),
       ...(input.price !== undefined ? { price: input.price } : {}),
@@ -66,6 +81,8 @@ export const productService = {
       ...(input.metaDescription !== undefined ? { metaDescription: input.metaDescription } : {}),
       ...(input.categoryId ? { category: { connect: { id: input.categoryId } } } : {}),
     });
+
+    return formatProductImages(updated);
   },
 
   async getById(id: string) {
@@ -73,7 +90,7 @@ export const productService = {
     if (!product) {
       throw new ProductNotFoundError();
     }
-    return product;
+    return formatProductImages(product);
   },
 
   async getBySlug(slug: string) {
@@ -82,15 +99,17 @@ export const productService = {
       throw new ProductNotFoundError();
     }
 
+    const formattedProduct = formatProductImages(product);
+
     // Si el dueño no habilitó mostrar el precio, lo ocultamos del todo
     // en la respuesta pública — no solo "no se muestra en el frontend",
     // el dato real ni siquiera viaja en el JSON (incluyendo variantes).
-    const productForPublic = product.showPrice
-      ? product
+    const productForPublic = formattedProduct.showPrice
+      ? formattedProduct
       : {
-          ...product,
+          ...formattedProduct,
           price: null,
-          variants: product.variants.map((v) => ({ ...v, price: null })),
+          variants: formattedProduct.variants.map((v) => ({ ...v, price: null })),
         };
 
     const withMeta = withSeoFallbacks(productForPublic);
@@ -116,7 +135,7 @@ export const productService = {
     });
 
     return {
-      items,
+      items: items.map((item) => formatProductImages(item)),
       pagination: {
         page: params.page,
         limit: params.limit,

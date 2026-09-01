@@ -14,7 +14,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/types/product";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;
@@ -48,7 +48,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       >
         {mainImage ? (
           <Image
-            src={mainImage.thumbnailUrl ?? mainImage.url}
+            src={getImageUrl(mainImage.thumbnailUrl ?? mainImage.url)}
             alt={mainImage.altText ?? product.name}
             fill
             priority={priority}

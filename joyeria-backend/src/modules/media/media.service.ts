@@ -1,7 +1,7 @@
 import sharp from 'sharp';
 import { fileTypeFromBuffer } from 'file-type';
 import { productRepository } from '../products/product.repository.js';
-import { uploadFile, deleteFile } from '../../infra/storage/storage.service.js';
+import { uploadFile, deleteFile, getPublicUrl } from '../../infra/storage/storage.service.js';
 import { BadRequestError, NotFoundError } from '../../shared/errors/index.js';
 import {
   MAX_FILE_SIZE_BYTES,
@@ -102,8 +102,8 @@ export const mediaService = {
 
       const created = await productRepository.createImage({
         productId: params.productId,
-        url: full.url,
-        thumbnailUrl: thumbnail.url,
+        url: getPublicUrl(full.url),
+        thumbnailUrl: getPublicUrl(thumbnail.url),
         altText: altText ?? null,
         order: currentMaxOrder + 1 + i,
       });

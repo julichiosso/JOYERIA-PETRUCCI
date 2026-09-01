@@ -41,3 +41,14 @@ export function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.slice(0, text.lastIndexOf(" ", maxLength)) + "…";
 }
+
+/**
+ * getImageUrl() — Normaliza URLs de imágenes de productos asegurando URLs absolutas o válidas.
+ */
+export function getImageUrl(url: string | null | undefined): string {
+  if (!url) return "";
+  if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("/") || url.startsWith("blob:")) {
+    return url;
+  }
+  return `https://tfftfgvyggxpiqjtbtzt.supabase.co/storage/v1/object/public/product-media/${url.replace(/^\/+/, "")}`;
+}
