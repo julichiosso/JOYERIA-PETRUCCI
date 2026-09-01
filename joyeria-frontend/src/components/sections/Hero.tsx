@@ -1,196 +1,150 @@
 "use client";
 
 /**
- * components/sections/HeroCarousel.tsx
- * Carrusel de imágenes de producto — reemplaza el hero con texto superpuesto.
+ * components/sections/Hero.tsx
+ * Hero Banner principal — estilo editorial de lujo (referencia: joyeriaelrubi.com.ar).
  *
- * Estética de referencia (joyeriaelrubi.com.ar):
- *  - Imagen grande, sin texto encima — la imagen habla sola
- *  - Dots de paginación abajo
- *  - Fila de 2 miniaturas a la derecha (desktop) o debajo (mobile) mostrando
- *    las próximas fotos — invitan a seguir mirando
- *  - Auto-avance cada 4s, se pausa al hover
- *
- * TODO: Reemplazar /hero-1.jpg, /hero-2.jpg, /hero-3.jpg por fotos reales
- *       de productos de Petrucci. Cada slide puede linkear a una categoría.
+ * Características:
+ *  - Banner único edge-to-edge a pantalla completa (sin columnas ni particiones).
+ *  - Carrusel de imágenes de alta resolución.
+ *  - Flechas de navegación `<` y `>` en los laterales.
+ *  - Puntos de paginación inferiores (dots).
+ *  - Efecto de ZOOM-IN sutil al hacer scroll (scale 1.0 -> 1.08 mediante Framer Motion).
+ *  - Cero scroll horizontal (overflow-hidden estricto).
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 
 const SLIDES = [
   {
-    src: "/hero-1.jpg",
-    alt: "Anillo solitario oro — Petrucci Joyería",
+    src: "/banner-1.jpg",
+    alt: "Colección Alta Joyería — Petrucci Joyería",
     href: "/joyeria/anillos",
-    label: "Anillos",
   },
   {
-    src: "/hero-2.jpg",
-    alt: "Cadena y aros oro — Petrucci Joyería",
+    src: "/banner-2.jpg",
+    alt: "Anillos y Joyas Artesanales — Petrucci Joyería",
     href: "/joyeria/cadenas",
-    label: "Cadenas & Aros",
-  },
-  {
-    src: "/hero-3.jpg",
-    alt: "Reloj clásico acero — Petrucci Joyería",
-    href: "/relojes",
-    label: "Relojes",
   },
 ];
 
-export default function HeroCarousel() {
+export default function Hero() {
   const [active, setActive] = useState(0);
+  const [direction, setDirection] = useState(1);
   const [paused, setPaused] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Hook de Framer Motion para el efecto de Zoom-in al hacer scroll
+  const { scrollY } = useScroll();
+  // De scrollY 0 a 400px -> scale pasa de 1 a 1.08 de forma ultra suave
+  const scale = useTransform(scrollY, [0, 400], [1, 1.08]);
 
   const next = useCallback(() => {
+    setDirection(1);
     setActive((i) => (i + 1) % SLIDES.length);
   }, []);
 
   const prev = useCallback(() => {
+    setDirection(-1);
     setActive((i) => (i - 1 + SLIDES.length) % SLIDES.length);
   }, []);
 
-  // Auto-avance
+  // Auto-avance cada 5 segundos si no está en hover
   useEffect(() => {
     if (paused) return;
-    const id = setInterval(next, 4000);
-    return () => clearInterval(id);
+    const timer = setInterval(next, 5000);
+    return () => clearInterval(timer);
   }, [next, paused]);
 
-  const current = SLIDES[active];
-  // Las 2 próximas imágenes para los thumbnails
-  const previews = [
-    SLIDES[(active + 1) % SLIDES.length],
-    SLIDES[(active + 2) % SLIDES.length],
-  ];
+  const currentSlide = SLIDES[active];
 
   return (
     <section
-      className="w-full"
-      aria-label="Galería de productos Petrucci"
+      ref={containerRef}
+      className="relative w-full overflow-hidden bg-gray-100"
+      aria-label="Colección destacada Petrucci"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* ── Layout: imagen principal + thumbnails en desktop ─────────────── */}
-      <div className="flex gap-1.5 md:gap-2">
-
-        {/* Imagen principal */}
-        <div className="relative flex-1 min-w-0">
-          <Link
-            href={current.href}
-            className="block relative w-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-petrucci-gold"
-            style={{ aspectRatio: "3/4" }}
-            tabIndex={0}
-            aria-label={`Ver colección ${current.label}`}
-          >
-            {SLIDES.map((slide, i) => (
-              <Image
-                key={slide.src}
-                src={slide.src}
-                alt={slide.alt}
-                fill
-                priority={i === 0}
-                quality={85}
-                className={`object-cover object-center transition-opacity duration-500 ${i === active ? "opacity-100" : "opacity-0"}`}
-                sizes="(max-width: 768px) 75vw, 50vw"
-              />
-            ))}
-          </Link>
-
-          {/* Flechas de navegación — solo desktop */}
-          <button
-            onClick={prev}
-            className="hidden md:flex absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 backdrop-blur-sm items-center justify-center hover:bg-white transition-colors z-10 focus-visible:outline-none"
-            aria-label="Imagen anterior"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-          <button
-            onClick={next}
-            className="hidden md:flex absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 backdrop-blur-sm items-center justify-center hover:bg-white transition-colors z-10 focus-visible:outline-none"
-            aria-label="Imagen siguiente"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </button>
-
-          {/* Label de la categoría — esquina inferior izquierda */}
-          <div className="absolute bottom-3 left-3 z-10">
-            <span className="font-body text-[10px] tracking-[0.2em] uppercase text-white bg-black/40 backdrop-blur-sm px-2.5 py-1">
-              {current.label}
-            </span>
-          </div>
-        </div>
-
-        {/* Thumbnails (próximas 2 imágenes) — solo desktop */}
-        <div className="hidden md:flex flex-col gap-2 w-[22%] shrink-0">
-          {previews.map((slide) => (
-            <button
-              key={slide.src}
-              onClick={() => setActive(SLIDES.indexOf(slide))}
-              className="relative flex-1 overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-petrucci-gold"
-              aria-label={`Ver ${slide.label}`}
+      {/* ── Contenedor de imagen edge-to-edge con zoom al scroll ── */}
+      <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[2.4/1] max-h-[75vh] overflow-hidden">
+        <Link
+          href={currentSlide.href}
+          className="block relative w-full h-full focus-visible:outline-none"
+          tabIndex={0}
+          aria-label={currentSlide.alt}
+        >
+          <AnimatePresence initial={false} custom={direction}>
+            <motion.div
+              key={currentSlide.src}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
+              style={{ scale }}
+              className="absolute inset-0 w-full h-full origin-center will-change-transform"
             >
               <Image
-                src={slide.src}
-                alt={slide.alt}
+                src={currentSlide.src}
+                alt={currentSlide.alt}
                 fill
-                quality={65}
-                className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
-                sizes="22vw"
+                priority={active === 0}
+                quality={92}
+                sizes="100vw"
+                className="object-cover object-center"
               />
-              {/* Overlay sutil al hover */}
-              <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors" />
-            </button>
+            </motion.div>
+          </AnimatePresence>
+        </Link>
+
+        {/* ── Flechas de navegación laterales (< y >) estilo joyeriaelrubi ── */}
+        <button
+          onClick={prev}
+          aria-label="Imagen anterior"
+          className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 md:w-11 md:h-11 bg-white/70 hover:bg-white text-petrucci-black shadow-sm flex items-center justify-center transition-all duration-200 focus-visible:outline-none rounded-full"
+        >
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
+        <button
+          onClick={next}
+          aria-label="Imagen siguiente"
+          className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 md:w-11 md:h-11 bg-white/70 hover:bg-white text-petrucci-black shadow-sm flex items-center justify-center transition-all duration-200 focus-visible:outline-none rounded-full"
+        >
+          <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+
+        {/* ── Paginación de puntos (Dots) inferiores ── */}
+        <div
+          className="absolute bottom-3 md:bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2"
+          role="tablist"
+          aria-label="Selector de slide"
+        >
+          {SLIDES.map((_, idx) => (
+            <button
+              key={idx}
+              role="tab"
+              aria-selected={idx === active}
+              aria-label={`Slide ${idx + 1}`}
+              onClick={() => {
+                setDirection(idx > active ? 1 : -1);
+                setActive(idx);
+              }}
+              className={`rounded-full transition-all duration-300 focus-visible:outline-none ${
+                idx === active
+                  ? "w-6 h-1.5 bg-white shadow-sm"
+                  : "w-2 h-2 bg-white/60 hover:bg-white/90"
+              }`}
+            />
           ))}
         </div>
-
-        {/* Thumbnails — mobile: fila debajo (se implementa debajo del div principal) */}
-      </div>
-
-      {/* Thumbnails mobile (debajo) */}
-      <div className="flex md:hidden gap-1.5 mt-1.5">
-        {previews.map((slide) => (
-          <button
-            key={slide.src}
-            onClick={() => setActive(SLIDES.indexOf(slide))}
-            className="relative flex-1 overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-petrucci-gold"
-            style={{ aspectRatio: "3/4" }}
-            aria-label={`Ver ${slide.label}`}
-          >
-            <Image
-              src={slide.src}
-              alt={slide.alt}
-              fill
-              quality={60}
-              className="object-cover object-center"
-              sizes="33vw"
-            />
-          </button>
-        ))}
-      </div>
-
-      {/* Dots de paginación */}
-      <div className="flex items-center justify-center gap-2 mt-4" role="tablist" aria-label="Selector de imagen">
-        {SLIDES.map((_, i) => (
-          <button
-            key={i}
-            role="tab"
-            aria-selected={i === active}
-            aria-label={`Imagen ${i + 1} de ${SLIDES.length}`}
-            onClick={() => setActive(i)}
-            className={`rounded-full transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-petrucci-gold ${
-              i === active
-                ? "w-6 h-1.5 bg-petrucci-black"
-                : "w-1.5 h-1.5 bg-petrucci-border hover:bg-petrucci-gray"
-            }`}
-          />
-        ))}
       </div>
     </section>
   );

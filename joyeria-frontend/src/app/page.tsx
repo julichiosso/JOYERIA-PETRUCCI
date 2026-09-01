@@ -2,21 +2,16 @@
  * app/page.tsx — Home de Petrucci Joyería
  *
  * Estructura (de arriba a abajo):
- *  1. SearchBar  — buscador debajo del header
- *  2. HeroCarousel — carrusel limpio sin texto superpuesto
- *  3. Categorías — chips scrolleables
- *  4. Piezas Destacadas — 3 productos
- *  5. CTA final — WhatsApp
- *
- * La sección "Por qué elegir Petrucci" fue eliminada (fondo negro,
- * copy genérico que no transmite la marca).
+ *  1. Hero — banner único edge-to-edge con carrusel y zoom-in al scroll
+ *  2. Categorías — chips scrolleables
+ *  3. Piezas Destacadas — 3 productos del catálogo
+ *  4. CTA final — WhatsApp
  */
 
 import { Suspense } from "react";
 import Hero from "@/components/sections/Hero";
 import FeaturedProducts from "@/components/sections/FeaturedProducts";
 import CategoryChip from "@/components/catalog/CategoryChip";
-import SearchBar from "@/components/ui/SearchBar";
 import { api } from "@/lib/api";
 import type { Metadata } from "next";
 import type { Category } from "@/types/category";
@@ -42,7 +37,7 @@ async function CategorySection() {
   return (
     <section
       id="colecciones"
-      className="py-10 md:py-14 border-b border-petrucci-border"
+      className="py-10 md:py-14 border-b border-petrucci-border bg-white"
       aria-labelledby="collections-heading"
     >
       <div className="mx-auto max-w-7xl px-5 md:px-10">
@@ -53,7 +48,7 @@ async function CategorySection() {
           </p>
           <h2
             id="collections-heading"
-            className="font-display text-2xl md:text-4xl text-petrucci-black"
+            className="font-display text-2xl md:text-4xl text-petrucci-black font-normal"
           >
             Nuestras Colecciones
           </h2>
@@ -71,8 +66,6 @@ async function CategorySection() {
 }
 
 // CTA final con WhatsApp
-// El link usa # como placeholder hasta que el backend tenga GET /catalog/whatsapp-link
-// (ver Bloque 2 del plan de correcciones)
 function WhatsAppCTA() {
   return (
     <section
@@ -85,7 +78,7 @@ function WhatsAppCTA() {
         </p>
         <h2
           id="cta-heading"
-          className="font-display text-3xl md:text-4xl text-petrucci-black mb-4"
+          className="font-display text-3xl md:text-4xl text-petrucci-black mb-4 font-normal"
         >
           ¿Buscás algo especial?
         </h2>
@@ -93,7 +86,6 @@ function WhatsAppCTA() {
           Contanos qué tenés en mente. Podemos hacer grabados personalizados,
           diseños a medida o ayudarte a encontrar el regalo perfecto.
         </p>
-        {/* TODO: reemplazar href por el resultado de GET /catalog/whatsapp-link cuando esté disponible */}
         <a
           href="#contacto"
           className="inline-flex items-center gap-3 px-8 py-4 bg-petrucci-black text-petrucci-cream font-body text-xs tracking-[0.2em] uppercase hover:bg-petrucci-gold transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-petrucci-black focus-visible:ring-offset-2"
@@ -113,25 +105,20 @@ function WhatsAppCTA() {
 export default function HomePage() {
   return (
     <>
-      {/* 1. SearchBar — entre header y hero */}
-      <SearchBar />
+      {/* 1. Hero — banner único edge-to-edge a pantalla completa con efecto zoom al scroll */}
+      <Hero />
 
-      {/* 2. Hero carrusel — imágenes sin texto superpuesto */}
-      <div className="px-2 md:px-4 pt-2 pb-4 md:py-4">
-        <Hero />
-      </div>
-
-      {/* 3. Categorías */}
-      <Suspense fallback={<div className="h-28 bg-petrucci-cream" aria-hidden />}>
+      {/* 2. Categorías */}
+      <Suspense fallback={<div className="h-28 bg-white" aria-hidden />}>
         <CategorySection />
       </Suspense>
 
-      {/* 4. Piezas Destacadas */}
-      <Suspense fallback={<div className="h-64 bg-petrucci-cream" aria-hidden />}>
+      {/* 3. Piezas Destacadas */}
+      <Suspense fallback={<div className="h-64 bg-white" aria-hidden />}>
         <FeaturedProducts />
       </Suspense>
 
-      {/* 5. CTA final WhatsApp */}
+      {/* 4. CTA final WhatsApp */}
       <WhatsAppCTA />
     </>
   );
