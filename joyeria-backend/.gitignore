@@ -1,27 +1,18 @@
+@"
 # Dependencies
 node_modules/
-*/node_modules/
 
 # Env vars - NUNCA subir esto
 .env
 .env.local
 .env.*.local
-*.env
-*/.env
-*/.env.local
-*/.env.*.local
 
-# Next.js & Build outputs
-.next/
-*/.next/
+# Build
 dist/
-*/dist/
 build/
-*/build/
 
 # Prisma
-dev.db
-*.db
+prisma/migrations/dev.db
 
 # Logs
 *.log
@@ -32,7 +23,7 @@ logs/
 .DS_Store
 Thumbs.db
 
-# Editors
+# Editores
 .vscode/*
 !.vscode/extensions.json
 .idea/
@@ -43,5 +34,4 @@ coverage/
 # Uploads temporales locales
 tmp/
 uploads-local/
-*/tmp/
-*/uploads-local/
+"@ | Out-File -FilePath .gitignore -Encoding utf8
