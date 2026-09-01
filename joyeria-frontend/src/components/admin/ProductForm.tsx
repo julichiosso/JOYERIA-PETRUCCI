@@ -2,25 +2,14 @@
 
 /**
  * components/admin/ProductForm.tsx
- * Formulario reutilizable para crear y editar productos.
- *
- * Usado por:
- *  - /admin/productos/nuevo (sin initialData)
- *  - /admin/productos/[id] (con initialData)
- *
- * Campos:
- *  - Nombre, descripción, categoría (select), estado
- *  - Precio + toggle "Mostrar precio"
- *  - Etiqueta de variantes (texto libre — no selector, alineado con el backend)
- *  - Subida de imágenes con ImageUploader
- *  - Meta title y meta description (colapsable "SEO avanzado")
+ * Formulario para crear y editar productos con subida de imágenes vinculadas al backend.
  */
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { adminFetch } from "@/lib/auth";
+import { adminFetch, adminFetchMultipart } from "@/lib/auth";
 import type { AdminApiError } from "@/lib/auth";
-import ImageUploader, { type UploadedImage } from "./ImageUploader";
+import ImageUploader, { type LocalProductImage } from "./ImageUploader";
 import type { Category } from "@/types/category";
 
 type ProductStatus = "ACTIVE" | "DRAFT" | "OUT_OF_STOCK";
@@ -39,17 +28,17 @@ interface ProductFormData {
 
 interface InitialProductData extends ProductFormData {
   id: string;
-  images: UploadedImage[];
+  images: LocalProductImage[];
 }
 
 interface ProductFormProps {
   initialData?: InitialProductData;
 }
 
-const STATUS_OPTIONS: { value: ProductStatus; label: string; color: string }[] = [
-  { value: "ACTIVE", label: "Activo — visible en la tienda", color: "text-green-700" },
-  { value: "DRAFT", label: "Borrador — oculto en la tienda", color: "text-yellow-700" },
-  { value: "OUT_OF_STOCK", label: "Sin stock — visible pero agotado", color: "text-red-700" },
+const STATUS_OPTIONS: { value: ProductStatus; label: string }[] = [
+  { value: "ACTIVE", label: "Activo — visible en la tienda" },
+  { value: "DRAFT", label: "Borrador — oculto en la tienda" },
+  { value: "OUT_OF_STOCK", label: "Sin stock — visible pero marcado agotado" },
 ];
 
 function FieldLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
@@ -80,14 +69,15 @@ export default function ProductForm({ initialData }: ProductFormProps) {
     metaDescription: initialData?.metaDescription ?? "",
   });
 
-  const [images, setImages] = useState<UploadedImage[]>(initialData?.images ?? []);
+  const [images, setImages] = useState<LocalProductImage[]>(initialData?.images ?? []);
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [seoOpen, setSeoOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof ProductFormData, string>>>({});
 
-  // Cargar categorías al montar
+  // Cargar categorías
   useEffect(() => {
     adminFetch<{ categories: Category[] }>("/admin/categories")
       .then(({ categories: cats }) => setCategories(cats))
@@ -106,7 +96,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
     if (!formData.name.trim()) errors.name = "El nombre es obligatorio";
     if (!formData.categoryId) errors.categoryId = "Seleccioná una categoría";
     if (formData.price && isNaN(Number(formData.price))) {
-      errors.price = "El precio debe ser un número";
+      errors.price = "El precio debe ser un número válido";
     }
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -115,13 +105,6 @@ export default function ProductForm({ initialData }: ProductFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-
-    // Verificar que no haya imágenes todavía subiendo
-    const stillUploading = images.some((img) => img._uploading);
-    if (stillUploading) {
-      setSubmitError("Esperá a que terminen de subir todas las fotos.");
-      return;
-    }
 
     setSubmitting(true);
     setSubmitError(null);
@@ -137,21 +120,40 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         variantLabel: formData.variantLabel.trim() || undefined,
         metaTitle: formData.metaTitle.trim() || undefined,
         metaDescription: formData.metaDescription.trim() || undefined,
-        // Las imágenes ya están subidas — enviamos los IDs/URLs para asociarlas
-        // TODO: el backend necesita un endpoint para asociar imágenes al producto
-        // por ahora las imágenes se suben a /admin/media de forma independiente
       };
 
-      if (isEditing) {
-        await adminFetch(`/admin/products/${initialData!.id}`, {
+      let productId = initialData?.id;
+
+      if (isEditing && productId) {
+        await adminFetch(`/admin/products/${productId}`, {
           method: "PATCH",
           body: JSON.stringify(payload),
         });
       } else {
-        await adminFetch("/admin/products", {
+        const created = await adminFetch<{ id: string }>("/admin/products", {
           method: "POST",
           body: JSON.stringify(payload),
         });
+        productId = created.id;
+      }
+
+      // Subir archivos nuevos al endpoint de media del producto
+      const filesToUpload = images.filter((img) => img._file);
+      if (filesToUpload.length > 0 && productId) {
+        const fd = new FormData();
+        filesToUpload.forEach((img) => {
+          if (img._file) {
+            fd.append("file", img._file);
+            if (img.altText) {
+              fd.append("altText", img.altText);
+            }
+          }
+        });
+
+        await adminFetchMultipart(
+          `/admin/media/products/${productId}/images`,
+          fd
+        );
       }
 
       router.push("/admin/productos");
@@ -161,7 +163,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
       if (error.status === 401) {
         router.push("/admin/login");
       } else {
-        setSubmitError(error.message ?? "Ocurrió un error. Intentá de nuevo.");
+        setSubmitError(error.message ?? "Ocurrió un error al guardar el producto.");
       }
     } finally {
       setSubmitting(false);
@@ -169,7 +171,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8">
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8 max-w-3xl">
 
       {/* ── Información básica ────────────────────────────────────────────── */}
       <section className="bg-white border border-gray-200 rounded-lg p-5 md:p-6 flex flex-col gap-5">
@@ -187,7 +189,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
             type="text"
             value={formData.name}
             onChange={set("name")}
-            placeholder="Ej: Anillo solitario oro blanco 18k"
+            placeholder="Ej: Anillo solitario oro blanco 18k con diamante"
             className={inputClass(Boolean(fieldErrors.name))}
             required
           />
@@ -204,7 +206,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
             value={formData.description}
             onChange={set("description")}
             rows={4}
-            placeholder="Describí el producto: material, medidas, características especiales…"
+            placeholder="Detalles de la pieza: materiales, medidas, acabados artesanales..."
             className={`${inputClass()} resize-none`}
           />
         </div>
@@ -243,7 +245,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
 
         {/* Estado */}
         <div>
-          <FieldLabel htmlFor="prod-status">Estado</FieldLabel>
+          <FieldLabel htmlFor="prod-status">Estado de publicación</FieldLabel>
           <select
             id="prod-status"
             value={formData.status}
@@ -256,18 +258,13 @@ export default function ProductForm({ initialData }: ProductFormProps) {
               </option>
             ))}
           </select>
-          <p className="mt-1 font-body text-xs text-gray-500">
-            {formData.status === "DRAFT" && "⚠️ El producto no aparece en la tienda hasta que lo actives."}
-            {formData.status === "ACTIVE" && "✓ El producto es visible en la tienda."}
-            {formData.status === "OUT_OF_STOCK" && "📦 Visible en la tienda pero marcado como agotado."}
-          </p>
         </div>
       </section>
 
-      {/* ── Precio ────────────────────────────────────────────────────────── */}
+      {/* ── Precio y Variantes ─────────────────────────────────────────────── */}
       <section className="bg-white border border-gray-200 rounded-lg p-5 md:p-6 flex flex-col gap-5">
         <h2 className="font-body text-sm font-semibold text-gray-900 tracking-wide">
-          Precio
+          Precio y Disponibilidad
         </h2>
 
         <div>
@@ -308,36 +305,30 @@ export default function ProductForm({ initialData }: ProductFormProps) {
               Mostrar precio en la tienda
             </p>
             <p className="font-body text-xs text-gray-500 mt-0.5 leading-snug">
-              Si está desactivado, el cliente verá "Consultar precio" y solo podrá contactarte por WhatsApp.
+              Si está desactivado, el cliente verá &quot;Consultar precio&quot; y el botón de WhatsApp directo.
             </p>
           </div>
         </label>
 
         {/* Variantes */}
         <div>
-          <FieldLabel htmlFor="prod-variant">Etiqueta de variantes (opcional)</FieldLabel>
+          <FieldLabel htmlFor="prod-variant">Variantes disponibles (opcional)</FieldLabel>
           <input
             id="prod-variant"
             type="text"
             value={formData.variantLabel}
             onChange={set("variantLabel")}
-            placeholder='Ej: "Disponible en oro blanco, oro amarillo y champagne"'
+            placeholder='Ej: "Disponible en oro blanco, oro amarillo y oro rosé"'
             className={inputClass()}
           />
-          <p className="mt-1 font-body text-xs text-gray-500">
-            Texto descriptivo de las variantes. Se muestra en la ficha del producto.
-          </p>
         </div>
       </section>
 
-      {/* ── Fotos ─────────────────────────────────────────────────────────── */}
+      {/* ── Subida de Fotos ─────────────────────────────────────────────────── */}
       <section className="bg-white border border-gray-200 rounded-lg p-5 md:p-6 flex flex-col gap-4">
         <h2 className="font-body text-sm font-semibold text-gray-900 tracking-wide">
           Fotos del producto
         </h2>
-        <p className="font-body text-xs text-gray-500 -mt-1">
-          La primera foto es la imagen principal. Podés subir varias.
-        </p>
         <ImageUploader
           images={images}
           onImagesChange={setImages}
@@ -345,7 +336,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         />
       </section>
 
-      {/* ── SEO (colapsable) ──────────────────────────────────────────────── */}
+      {/* ── SEO Avanzado (colapsable) ────────────────────────────────────────── */}
       <section className="bg-white border border-gray-200 rounded-lg overflow-hidden">
         <button
           type="button"
@@ -355,10 +346,10 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         >
           <div>
             <p className="font-body text-sm font-semibold text-gray-900 tracking-wide">
-              SEO avanzado
+              SEO y Posicionamiento (Opcional)
             </p>
             <p className="font-body text-xs text-gray-500 mt-0.5">
-              Opcional — el sistema genera estos datos automáticamente si los dejás vacíos
+              Si se dejan vacíos, se completan automáticamente con el nombre del producto
             </p>
           </div>
           <svg
@@ -366,7 +357,6 @@ export default function ProductForm({ initialData }: ProductFormProps) {
             height="16"
             viewBox="0 0 16 16"
             fill="none"
-            aria-hidden="true"
             className={`text-gray-400 transition-transform duration-200 ${seoOpen ? "rotate-180" : ""}`}
           >
             <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -382,13 +372,10 @@ export default function ProductForm({ initialData }: ProductFormProps) {
                 type="text"
                 value={formData.metaTitle}
                 onChange={set("metaTitle")}
-                placeholder="Ej: Anillo Solitario Oro Blanco 18k | Petrucci Joyería"
+                placeholder="Ej: Anillo Solitario Oro Blanco 18k | Joyería Petrucci"
                 maxLength={70}
                 className={inputClass()}
               />
-              <p className="mt-1 font-body text-xs text-gray-400">
-                {formData.metaTitle.length}/70 caracteres
-              </p>
             </div>
             <div>
               <FieldLabel htmlFor="meta-desc">Descripción SEO</FieldLabel>
@@ -397,50 +384,40 @@ export default function ProductForm({ initialData }: ProductFormProps) {
                 value={formData.metaDescription}
                 onChange={set("metaDescription")}
                 rows={3}
-                placeholder="Descripción breve para buscadores…"
+                placeholder="Descripción para resultados de Google..."
                 maxLength={160}
                 className={`${inputClass()} resize-none`}
               />
-              <p className="mt-1 font-body text-xs text-gray-400">
-                {formData.metaDescription.length}/160 caracteres
-              </p>
             </div>
           </div>
         )}
       </section>
 
-      {/* ── Error global + Submit ─────────────────────────────────────────── */}
+      {/* ── Error y Botones ─────────────────────────────────────────────────── */}
       {submitError && (
-        <div
-          role="alert"
-          className="flex items-start gap-2.5 bg-red-50 border border-red-200 rounded-md px-4 py-3"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0 mt-0.5 text-red-500">
-            <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.3" />
-            <path d="M8 5v3M8 10.5h.01" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-          </svg>
+        <div role="alert" className="bg-red-50 border border-red-200 rounded-md px-4 py-3">
           <p className="font-body text-sm text-red-700">{submitError}</p>
         </div>
       )}
 
-      <div className="flex flex-col-reverse md:flex-row gap-3 pb-2">
+      <div className="flex flex-col-reverse md:flex-row gap-3 pb-6">
         <button
           type="button"
           onClick={() => router.back()}
           disabled={submitting}
-          className="flex-1 md:flex-none px-6 py-3 border border-gray-300 text-gray-700 font-body text-sm rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+          className="px-6 py-3 border border-gray-300 text-gray-700 font-body text-sm rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
         >
           Cancelar
         </button>
         <button
           type="submit"
           disabled={submitting}
-          className="flex-1 md:flex-none px-8 py-3 bg-gray-900 text-white font-body text-sm rounded-md hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+          className="px-8 py-3 bg-gray-900 text-white font-body text-sm rounded-md hover:bg-amber-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
         >
           {submitting ? (
             <>
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" aria-hidden />
-              Guardando…
+              Guardando producto y subiendo fotos…
             </>
           ) : isEditing ? (
             "Guardar cambios"

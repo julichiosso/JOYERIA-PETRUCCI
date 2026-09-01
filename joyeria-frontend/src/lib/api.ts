@@ -7,7 +7,7 @@ import type { ProductListResponse, PublicProductResponse } from "@/types/product
 import type { CategoryListResponse } from "@/types/category";
 import type { PublicStoreConfig } from "@/types/store-config";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 class ApiError extends Error {
   constructor(

@@ -11,7 +11,7 @@ import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { adminFetch } from "@/lib/auth";
 import ProductForm from "@/components/admin/ProductForm";
-import type { UploadedImage } from "@/components/admin/ImageUploader";
+import type { LocalProductImage } from "@/components/admin/ImageUploader";
 
 interface AdminProductDetail {
   id: string;
@@ -82,7 +82,7 @@ export default function EditarProductoPage() {
   }
 
   // Mapear las imágenes del backend al formato que entiende ImageUploader
-  const initialImages: UploadedImage[] = product.images
+  const initialImages: LocalProductImage[] = product.images
     .sort((a, b) => a.order - b.order)
     .map((img) => ({
       id: img.id,
@@ -90,6 +90,7 @@ export default function EditarProductoPage() {
       thumbnailUrl: img.thumbnailUrl,
       altText: img.altText,
       order: img.order,
+      _localPreview: img.thumbnailUrl || img.url,
     }));
 
   return (
