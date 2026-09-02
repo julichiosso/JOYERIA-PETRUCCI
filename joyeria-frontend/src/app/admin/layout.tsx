@@ -72,7 +72,8 @@ function TopBar({ user }: { user: AdminUser | null }) {
       <div className="flex items-center gap-3">
         {user && (
           <span className="hidden md:block font-body text-xs text-gray-500">
-            {user.name}
+            Administrador - Victor
+            {/* {user.name} */}
           </span>
         )}
         <button

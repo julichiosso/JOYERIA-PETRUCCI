@@ -16,13 +16,13 @@ const nextConfig: NextConfig = {
         // Desarrollo local — imágenes servidas por el backend en localhost
         protocol: "http",
         hostname: "localhost",
-        port: "3000",
+        port: "3001",
         pathname: "/**",
       },
     ],
     // Formatos modernos: Next.js convierte automáticamente a AVIF/WebP
-    // Beneficio directo en Lighthouse Performance (LCP más rápido)
     formats: ["image/avif", "image/webp"],
+    qualities: [60, 65, 80, 85, 92],
   },
 
   // Encabezados de seguridad HTTP (Lighthouse Best Practices)
