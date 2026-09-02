@@ -4,7 +4,7 @@
  */
 
 import type { ProductListResponse, PublicProductResponse } from "@/types/product";
-import type { CategoryListResponse } from "@/types/category";
+import type { Category } from "@/types/category";
 import type { PublicStoreConfig } from "@/types/store-config";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
@@ -24,6 +24,7 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
 
   const res = await fetch(url, {
     headers: { "Content-Type": "application/json", ...options?.headers },
+    cache: "no-store",
     ...options,
   });
 
@@ -51,31 +52,28 @@ export const api = {
       ).toString();
       return apiFetch<ProductListResponse>(
         `/catalog/products${qs ? `?${qs}` : ""}`,
-        { next: { revalidate: 60 } } as RequestInit
+        { cache: "no-store" }
       );
     },
 
     getProductBySlug: (slug: string) =>
       apiFetch<PublicProductResponse>(`/catalog/products/${slug}`, {
-        next: { revalidate: 60 },
-      } as RequestInit),
+        cache: "no-store",
+      }),
 
-    getCategories: () =>
-      apiFetch<CategoryListResponse>("/catalog/categories", {
-        next: { revalidate: 300 },
-      } as RequestInit),
+    getCategories: async (): Promise<{ categories: Category[] }> => {
+      const data = await apiFetch<Category[] | { categories: Category[] }>(
+        "/catalog/categories",
+        { cache: "no-store" }
+      );
+      return {
+        categories: Array.isArray(data) ? data : data?.categories || [],
+      };
+    },
 
     getStoreConfig: () =>
       apiFetch<PublicStoreConfig>("/catalog/store-config", {
-        next: { revalidate: 3600 },
-      } as RequestInit),
-
-    // getWhatsAppLink: link general de la tienda (sin producto asociado).
-    // TODO: descomentar cuando el backend implemente GET /catalog/whatsapp-link
-    //
-    // getWhatsAppLink: () =>
-    //   apiFetch<{ url: string }>("/catalog/whatsapp-link", {
-    //     next: { revalidate: 3600 },
-    //   } as RequestInit),
+        cache: "no-store",
+      }),
   },
 };

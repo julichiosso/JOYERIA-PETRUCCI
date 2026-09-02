@@ -64,9 +64,22 @@ export default async function SubcategoryOrProductPage({ params, searchParams }:
 
   try {
     const { categories } = await api.catalog.getCategories();
-    parent = categories.find((c) => c.slug === categorySlug && !c.parent && c.isActive) ?? null;
-    subcategory = parent?.children.find((c) => c.slug === subSlug) ?? null;
-    isSubcategory = Boolean(subcategory);
+    parent = categories.find((c) => {
+      if (!c.isActive) return false;
+      const s = c.slug.toLowerCase();
+      const target = categorySlug.toLowerCase();
+      return s === target || s.includes(target) || target.includes(s);
+    }) ?? null;
+
+    if (parent) {
+      subcategory = parent.children?.find((c) => {
+        if (!c.isActive) return false;
+        const s = c.slug.toLowerCase();
+        const target = subSlug.toLowerCase();
+        return s === target || s.startsWith(target) || target.startsWith(s);
+      }) ?? null;
+      isSubcategory = Boolean(subcategory);
+    }
   } catch {
     // continúa a probar producto
   }

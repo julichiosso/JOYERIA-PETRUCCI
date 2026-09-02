@@ -14,11 +14,12 @@ const ANNOUNCEMENTS = [
 ];
 
 const NAV_LINKS = [
-  { label: "Anillos", href: "/joyeria/anillos" },
+  { label: "Anillos", href: "/joyeria/anillos-2" },
   { label: "Relojes", href: "/relojes" },
   { label: "Cadenas", href: "/joyeria/cadenas" },
-  { label: "Personalizados", href: "/personalizados" },
+  { label: "Personalizados", href: "/trabajos-personalizados" },
   { label: "Marroquinería", href: "/marroquineria" },
+  { label: "Mates", href: "/mates" },
   { label: "Quiénes Somos", href: "/nosotros" },
 ];
 
