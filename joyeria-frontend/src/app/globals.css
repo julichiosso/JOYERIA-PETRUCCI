@@ -79,11 +79,6 @@ img, video {
   border-radius: 2px;
 }
 
-/* Selección de texto con color de marca */
-::selection {
-  background-color: var(--color-petrucci-gold);
-  color: var(--color-petrucci-white);
-}
 
 /* Ocultar scrollbar manteniendo funcionalidad (sección de chips mobile) */
 .scrollbar-hide {

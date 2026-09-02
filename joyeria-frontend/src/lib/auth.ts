@@ -82,13 +82,21 @@ export async function adminFetch<T>(
   const token = getToken();
   const url = `${API_BASE_URL}${endpoint}`;
 
+  const headers: Record<string, string> = {
+    ...(options?.headers as Record<string, string>),
+  };
+
+  if (options?.body && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+
+  if (token && !headers["Authorization"]) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   const res = await fetch(url, {
     ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options?.headers,
-    },
+    headers,
     cache: "no-store",
   });
 

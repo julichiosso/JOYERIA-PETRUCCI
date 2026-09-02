@@ -15,7 +15,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { adminFetch } from "@/lib/auth";
 import type { Category } from "@/types/category";
-
+import CategoryMenuPreview from "@/components/admin/CategoryMenuPreview";
 interface ModalState {
   isOpen: boolean;
   mode: "create_root" | "create_sub" | "edit";
@@ -237,31 +237,33 @@ export default function AdminCategoriasPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl mx-auto font-body text-gray-900 pb-12">
+    <div className="flex flex-col gap-4 max-w-4xl mx-auto font-body text-gray-900 pb-16">
       {/* ── Encabezado Principal y Explicación ──────────────────────────────── */}
-      <div className="bg-white p-6 md:p-8 rounded-xl border border-gray-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <div className="bg-white p-5 md:p-6 rounded-xl border border-gray-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl md:text-2xl font-bold text-gray-950">
             Secciones y Rubros del Menú
           </h1>
-          <p className="text-sm md:text-base text-gray-600 mt-2 leading-relaxed">
-            Acá podés ordenar los rubros de tu joyería. Las <strong>secciones principales</strong> son los botones del menú de arriba, y las <strong>subcategorías</strong> son los tipos de joyas o marcas que van adentro.
+          <p className="text-xs md:text-sm text-gray-600 mt-1">
+            Organiza las secciones del menú principal y sus subcategorías de joyas o marcas.
           </p>
         </div>
         <button
           type="button"
           onClick={openCreateRoot}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-900 hover:bg-black text-white font-medium text-base rounded-lg shadow-sm transition-all active:scale-[0.98] shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-black text-white font-medium text-sm rounded-lg shadow-sm transition-all active:scale-[0.98] shrink-0"
         >
-          <span className="text-xl leading-none font-bold">+</span>
+          <span className="text-lg leading-none font-bold">+</span>
           <span>Nueva Sección Principal</span>
         </button>
       </div>
 
+      {!loading && !error && <CategoryMenuPreview categories={categories} />}
+
       {/* Mensaje de éxito verde */}
       {successMessage && (
-        <div className="p-4 bg-emerald-50 border-2 border-emerald-300 rounded-xl text-emerald-900 font-medium text-base flex items-center gap-3 shadow-xs">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-700 shrink-0">
+        <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-xl text-emerald-900 font-medium text-sm flex items-center gap-2.5 shadow-xs">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-700 shrink-0">
             <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <span>{successMessage}</span>
@@ -270,31 +272,31 @@ export default function AdminCategoriasPage() {
 
       {/* Mensaje de error general */}
       {error && (
-        <div className="p-4 bg-red-50 border-2 border-red-300 rounded-xl text-red-900 font-medium text-base">
+        <div className="p-3.5 bg-red-50 border border-red-300 rounded-xl text-red-900 font-medium text-sm">
           {error}
         </div>
       )}
 
       {/* Cargando */}
       {loading && (
-        <div className="flex flex-col items-center justify-center py-16 gap-3">
-          <div className="w-10 h-10 border-4 border-gray-900 border-t-transparent rounded-full animate-spin" />
-          <p className="text-base text-gray-600 font-medium">Cargando secciones...</p>
+        <div className="flex flex-col items-center justify-center py-12 gap-3">
+          <div className="w-8 h-8 border-3 border-gray-900 border-t-transparent rounded-full animate-spin" />
+          <p className="text-sm text-gray-600 font-medium">Cargando secciones...</p>
         </div>
       )}
 
       {/* ── Listado de Secciones ───────────────────────────────────────────── */}
       {!loading && !error && (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-3.5">
           {categories.length === 0 ? (
-            <div className="text-center py-16 bg-white border border-gray-200 rounded-xl p-6">
-              <p className="text-lg text-gray-700 mb-4">
+            <div className="text-center py-12 bg-white border border-gray-200 rounded-xl p-6">
+              <p className="text-base text-gray-700 mb-3">
                 Todavía no tenés secciones creadas.
               </p>
               <button
                 type="button"
                 onClick={openCreateRoot}
-                className="px-6 py-3 bg-gray-900 text-white rounded-lg text-base font-semibold"
+                className="px-5 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-semibold"
               >
                 Crear la primera sección
               </button>
@@ -303,19 +305,19 @@ export default function AdminCategoriasPage() {
             categories.map((cat, rootIndex) => (
               <div
                 key={cat.id}
-                className="bg-white border-2 border-gray-200 rounded-xl shadow-xs overflow-hidden"
+                className="bg-white border border-gray-200 rounded-xl shadow-xs overflow-hidden transition-all hover:border-gray-300"
               >
-                {/* ── Cabecera de Categoría Principal ── */}
-                <div className="p-5 md:p-6 bg-gray-50/80 border-b border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    {/* Botones de orden sencillos */}
-                    <div className="flex flex-col gap-1 shrink-0 mt-0.5">
+                {/* ── Cabecera de Categoría Principal Compacta ── */}
+                <div className="p-3.5 md:p-4 bg-gray-50/70 border-b border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    {/* Botones de orden compactos */}
+                    <div className="flex items-center gap-1 shrink-0">
                       <button
                         type="button"
                         onClick={() => moveOrder(cat, "up", categories)}
                         disabled={rootIndex === 0}
                         title="Subir posición en el menú"
-                        className="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded text-gray-800 disabled:opacity-20 font-bold"
+                        className="w-7 h-7 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded text-xs text-gray-800 disabled:opacity-25 font-bold transition-colors"
                       >
                         ▲
                       </button>
@@ -324,70 +326,68 @@ export default function AdminCategoriasPage() {
                         onClick={() => moveOrder(cat, "down", categories)}
                         disabled={rootIndex === categories.length - 1}
                         title="Bajar posición en el menú"
-                        className="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded text-gray-800 disabled:opacity-20 font-bold"
+                        className="w-7 h-7 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded text-xs text-gray-800 disabled:opacity-25 font-bold transition-colors"
                       >
                         ▼
                       </button>
                     </div>
 
-                    <div>
-                      <div className="flex items-center gap-3 flex-wrap">
-                        <span className="text-xs font-bold uppercase tracking-wider bg-gray-200 text-gray-700 px-2.5 py-0.5 rounded">
-                          Lugar {rootIndex + 1}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[11px] font-bold uppercase tracking-wider bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
+                        #{rootIndex + 1}
+                      </span>
+                      <h2 className="text-base md:text-lg font-bold text-gray-950">
+                        {cat.name}
+                      </h2>
+                      {cat.isProtected && (
+                        <span className="bg-amber-50 text-amber-900 text-[11px] font-medium px-2 py-0.5 rounded border border-amber-200">
+                          Básica
                         </span>
-                        <h2 className="text-xl md:text-2xl font-bold text-gray-950">
-                          {cat.name}
-                        </h2>
-                        {cat.isProtected && (
-                          <span className="bg-amber-100 text-amber-900 text-xs font-semibold px-3 py-1 rounded-full border border-amber-300">
-                            Sección básica del negocio
-                          </span>
-                        )}
-                        {!cat.isActive && (
-                          <span className="bg-gray-300 text-gray-800 text-xs font-semibold px-3 py-1 rounded-full">
-                            Oculta de los clientes
-                          </span>
-                        )}
-                      </div>
-                      {cat.description && (
-                        <p className="text-sm text-gray-600 mt-1">
-                          {cat.description}
-                        </p>
+                      )}
+                      {!cat.isActive && (
+                        <span className="bg-gray-200 text-gray-600 text-[11px] font-medium px-2 py-0.5 rounded">
+                          Oculta
+                        </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Acciones principales */}
-                  <div className="flex items-center gap-2.5 flex-wrap self-start md:self-center">
-                    {/* Botón Visible / Oculto */}
+                  {/* Acciones principales compactas */}
+                  <div className="flex items-center gap-2 flex-wrap self-end md:self-auto">
+                    <button
+                      type="button"
+                      onClick={() => openCreateSub(cat)}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-amber-900 hover:text-amber-950 py-1.5 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg transition-colors"
+                    >
+                      <span>+ Sub-rubro</span>
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => toggleActive(cat)}
-                      className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-colors ${
+                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
                         cat.isActive
-                          ? "bg-emerald-50 border-emerald-400 text-emerald-800 hover:bg-emerald-100"
+                          ? "bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100"
                           : "bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
-                      {cat.isActive ? "✓ Visible en tienda" : "○ Ocultar"}
+                      {cat.isActive ? "✓ Visible" : "○ Oculta"}
                     </button>
 
-                    {/* Botón Modificar */}
                     <button
                       type="button"
                       onClick={() => openEdit(cat)}
-                      className="px-4 py-2 bg-white border border-gray-300 text-gray-800 hover:bg-gray-100 text-sm font-semibold rounded-lg transition-colors"
+                      className="px-3 py-1.5 bg-white border border-gray-300 text-gray-800 hover:bg-gray-100 text-xs font-semibold rounded-lg transition-colors"
                     >
                       Modificar
                     </button>
 
-                    {/* Botón Eliminar */}
                     {cat.isProtected ? (
                       <span
-                        className="px-3 py-2 text-xs text-gray-400 bg-gray-100 rounded-lg border border-gray-200 cursor-not-allowed"
+                        className="px-2.5 py-1.5 text-[11px] text-gray-400 bg-gray-100 rounded-lg border border-gray-200 cursor-not-allowed"
                         title="Esta sección es fija y no puede borrarse"
                       >
-                        Protegida
+                        Fija
                       </span>
                     ) : (
                       <button
@@ -396,7 +396,7 @@ export default function AdminCategoriasPage() {
                           setDeleteError(null);
                           setDeleteTarget(cat);
                         }}
-                        className="px-4 py-2 bg-white border border-red-300 text-red-600 hover:bg-red-50 text-sm font-semibold rounded-lg transition-colors"
+                        className="px-3 py-1.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold rounded-lg transition-colors"
                       >
                         Borrar
                       </button>
@@ -404,37 +404,23 @@ export default function AdminCategoriasPage() {
                   </div>
                 </div>
 
-                {/* ── Subcategorías / Tipos de Joyas / Marcas adentro ── */}
-                <div className="p-5 md:p-6 bg-white flex flex-col gap-4">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-gray-100">
-                    <p className="text-sm font-bold text-gray-700 uppercase tracking-wide">
-                      Tipos de productos o marcas adentro de &quot;{cat.name}&quot; ({cat.children?.length ?? 0}):
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => openCreateSub(cat)}
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-amber-900 hover:text-amber-950 py-2 px-4 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg transition-colors self-start sm:self-auto"
-                    >
-                      <span className="font-bold text-base">+</span>
-                      <span>Agregar sub-rubro a {cat.name}</span>
-                    </button>
-                  </div>
-
+                {/* ── Subcategorías compactas ── */}
+                <div className="p-3 md:p-4 bg-white">
                   {cat.children && cat.children.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex flex-col gap-2 pl-3 border-l-2 border-amber-300">
                       {cat.children.map((sub, subIndex) => (
                         <div
                           key={sub.id}
-                          className="flex items-center justify-between p-3.5 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100/70 transition-colors gap-3"
+                          className="flex items-center justify-between p-2.5 bg-gray-50/80 border border-gray-200 rounded-lg hover:bg-gray-100/70 transition-colors gap-2"
                         >
-                          <div className="flex items-center gap-2.5">
+                          <div className="flex items-center gap-2">
                             {/* Orden sub */}
-                            <div className="flex flex-col gap-0.5">
+                            <div className="flex items-center gap-0.5">
                               <button
                                 type="button"
                                 onClick={() => moveOrder(sub as unknown as Category, "up", cat.children)}
                                 disabled={subIndex === 0}
-                                className="w-5 h-5 flex items-center justify-center text-xs text-gray-600 hover:text-black bg-white border border-gray-200 rounded disabled:opacity-20"
+                                className="w-5 h-5 flex items-center justify-center text-[10px] text-gray-600 hover:text-black bg-white border border-gray-200 rounded disabled:opacity-20"
                                 title="Subir"
                               >
                                 ▲
@@ -443,23 +429,23 @@ export default function AdminCategoriasPage() {
                                 type="button"
                                 onClick={() => moveOrder(sub as unknown as Category, "down", cat.children)}
                                 disabled={subIndex === cat.children.length - 1}
-                                className="w-5 h-5 flex items-center justify-center text-xs text-gray-600 hover:text-black bg-white border border-gray-200 rounded disabled:opacity-20"
+                                className="w-5 h-5 flex items-center justify-center text-[10px] text-gray-600 hover:text-black bg-white border border-gray-200 rounded disabled:opacity-20"
                                 title="Bajar"
                               >
                                 ▼
                               </button>
                             </div>
 
-                            <span className="text-base font-semibold text-gray-900">
+                            <span className="text-xs md:text-sm font-medium text-gray-900">
                               {sub.name}
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
                             <button
                               type="button"
                               onClick={() => openEdit(sub as unknown as Category, cat.name)}
-                              className="px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-md transition-colors"
+                              className="px-2.5 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-md transition-colors"
                             >
                               Modificar
                             </button>
@@ -469,7 +455,7 @@ export default function AdminCategoriasPage() {
                                 setDeleteError(null);
                                 setDeleteTarget(sub as unknown as Category);
                               }}
-                              className="px-3 py-1.5 text-xs font-semibold text-red-600 bg-white border border-red-200 hover:bg-red-50 rounded-md transition-colors"
+                              className="px-2.5 py-1 text-xs font-medium text-red-600 bg-white border border-red-200 hover:bg-red-50 rounded-md transition-colors"
                             >
                               Borrar
                             </button>
@@ -478,9 +464,9 @@ export default function AdminCategoriasPage() {
                       ))}
                     </div>
                   ) : (
-                    <div className="p-4 bg-gray-50 border border-dashed border-gray-300 rounded-lg text-sm text-gray-500 text-center">
-                      No tiene subcategorías (los productos se cargan directo en {cat.name}).
-                    </div>
+                    <p className="text-xs text-gray-400 italic py-1 pl-1">
+                      Sin subcategorías (los productos se asocian directo a {cat.name}).
+                    </p>
                   )}
                 </div>
               </div>
