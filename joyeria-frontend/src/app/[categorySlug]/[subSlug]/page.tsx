@@ -2,7 +2,7 @@
  * app/[categorySlug]/[subSlug]/page.tsx
  *
  * Maneja dinámicamente:
- *  1. Subcategoría (ej: /joyeria/anillos-2) -> Muestra listado de productos
+ *  1. Subcategoría (ej: /joyeria/anillos-2) -> Muestra listado de productos con filtros y orden
  *  2. Detalle de producto cuando pertenece directamente a categoría raíz (ej: /joyeria/anillo-de-plata-925-con-circonia)
  */
 
@@ -11,7 +11,7 @@ import { notFound } from "next/navigation";
 import Script from "next/script";
 import Link from "next/link";
 import { api } from "@/lib/api";
-import ProductCard from "@/components/catalog/ProductCard";
+import CategoryCatalogView from "@/components/catalog/CategoryCatalogView";
 import ProductGallery from "@/components/product/ProductGallery";
 import { formatPrice } from "@/lib/utils";
 import type { Product } from "@/types/product";
@@ -25,8 +25,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { categorySlug, subSlug } = await params;
   try {
     const { categories } = await api.catalog.getCategories();
-    const parent = categories.find((c) => c.slug === categorySlug && !c.parent && c.isActive);
-    const sub = parent?.children.find((c) => c.slug === subSlug);
+    const parent = categories.find((c) => {
+      if (!c.isActive) return false;
+      const s = c.slug.toLowerCase();
+      const target = categorySlug.toLowerCase();
+      return s === target || s.includes(target) || target.includes(s);
+    });
+
+    const sub = parent?.children?.find((c) => {
+      if (c.isActive === false) return false;
+      const s = c.slug.toLowerCase();
+      const target = subSlug.toLowerCase();
+      return s === target || s.startsWith(target) || target.startsWith(s);
+    });
 
     if (sub) {
       return {
@@ -73,7 +84,7 @@ export default async function SubcategoryOrProductPage({ params, searchParams }:
 
     if (parent) {
       subcategory = parent.children?.find((c) => {
-        if (!c.isActive) return false;
+        if (c.isActive === false) return false;
         const s = c.slug.toLowerCase();
         const target = subSlug.toLowerCase();
         return s === target || s.startsWith(target) || target.startsWith(s);
@@ -87,11 +98,9 @@ export default async function SubcategoryOrProductPage({ params, searchParams }:
   // ── CASO 1: Es una subcategoría ─────────────────────────────────────────────
   if (isSubcategory && subcategory && parent) {
     const page = Math.max(1, parseInt(pageParam ?? "1", 10));
-    const LIMIT = 12;
+    const LIMIT = 40;
 
     let products: Product[] = [];
-    let pagination = { page: 1, totalPages: 1, total: 0 };
-
     try {
       const response = await api.catalog.getProducts({
         categoryId: subcategory.id,
@@ -99,7 +108,6 @@ export default async function SubcategoryOrProductPage({ params, searchParams }:
         limit: LIMIT,
       });
       products = response.items.filter((p) => p.status === "ACTIVE");
-      pagination = response.pagination;
     } catch {
       // grilla vacía
     }
@@ -129,44 +137,12 @@ export default async function SubcategoryOrProductPage({ params, searchParams }:
           </div>
         </div>
 
-        {/* Grilla de productos */}
-        <div className="mx-auto max-w-7xl px-6 md:px-10 py-10 md:py-14">
-          {products.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="font-body text-petrucci-gray mb-4">
-                Aún no hay productos en esta sección.
-              </p>
-              <Link href={`/${categorySlug}`} className="font-body text-sm text-petrucci-gold hover:underline">
-                ← Ver {parent.name}
-              </Link>
-            </div>
-          ) : (
-            <>
-              <p className="font-body text-xs text-petrucci-gray mb-6">
-                {pagination.total} pieza{pagination.total !== 1 ? "s" : ""}
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-8">
-                {products.map((product, index) => (
-                  <ProductCard key={product.id} product={product} priority={index < 4} />
-                ))}
-              </div>
-              {pagination.totalPages > 1 && (
-                <div className="flex items-center justify-center gap-4 mt-14">
-                  {page > 1 && (
-                    <Link href={`/${categorySlug}/${subSlug}?page=${page - 1}`} className="font-body text-sm text-petrucci-black hover:text-petrucci-gold border-b border-petrucci-black hover:border-petrucci-gold pb-0.5 transition-colors">
-                      ← Anterior
-                    </Link>
-                  )}
-                  <span className="font-body text-xs text-petrucci-gray">{page} / {pagination.totalPages}</span>
-                  {page < pagination.totalPages && (
-                    <Link href={`/${categorySlug}/${subSlug}?page=${page + 1}`} className="font-body text-sm text-petrucci-black hover:text-petrucci-gold border-b border-petrucci-black hover:border-petrucci-gold pb-0.5 transition-colors">
-                      Siguiente →
-                    </Link>
-                  )}
-                </div>
-              )}
-            </>
-          )}
+        {/* Catálogo con Filtros y Orden */}
+        <div className="mx-auto max-w-7xl px-6 md:px-10 py-8 md:py-12">
+          <CategoryCatalogView
+            initialProducts={products}
+            categoryName={subcategory.name}
+          />
         </div>
       </>
     );

@@ -43,6 +43,7 @@ export interface Product {
   metaDescription: string;
   category: ProductCategory;
   images: ProductImage[];
+  createdAt?: string;
 }
 
 export interface PublicProductResponse extends Product {

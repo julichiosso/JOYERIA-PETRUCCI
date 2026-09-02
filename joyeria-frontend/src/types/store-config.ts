@@ -3,6 +3,7 @@
 
 export interface PublicStoreConfig {
   storeName: string;
+  whatsappNumber?: string | null;
   instagramUrl: string | null;
   facebookUrl: string | null;
   address: string | null;

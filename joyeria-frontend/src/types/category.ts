@@ -19,6 +19,8 @@ export interface Category {
     slug: string;
     description: string | null;
     sortOrder: number;
+    isActive?: boolean;
+    isProtected?: boolean;
   }[];
 }
 
