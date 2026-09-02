@@ -357,7 +357,7 @@ export default function Footer() {
           <ArgencardCard />
         </div>
 
-        {/* ── Texto Legal / Defensa del Consumidor / Copyright ───────────────── */}
+
         <div className="mt-8 text-center text-xs text-gray-600 leading-relaxed flex flex-col items-center gap-3">
           <p>
             Copyright Petrucci Joyería - 2026. Todos los derechos reservados. Defensa de las y los consumidores. Para reclamos{" "}
