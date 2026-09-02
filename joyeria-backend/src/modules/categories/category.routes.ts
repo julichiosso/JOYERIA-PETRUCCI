@@ -16,7 +16,7 @@ export async function categoryAdminRoutes(app: FastifyInstance) {
   server.addHook('preHandler', requireAuth);
 
   server.post('/', { schema: { body: createCategorySchema } }, categoryController.create);
-  server.get('/', categoryController.findAllFlat);
+  server.get('/', categoryController.findAllTree);
   server.get(
     '/:id',
     { schema: { params: categoryParamsSchema } },

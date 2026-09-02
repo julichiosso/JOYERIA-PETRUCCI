@@ -79,8 +79,11 @@ export default function ProductForm({ initialData }: ProductFormProps) {
 
   // Cargar categorías
   useEffect(() => {
-    adminFetch<{ categories: Category[] }>("/admin/categories")
-      .then(({ categories: cats }) => setCategories(cats))
+    adminFetch<Category[] | { categories: Category[] }>("/admin/categories")
+      .then((res) => {
+        const cats = Array.isArray(res) ? res : res?.categories || [];
+        setCategories(cats);
+      })
       .catch(() => setCategories([]));
   }, []);
 
@@ -224,9 +227,9 @@ export default function ProductForm({ initialData }: ProductFormProps) {
             required
           >
             <option value="">— Seleccioná una categoría —</option>
-            {categories.map((cat) => (
+            {(categories || []).map((cat) => (
               <optgroup key={cat.id} label={cat.name}>
-                {cat.children.length > 0 ? (
+                {cat.children && cat.children.length > 0 ? (
                   cat.children.map((sub) => (
                     <option key={sub.id} value={sub.id}>
                       {cat.name} › {sub.name}

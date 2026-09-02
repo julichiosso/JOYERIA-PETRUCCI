@@ -26,8 +26,9 @@ export default function AdminCategoriasPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    adminFetch<CategoryListResponse>("/admin/categories")
-      .then(({ categories: cats }) => {
+    adminFetch<Category[] | { categories: Category[] }>("/admin/categories")
+      .then((res) => {
+        const cats = Array.isArray(res) ? res : res?.categories || [];
         setCategories(cats);
         setLoading(false);
       })
@@ -114,7 +115,7 @@ export default function AdminCategoriasPage() {
                   </div>
 
                   {/* Sub-categorías */}
-                  {cat.children.length > 0 && (
+                  {cat.children && cat.children.length > 0 && (
                     <ul className="divide-y divide-gray-50 bg-gray-50/50">
                       {cat.children.map((sub) => (
                         <li key={sub.id} className="flex items-center justify-between px-4 py-2.5 pl-8">

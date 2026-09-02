@@ -53,6 +53,22 @@ export const categoryRepository = {
     });
   },
 
+  // ---------- Admin: listar tree completo con hijos ----------
+  async findAllTree() {
+    return prisma.category.findMany({
+      where: {
+        tenantId: TENANT_ID,
+        parentId: null,
+      },
+      orderBy: { sortOrder: 'asc' },
+      include: {
+        children: {
+          orderBy: { sortOrder: 'asc' },
+        },
+      },
+    });
+  },
+
   // ---------- Admin: listar flat ----------
   async findAllFlat() {
     return prisma.category.findMany({

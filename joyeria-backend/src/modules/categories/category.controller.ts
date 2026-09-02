@@ -16,6 +16,11 @@ export const categoryController = {
     return reply.status(201).send(category);
   },
 
+  async findAllTree(_request: FastifyRequest, reply: FastifyReply) {
+    const categories = await categoryService.findAllTree();
+    return reply.send(categories);
+  },
+
   async findAllFlat(_request: FastifyRequest, reply: FastifyReply) {
     const categories = await categoryService.findAllFlat();
     return reply.send(categories);

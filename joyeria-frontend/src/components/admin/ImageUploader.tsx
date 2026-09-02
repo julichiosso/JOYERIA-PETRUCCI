@@ -4,14 +4,16 @@
  * components/admin/ImageUploader.tsx
  * Subida y previsualización de imágenes en el panel de administración.
  *
- * Flujo mobile-friendly:
- *  - El dueño selecciona fotos (cámara o galería del celular)
- *  - Se generan previews locales instantáneos (URL.createObjectURL)
- *  - Los archivos reales (File) se guardan en el estado y se suben al guardar el producto
+ * Diseñado especialmente para máxima comodidad en celulares (touch amigable, botones grandes):
+ *  - Botón directo para "Tomar foto con la cámara"
+ *  - Botón para "Elegir fotos de la galería o computadora"
+ *  - Previews grandes, orden visual y badge claro de Foto Principal
+ *  - Botones de borrar grandes (fáciles de presionar)
  */
 
 import { useRef, useCallback } from "react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 export interface LocalProductImage {
   id?: string;            // id si ya existía en la base de datos
@@ -34,7 +36,8 @@ export default function ImageUploader({
   onImagesChange,
   disabled = false,
 }: ImageUploaderProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const galleryInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleFiles = useCallback(
     (files: FileList | File[]) => {
@@ -54,7 +57,12 @@ export default function ImageUploader({
     [images, onImagesChange]
   );
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) handleFiles(e.target.files);
+    e.target.value = "";
+  };
+
+  const handleCameraChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) handleFiles(e.target.files);
     e.target.value = "";
   };
@@ -70,6 +78,14 @@ export default function ImageUploader({
     onImagesChange(updated);
   };
 
+  const setAsMain = (index: number) => {
+    if (index === 0) return;
+    const item = images[index];
+    const rest = images.filter((_, i) => i !== index);
+    const updated = [item, ...rest].map((img, i) => ({ ...img, order: i }));
+    onImagesChange(updated);
+  };
+
   const updateAltText = (index: number, altText: string) => {
     const updated = images.map((img, i) =>
       i === index ? { ...img, altText } : img
@@ -78,97 +94,139 @@ export default function ImageUploader({
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Botón de selección / Drag & Drop */}
-      <div
-        onClick={() => fileInputRef.current?.click()}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => e.key === "Enter" && fileInputRef.current?.click()}
-        aria-label="Agregar fotos del producto"
-        className={`
-          border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer
-          border-gray-300 hover:border-amber-500 hover:bg-amber-50/50
-          ${disabled ? "opacity-50 pointer-events-none" : ""}
-        `}
-      >
-        <svg
-          width="36"
-          height="36"
-          viewBox="0 0 36 36"
-          fill="none"
-          aria-hidden="true"
-          className="mx-auto mb-2 text-gray-400"
+    <div className="flex flex-col gap-5">
+      {/* Botones de acción principales (grandes y cómodos) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Opción 1: Cámara del teléfono */}
+        <button
+          type="button"
+          onClick={() => cameraInputRef.current?.click()}
+          disabled={disabled}
+          className="flex items-center justify-center gap-3 p-4 bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50 text-amber-950 font-body text-base font-semibold shadow-sm"
         >
-          <rect x="3" y="7" width="30" height="22" rx="3" stroke="currentColor" strokeWidth="1.5" />
-          <circle cx="24" cy="14" r="3" stroke="currentColor" strokeWidth="1.5" />
-          <path d="M3 24l8-7 6 5 5-4 11 7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          <path d="M18 16v8M14 20h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-        <p className="font-body text-sm text-gray-700 font-medium">
-          Tocá para agregar fotos desde el celular o computadora
-        </p>
-        <p className="font-body text-xs text-gray-400 mt-0.5">
-          JPG, PNG o WebP · Hasta 10 fotos
-        </p>
+          <span className="text-2xl" role="img" aria-label="Cámara">📸</span>
+          <div className="text-left">
+            <p className="leading-tight">Sacar foto con la cámara</p>
+            <p className="text-xs font-normal text-amber-800">Abre la cámara del celular</p>
+          </div>
+        </button>
 
+        {/* Opción 2: Galería / Archivos */}
+        <button
+          type="button"
+          onClick={() => galleryInputRef.current?.click()}
+          disabled={disabled}
+          className="flex items-center justify-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 border-2 border-gray-300 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50 text-gray-900 font-body text-base font-semibold shadow-sm"
+        >
+          <span className="text-2xl" role="img" aria-label="Galería">🖼️</span>
+          <div className="text-left">
+            <p className="leading-tight">Elegir de la galería</p>
+            <p className="text-xs font-normal text-gray-500">Subir una o varias fotos</p>
+          </div>
+        </button>
+
+        {/* Inputs ocultos */}
         <input
-          ref={fileInputRef}
+          ref={cameraInputRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="sr-only"
+          onChange={handleCameraChange}
+          disabled={disabled}
+          aria-label="Tomar foto con la cámara"
+        />
+        <input
+          ref={galleryInputRef}
           type="file"
           accept="image/*"
           multiple
           className="sr-only"
-          onChange={handleInputChange}
+          onChange={handleGalleryChange}
           disabled={disabled}
-          aria-label="Seleccionar imágenes"
+          aria-label="Seleccionar imágenes de la galería"
         />
       </div>
 
-      {/* Grid de miniaturas */}
+      {/* Contador de fotos */}
+      <div className="flex items-center justify-between text-sm text-gray-600 font-body px-1">
+        <span>
+          {images.length === 0
+            ? "Todavía no cargaste ninguna foto"
+            : `${images.length} foto${images.length > 1 ? "s" : ""} cargada${images.length > 1 ? "s" : ""}`}
+        </span>
+        {images.length > 0 && (
+          <span className="text-xs text-gray-400">
+            La primera foto es la que se ve en la vidriera
+          </span>
+        )}
+      </div>
+
+      {/* Grid de miniaturas grandes y cómodas */}
       {images.length > 0 && (
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-          {images.map((img, index) => (
-            <div key={img.id ?? img._localPreview ?? index} className="relative group">
-              <div className="relative aspect-square rounded-md overflow-hidden bg-gray-100 border border-gray-200">
-                <Image
-                  src={img._localPreview || img.thumbnailUrl || img.url || ""}
-                  alt={img.altText ?? `Foto ${index + 1}`}
-                  fill
-                  unoptimized={img._localPreview.startsWith("blob:")}
-                  className="object-cover"
-                  sizes="(max-width: 768px) 33vw, 20vw"
-                />
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {images.map((img, index) => {
+            const rawSrc = img._localPreview || img.thumbnailUrl || img.url || "";
+            const src = rawSrc.startsWith("blob:") ? rawSrc : getImageUrl(rawSrc);
 
-                {/* Badge principal */}
-                {index === 0 && (
-                  <span className="absolute bottom-1 left-1 bg-amber-700 text-white font-body text-[8px] tracking-wide px-1.5 py-0.5 rounded shadow">
-                    Principal
-                  </span>
-                )}
+            return (
+              <div
+                key={img.id ?? img._localPreview ?? index}
+                className="relative flex flex-col bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm group"
+              >
+                {/* Contenedor de la foto */}
+                <div className="relative aspect-square w-full bg-gray-100">
+                  <Image
+                    src={src}
+                    alt={img.altText ?? `Foto ${index + 1}`}
+                    fill
+                    unoptimized={src.startsWith("blob:")}
+                    className="object-cover"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                  />
 
-                {/* Botón eliminar */}
-                <button
-                  type="button"
-                  onClick={() => removeImage(index)}
-                  className="absolute top-1 right-1 w-6 h-6 bg-black/70 hover:bg-red-600 rounded-full flex items-center justify-center transition-colors"
-                  aria-label={`Eliminar foto ${index + 1}`}
-                >
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                    <path d="M2 2l6 6M8 2L2 8" stroke="white" strokeWidth="1.3" strokeLinecap="round" />
-                  </svg>
-                </button>
+                  {/* Badge de Foto Principal */}
+                  {index === 0 ? (
+                    <span className="absolute top-2 left-2 bg-amber-600 text-white font-body text-xs font-bold px-2.5 py-1 rounded-md shadow-md">
+                      ⭐ Principal
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setAsMain(index)}
+                      className="absolute top-2 left-2 bg-black/70 hover:bg-amber-600 text-white font-body text-[11px] px-2 py-1 rounded-md shadow transition-colors"
+                      title="Hacer foto principal"
+                    >
+                      Hacer principal
+                    </button>
+                  )}
+
+                  {/* Botón de borrar grande (fácil de tocar en teléfono) */}
+                  <button
+                    type="button"
+                    onClick={() => removeImage(index)}
+                    className="absolute top-2 right-2 w-9 h-9 bg-red-600/90 hover:bg-red-700 text-white rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-90"
+                    aria-label={`Borrar foto ${index + 1}`}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path d="M2 2l10 10M12 2L2 12" stroke="white" strokeWidth="2.2" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                </div>
+
+                {/* Pie de foto / Descripción opcional */}
+                <div className="p-2.5 bg-gray-50 border-t border-gray-100">
+                  <input
+                    type="text"
+                    value={img.altText ?? ""}
+                    onChange={(e) => updateAltText(index, e.target.value)}
+                    placeholder="Descripción (opcional)"
+                    className="w-full text-xs font-body text-gray-700 bg-white border border-gray-300 rounded-md px-2 py-1.5 focus:outline-none focus:border-amber-600"
+                  />
+                </div>
               </div>
-
-              {/* Alt text descriptivo */}
-              <input
-                type="text"
-                value={img.altText ?? ""}
-                onChange={(e) => updateAltText(index, e.target.value)}
-                placeholder="Descripción (opcional)"
-                className="mt-1 w-full text-[10px] font-body text-gray-600 border border-gray-200 rounded px-1.5 py-0.5 focus:outline-none focus:border-amber-600"
-              />
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

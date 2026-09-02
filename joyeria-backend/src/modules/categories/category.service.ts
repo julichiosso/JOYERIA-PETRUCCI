@@ -33,6 +33,11 @@ export const categoryService = {
     return categoryRepository.create({ ...input, slug });
   },
 
+  // ---------- Admin: listar tree completo con hijos ----------
+  async findAllTree() {
+    return categoryRepository.findAllTree();
+  },
+
   // ---------- Admin: listar flat ----------
   async findAllFlat() {
     return categoryRepository.findAllFlat();
