@@ -1,3 +1,5 @@
+"use client";
+
 /**
  * components/layout/Footer.tsx
  * Footer global inspirado en la estructura y elegancia de joyeriaelrubi.com.ar
@@ -11,23 +13,48 @@
  *  - Barra inferior con copyright y ubicación
  */
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { api } from "@/lib/api";
+import type { PublicStoreConfig } from "@/types/store-config";
 import NewsletterForm from "./NewsletterForm";
 
-export default async function Footer() {
-  let storeConfig = null;
-  try {
-    storeConfig = await api.catalog.getStoreConfig();
-  } catch {
-    // Fallbacks si la API no está disponible
-  }
+const DEFAULT_CONFIG: PublicStoreConfig = {
+  storeName: "Petrucci Joyería",
+  address: "Eva Perón 1574, San Jorge, Santa Fe",
+  businessHours: "Lun–Vie 9:00–18:00 · Sáb 9:00–13:00",
+  instagramUrl: "https://instagram.com/joyeriapetrucci",
+  facebookUrl: "https://facebook.com/joyeriapetrucci",
+  whatsappNumber: "5493408123456",
+  returnPolicy: null,
+  shippingInfo: null,
+};
 
-  const address = storeConfig?.address ?? "Eva Perón 1574, San Jorge, Santa Fe";
-  const businessHours = storeConfig?.businessHours ?? "Lun–Vie 9:00–18:00 · Sáb 9:00–13:00";
-  const instagramUrl = storeConfig?.instagramUrl ?? "https://instagram.com/joyeriapetrucci";
-  const facebookUrl = storeConfig?.facebookUrl ?? "https://facebook.com/joyeriapetrucci";
-  const rawWhatsapp = storeConfig?.whatsappNumber ?? "5493408123456";
+export default function Footer() {
+  const [config, setConfig] = useState<PublicStoreConfig>(DEFAULT_CONFIG);
+
+  useEffect(() => {
+    let mounted = true;
+    api.catalog
+      .getStoreConfig()
+      .then((data) => {
+        if (mounted && data) {
+          setConfig((prev) => ({ ...prev, ...data }));
+        }
+      })
+      .catch(() => {
+        // Usa DEFAULT_CONFIG
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const address = config.address ?? DEFAULT_CONFIG.address!;
+  const businessHours = config.businessHours ?? DEFAULT_CONFIG.businessHours!;
+  const instagramUrl = config.instagramUrl ?? DEFAULT_CONFIG.instagramUrl;
+  const facebookUrl = config.facebookUrl ?? DEFAULT_CONFIG.facebookUrl;
+  const rawWhatsapp = config.whatsappNumber ?? DEFAULT_CONFIG.whatsappNumber!;
 
   // Formatos legibles para el número de WhatsApp
   const formattedWaIntl = rawWhatsapp.startsWith("54")
@@ -38,17 +65,17 @@ export default async function Footer() {
     : rawWhatsapp;
 
   return (
-    <footer className="w-full border-t border-petrucci-border bg-white text-petrucci-black">
+    <footer className="w-full border-t border-gray-200 bg-white text-gray-900 font-body">
       {/* ── Grid Principal de 3 Columnas ──────────────────────────────────── */}
       <div className="mx-auto max-w-7xl px-6 py-14 md:py-18">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-10 lg:gap-14">
 
           {/* ── Columna 1: Newsletter ────────────────────────────────────────── */}
           <div className="flex flex-col gap-4">
-            <h3 className="font-display text-xl md:text-2xl text-petrucci-black tracking-wide font-normal">
+            <h3 className="font-body text-base font-bold text-gray-900 tracking-wider uppercase">
               Suscribite al newsletter
             </h3>
-            <p className="font-body text-sm text-petrucci-gray leading-relaxed">
+            <p className="font-body text-sm text-gray-600 leading-relaxed">
               Recibí novedades sobre nuevas piezas, trabajos personalizados y lanzamientos exclusivos antes que nadie.
             </p>
             <div className="mt-2 max-w-sm">
@@ -58,28 +85,28 @@ export default async function Footer() {
 
           {/* ── Columna 2: Información ───────────────────────────────────────── */}
           <div className="flex flex-col gap-4 md:pl-6">
-            <h3 className="font-display text-xl md:text-2xl text-petrucci-black tracking-wide font-normal">
+            <h3 className="font-body text-base font-bold text-gray-900 tracking-wider uppercase">
               Información
             </h3>
             <nav aria-label="Enlaces de información">
-              <ul className="flex flex-col gap-2.5 font-body text-sm text-petrucci-gray">
+              <ul className="flex flex-col gap-2.5 font-body text-sm text-gray-600">
                 <li>
-                  <Link href="/nosotros" className="hover:text-petrucci-gold transition-colors">
+                  <Link href="/nosotros" className="hover:text-black transition-colors">
                     Quiénes Somos
                   </Link>
                 </li>
                 <li>
-                  <Link href="/trabajos-personalizados" className="hover:text-petrucci-gold transition-colors">
+                  <Link href="/trabajos-personalizados" className="hover:text-black transition-colors">
                     Grabados y Trabajos Personalizados
                   </Link>
                 </li>
                 <li>
-                  <Link href="/nosotros#contacto" className="hover:text-petrucci-gold transition-colors">
+                  <Link href="/nosotros#contacto" className="hover:text-black transition-colors">
                     Atención al Cliente y Asesoramiento
                   </Link>
                 </li>
                 <li>
-                  <Link href="/nosotros#envios" className="hover:text-petrucci-gold transition-colors">
+                  <Link href="/nosotros#envios" className="hover:text-black transition-colors">
                     Envíos y Retiro en Local
                   </Link>
                 </li>
@@ -89,10 +116,10 @@ export default async function Footer() {
 
           {/* ── Columna 3: Contactanos ───────────────────────────────────────── */}
           <div className="flex flex-col gap-4">
-            <h3 className="font-display text-xl md:text-2xl text-petrucci-black tracking-wide font-normal">
+            <h3 className="font-body text-base font-bold text-gray-900 tracking-wider uppercase">
               Contactanos
             </h3>
-            <div className="flex flex-col gap-3 font-body text-sm text-petrucci-gray">
+            <div className="flex flex-col gap-3 font-body text-sm text-gray-600">
               {/* WhatsApp */}
               <div className="flex items-start gap-3">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-gray-700 mt-0.5 shrink-0" aria-hidden="true">
@@ -156,7 +183,7 @@ export default async function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Instagram de Petrucci Joyería"
-                  className="w-9 h-9 flex items-center justify-center rounded-full border border-petrucci-border text-petrucci-gray hover:text-petrucci-black hover:border-petrucci-black transition-colors"
+                  className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:text-black hover:border-black transition-colors"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
@@ -171,7 +198,7 @@ export default async function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Facebook de Petrucci Joyería"
-                  className="w-9 h-9 flex items-center justify-center rounded-full border border-petrucci-border text-petrucci-gray hover:text-petrucci-black hover:border-petrucci-black transition-colors"
+                  className="w-9 h-9 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:text-black hover:border-black transition-colors"
                 >
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
@@ -184,8 +211,8 @@ export default async function Footer() {
       </div>
 
       {/* ── Barra Inferior Copyright ────────────────────────────────────────── */}
-      <div className="border-t border-petrucci-border bg-gray-50/50">
-        <div className="mx-auto max-w-7xl px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-petrucci-gray font-body">
+      <div className="border-t border-gray-200 bg-gray-50/50">
+        <div className="mx-auto max-w-7xl px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500 font-body">
           <p>© {new Date().getFullYear()} Petrucci Joyería. Todos los derechos reservados.</p>
           <p>San Jorge, Santa Fe, Argentina</p>
         </div>
