@@ -101,14 +101,26 @@ export async function adminFetch<T>(
     let message = `Error ${res.status}`;
     try {
       const body = await res.json();
-      message = (body as { error?: string }).error ?? message;
+      message = (body as { message?: string; error?: string }).message ?? (body as { error?: string }).error ?? message;
     } catch {
       // mantiene el mensaje de status
     }
     throw new AdminApiError(res.status, message);
   }
 
-  return res.json() as Promise<T>;
+  if (res.status === 204) {
+    return {} as T;
+  }
+
+  const text = await res.text();
+  if (!text) {
+    return {} as T;
+  }
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return {} as T;
+  }
 }
 
 /**

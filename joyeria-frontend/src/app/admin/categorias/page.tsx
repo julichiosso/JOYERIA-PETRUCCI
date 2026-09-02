@@ -2,14 +2,13 @@
 
 /**
  * app/admin/categorias/page.tsx
- * Editor completo de Categorías y Subcategorías para el panel de administración.
+ * Panel de Categorías y Subcategorías diseñado especialmente para uso fácil, claro y directo.
  *
- * Características:
- *  - Crear categorías raíz y subcategorías (ej. Marcas en Relojes o Secciones en Joyería)
- *  - Editar nombre, descripción, visibilidad y orden en el menú
- *  - Reorganizar orden con flechas simples (↑ / ↓)
- *  - Eliminar categorías con confirmación y manejo de protecciones del backend
- *  - Mobile-first con botones grandes y explicaciones claras sin jerga técnica
+ * Características para personas mayores / facilidad de uso:
+ *  - Textos grandes, claros y en español simple (sin jerga técnica).
+ *  - Botones de gran tamaño y buen contraste para pulsar fácil.
+ *  - Distinción visual obvia entre Categoría Principal y Subcategorías internas.
+ *  - Confirmaciones y mensajes de ayuda paso a paso.
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -32,7 +31,7 @@ export default function AdminCategoriasPage() {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Estado del modal de creación / edición
+  // Modal
   const [modal, setModal] = useState<ModalState>({ isOpen: false, mode: "create_root" });
   const [formName, setFormName] = useState("");
   const [formDesc, setFormDesc] = useState("");
@@ -41,7 +40,7 @@ export default function AdminCategoriasPage() {
   const [saving, setSaving] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
 
-  // Estado de eliminación
+  // Eliminación
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -52,7 +51,6 @@ export default function AdminCategoriasPage() {
       setError(null);
       const res = await adminFetch<Category[] | { categories: Category[] }>("/admin/categories");
       const cats = Array.isArray(res) ? res : res?.categories || [];
-      // Ordenar por sortOrder
       cats.sort((a, b) => a.sortOrder - b.sortOrder);
       cats.forEach((c) => c.children?.sort((a, b) => a.sortOrder - b.sortOrder));
       setCategories(cats);
@@ -77,7 +75,7 @@ export default function AdminCategoriasPage() {
     setTimeout(() => setSuccessMessage(null), 4000);
   };
 
-  // ── Toggle Activo / Inactivo ──────────────────────────────────────────────
+  // Toggle Activo
   const toggleActive = async (cat: Category) => {
     try {
       const nextActive = !cat.isActive;
@@ -85,15 +83,15 @@ export default function AdminCategoriasPage() {
         method: "PATCH",
         body: JSON.stringify({ isActive: nextActive }),
       });
-      showSuccess(`Categoría "${cat.name}" ${nextActive ? "activada" : "ocultada"}.`);
+      showSuccess(`"${cat.name}" ahora está ${nextActive ? "visible en la tienda" : "oculta"}.`);
       loadCategories();
     } catch (err: unknown) {
       const e = err as { message?: string };
-      alert(e.message ?? "No se pudo cambiar el estado de la categoría.");
+      alert(e.message ?? "No se pudo cambiar el estado.");
     }
   };
 
-  // ── Reordenar ↑ / ↓ ───────────────────────────────────────────────────────
+  // Mover orden
   const moveOrder = async (cat: Category, direction: "up" | "down", siblings: (Category | Category["children"][0])[]) => {
     const currentIndex = siblings.findIndex((s) => s.id === cat.id);
     if (currentIndex === -1) return;
@@ -102,7 +100,6 @@ export default function AdminCategoriasPage() {
 
     const targetCat = siblings[targetIndex];
     try {
-      // Intercambiar sortOrder
       await Promise.all([
         adminFetch(`/admin/categories/${cat.id}`, {
           method: "PATCH",
@@ -116,11 +113,11 @@ export default function AdminCategoriasPage() {
       loadCategories();
     } catch (err: unknown) {
       const e = err as { message?: string };
-      alert(e.message ?? "No se pudo mover el orden.");
+      alert(e.message ?? "No se pudo mover la posición.");
     }
   };
 
-  // ── Abrir Modales ─────────────────────────────────────────────────────────
+  // Abrir modales
   const openCreateRoot = () => {
     setFormName("");
     setFormDesc("");
@@ -162,11 +159,11 @@ export default function AdminCategoriasPage() {
     setModal({ isOpen: false, mode: "create_root" });
   };
 
-  // ── Guardar Creación / Edición ───────────────────────────────────────────
+  // Guardar
   const handleSaveModal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName.trim()) {
-      setModalError("Por favor ingresá un nombre para la categoría.");
+      setModalError("Por favor escribí un nombre.");
       return;
     }
 
@@ -183,7 +180,7 @@ export default function AdminCategoriasPage() {
             sortOrder: Number(formOrder) || 0,
           }),
         });
-        showSuccess(`Categoría "${formName.trim()}" creada con éxito.`);
+        showSuccess(`Se creó la sección "${formName.trim()}" con éxito.`);
       } else if (modal.mode === "create_sub") {
         await adminFetch("/admin/categories", {
           method: "POST",
@@ -194,7 +191,7 @@ export default function AdminCategoriasPage() {
             sortOrder: Number(formOrder) || 0,
           }),
         });
-        showSuccess(`Subcategoría "${formName.trim()}" agregada a ${modal.parentName}.`);
+        showSuccess(`Se agregó "${formName.trim()}" dentro de ${modal.parentName}.`);
       } else if (modal.mode === "edit" && modal.category) {
         await adminFetch(`/admin/categories/${modal.category.id}`, {
           method: "PATCH",
@@ -218,7 +215,7 @@ export default function AdminCategoriasPage() {
     }
   };
 
-  // ── Eliminar Categoría ───────────────────────────────────────────────────
+  // Eliminar
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     setDeleting(true);
@@ -228,98 +225,97 @@ export default function AdminCategoriasPage() {
       await adminFetch(`/admin/categories/${deleteTarget.id}`, {
         method: "DELETE",
       });
-      showSuccess(`Categoría "${deleteTarget.name}" eliminada.`);
+      showSuccess(`Se eliminó "${deleteTarget.name}".`);
       setDeleteTarget(null);
       loadCategories();
     } catch (err: unknown) {
       const e = err as { message?: string };
-      setDeleteError(e.message ?? "No se pudo eliminar la categoría.");
+      setDeleteError(e.message ?? "No se pudo eliminar.");
     } finally {
       setDeleting(false);
     }
   };
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl mx-auto">
-      {/* ── Encabezado ────────────────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 md:p-6 rounded-xl border border-gray-200 shadow-sm">
+    <div className="flex flex-col gap-6 max-w-4xl mx-auto font-body text-gray-900 pb-12">
+      {/* ── Encabezado Principal y Explicación ──────────────────────────────── */}
+      <div className="bg-white p-6 md:p-8 rounded-xl border border-gray-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div>
-          <h1 className="font-body text-xl md:text-2xl font-bold text-gray-900">
-            Categorías y Secciones
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            Secciones y Rubros del Menú
           </h1>
-          <p className="font-body text-sm text-gray-500 mt-1">
-            Organizá los rubros y marcas que tus clientes ven en el menú de la tienda.
+          <p className="text-sm md:text-base text-gray-600 mt-2 leading-relaxed">
+            Acá podés ordenar los rubros de tu joyería. Las <strong>secciones principales</strong> son los botones del menú de arriba, y las <strong>subcategorías</strong> son los tipos de joyas o marcas que van adentro.
           </p>
         </div>
         <button
           type="button"
           onClick={openCreateRoot}
-          className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-amber-700 hover:bg-amber-800 text-white font-body text-sm font-semibold rounded-lg shadow transition-all active:scale-[0.98] shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-gray-900 hover:bg-black text-white font-medium text-base rounded-lg shadow-sm transition-all active:scale-[0.98] shrink-0"
         >
-          <span className="text-lg leading-none">+</span>
-          <span>Nueva categoría principal</span>
+          <span className="text-xl leading-none font-bold">+</span>
+          <span>Nueva Sección Principal</span>
         </button>
       </div>
 
-      {/* Alerta de éxito */}
+      {/* Mensaje de éxito verde */}
       {successMessage && (
-        <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 font-body text-sm flex items-center gap-2 shadow-sm animate-fade-in">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="shrink-0 text-emerald-600">
-            <circle cx="9" cy="9" r="8" stroke="currentColor" strokeWidth="1.5" />
-            <path d="M5.5 9l2.5 2.5 4.5-4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <div className="p-4 bg-emerald-50 border-2 border-emerald-300 rounded-xl text-emerald-900 font-medium text-base flex items-center gap-3 shadow-xs">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-700 shrink-0">
+            <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <span>{successMessage}</span>
         </div>
       )}
 
-      {/* Alerta de error general */}
+      {/* Mensaje de error general */}
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 font-body text-sm">
+        <div className="p-4 bg-red-50 border-2 border-red-300 rounded-xl text-red-900 font-medium text-base">
           {error}
         </div>
       )}
 
-      {/* Spinner de carga */}
+      {/* Cargando */}
       {loading && (
-        <div className="flex flex-col items-center justify-center py-20 gap-3">
-          <div className="w-9 h-9 border-3 border-amber-600 border-t-transparent rounded-full animate-spin" />
-          <p className="font-body text-sm text-gray-500">Cargando categorías...</p>
+        <div className="flex flex-col items-center justify-center py-16 gap-3">
+          <div className="w-10 h-10 border-4 border-gray-900 border-t-transparent rounded-full animate-spin" />
+          <p className="text-base text-gray-600 font-medium">Cargando secciones...</p>
         </div>
       )}
 
-      {/* ── Listado de Categorías Raíz y Subcategorías ────────────────────────── */}
+      {/* ── Listado de Secciones ───────────────────────────────────────────── */}
       {!loading && !error && (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-6">
           {categories.length === 0 ? (
             <div className="text-center py-16 bg-white border border-gray-200 rounded-xl p-6">
-              <p className="font-body text-base text-gray-600 mb-4">
-                Todavía no tenés categorías creadas.
+              <p className="text-lg text-gray-700 mb-4">
+                Todavía no tenés secciones creadas.
               </p>
               <button
                 type="button"
                 onClick={openCreateRoot}
-                className="px-6 py-2.5 bg-amber-700 text-white rounded-lg font-body text-sm font-medium hover:bg-amber-800"
+                className="px-6 py-3 bg-gray-900 text-white rounded-lg text-base font-semibold"
               >
-                Crear la primera categoría
+                Crear la primera sección
               </button>
             </div>
           ) : (
             categories.map((cat, rootIndex) => (
               <div
                 key={cat.id}
-                className="bg-white border-2 border-gray-200 rounded-xl shadow-sm overflow-hidden"
+                className="bg-white border-2 border-gray-200 rounded-xl shadow-xs overflow-hidden"
               >
-                {/* Cabecera de Categoría Raíz */}
-                <div className="p-4 sm:p-5 bg-gray-50/75 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="flex items-start sm:items-center gap-3">
-                    {/* Botones de orden arriba/abajo */}
-                    <div className="flex flex-col gap-0.5 shrink-0">
+                {/* ── Cabecera de Categoría Principal ── */}
+                <div className="p-5 md:p-6 bg-gray-50/80 border-b border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div className="flex items-start gap-4">
+                    {/* Botones de orden sencillos */}
+                    <div className="flex flex-col gap-1 shrink-0 mt-0.5">
                       <button
                         type="button"
                         onClick={() => moveOrder(cat, "up", categories)}
                         disabled={rootIndex === 0}
-                        title="Subir en el menú"
-                        className="p-1 hover:bg-gray-200 rounded text-gray-600 disabled:opacity-20 disabled:hover:bg-transparent"
+                        title="Subir posición en el menú"
+                        className="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded text-gray-800 disabled:opacity-20 font-bold"
                       >
                         ▲
                       </button>
@@ -327,66 +323,69 @@ export default function AdminCategoriasPage() {
                         type="button"
                         onClick={() => moveOrder(cat, "down", categories)}
                         disabled={rootIndex === categories.length - 1}
-                        title="Bajar en el menú"
-                        className="p-1 hover:bg-gray-200 rounded text-gray-600 disabled:opacity-20 disabled:hover:bg-transparent"
+                        title="Bajar posición en el menú"
+                        className="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded text-gray-800 disabled:opacity-20 font-bold"
                       >
                         ▼
                       </button>
                     </div>
 
                     <div>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h2 className="font-body text-base sm:text-lg font-bold text-gray-900">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        <span className="text-xs font-bold uppercase tracking-wider bg-gray-200 text-gray-700 px-2.5 py-0.5 rounded">
+                          Lugar {rootIndex + 1}
+                        </span>
+                        <h2 className="text-xl md:text-2xl font-bold text-gray-950">
                           {cat.name}
                         </h2>
                         {cat.isProtected && (
-                          <span className="bg-amber-100 text-amber-800 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-amber-200" title="Esta categoría es fundamental y no puede borrarse">
-                            Base del negocio
+                          <span className="bg-amber-100 text-amber-900 text-xs font-semibold px-3 py-1 rounded-full border border-amber-300">
+                            Sección básica del negocio
                           </span>
                         )}
                         {!cat.isActive && (
-                          <span className="bg-gray-200 text-gray-700 text-[10px] font-semibold px-2 py-0.5 rounded-full">
-                            Oculta
+                          <span className="bg-gray-300 text-gray-800 text-xs font-semibold px-3 py-1 rounded-full">
+                            Oculta de los clientes
                           </span>
                         )}
                       </div>
                       {cat.description && (
-                        <p className="font-body text-xs text-gray-500 mt-0.5 max-w-lg">
+                        <p className="text-sm text-gray-600 mt-1">
                           {cat.description}
                         </p>
                       )}
                     </div>
                   </div>
 
-                  {/* Acciones para la categoría raíz */}
-                  <div className="flex items-center gap-2 self-end sm:self-center">
-                    {/* Toggle Activo */}
+                  {/* Acciones principales */}
+                  <div className="flex items-center gap-2.5 flex-wrap self-start md:self-center">
+                    {/* Botón Visible / Oculto */}
                     <button
                       type="button"
                       onClick={() => toggleActive(cat)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                      className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-colors ${
                         cat.isActive
-                          ? "bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100"
+                          ? "bg-emerald-50 border-emerald-400 text-emerald-800 hover:bg-emerald-100"
                           : "bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200"
                       }`}
                     >
-                      {cat.isActive ? "✓ Visible en tienda" : "○ Oculta"}
+                      {cat.isActive ? "✓ Visible en tienda" : "○ Ocultar"}
                     </button>
 
-                    {/* Editar */}
+                    {/* Botón Modificar */}
                     <button
                       type="button"
                       onClick={() => openEdit(cat)}
-                      className="px-3 py-1.5 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 text-xs font-medium rounded-lg transition-colors"
+                      className="px-4 py-2 bg-white border border-gray-300 text-gray-800 hover:bg-gray-100 text-sm font-semibold rounded-lg transition-colors"
                     >
-                      Editar
+                      Modificar
                     </button>
 
-                    {/* Eliminar */}
+                    {/* Botón Eliminar */}
                     {cat.isProtected ? (
                       <span
-                        className="px-2.5 py-1.5 text-xs text-gray-400 bg-gray-100 rounded-lg cursor-not-allowed border border-gray-200"
-                        title="Categoría base protegida (no se puede borrar)"
+                        className="px-3 py-2 text-xs text-gray-400 bg-gray-100 rounded-lg border border-gray-200 cursor-not-allowed"
+                        title="Esta sección es fija y no puede borrarse"
                       >
                         Protegida
                       </span>
@@ -397,7 +396,7 @@ export default function AdminCategoriasPage() {
                           setDeleteError(null);
                           setDeleteTarget(cat);
                         }}
-                        className="px-3 py-1.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 text-xs font-medium rounded-lg transition-colors"
+                        className="px-4 py-2 bg-white border border-red-300 text-red-600 hover:bg-red-50 text-sm font-semibold rounded-lg transition-colors"
                       >
                         Borrar
                       </button>
@@ -405,37 +404,37 @@ export default function AdminCategoriasPage() {
                   </div>
                 </div>
 
-                {/* Subcategorías / Marcas / Modelos */}
-                <div className="p-4 sm:p-5 bg-white flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <p className="font-body text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                      Subcategorías / Marcas ({cat.children?.length ?? 0})
+                {/* ── Subcategorías / Tipos de Joyas / Marcas adentro ── */}
+                <div className="p-5 md:p-6 bg-white flex flex-col gap-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-gray-100">
+                    <p className="text-sm font-bold text-gray-700 uppercase tracking-wide">
+                      Tipos de productos o marcas adentro de &quot;{cat.name}&quot; ({cat.children?.length ?? 0}):
                     </p>
                     <button
                       type="button"
                       onClick={() => openCreateSub(cat)}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 hover:text-amber-800 py-1 px-2.5 bg-amber-50 hover:bg-amber-100 rounded-md transition-colors"
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-amber-900 hover:text-amber-950 py-2 px-4 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg transition-colors self-start sm:self-auto"
                     >
-                      <span>+</span>
-                      <span>Agregar subcategoría a {cat.name}</span>
+                      <span className="font-bold text-base">+</span>
+                      <span>Agregar sub-rubro a {cat.name}</span>
                     </button>
                   </div>
 
                   {cat.children && cat.children.length > 0 ? (
-                    <ul className="divide-y divide-gray-100 border border-gray-100 rounded-lg overflow-hidden">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {cat.children.map((sub, subIndex) => (
-                        <li
+                        <div
                           key={sub.id}
-                          className="flex flex-col sm:flex-row sm:items-center justify-between p-3 sm:px-4 bg-gray-50/40 hover:bg-gray-50 transition-colors gap-2"
+                          className="flex items-center justify-between p-3.5 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100/70 transition-colors gap-3"
                         >
-                          <div className="flex items-center gap-2">
-                            {/* Orden subcategoría */}
-                            <div className="flex items-center gap-0.5">
+                          <div className="flex items-center gap-2.5">
+                            {/* Orden sub */}
+                            <div className="flex flex-col gap-0.5">
                               <button
                                 type="button"
                                 onClick={() => moveOrder(sub as unknown as Category, "up", cat.children)}
                                 disabled={subIndex === 0}
-                                className="p-0.5 text-xs text-gray-500 hover:text-gray-800 disabled:opacity-20"
+                                className="w-5 h-5 flex items-center justify-center text-xs text-gray-600 hover:text-black bg-white border border-gray-200 rounded disabled:opacity-20"
                                 title="Subir"
                               >
                                 ▲
@@ -444,33 +443,25 @@ export default function AdminCategoriasPage() {
                                 type="button"
                                 onClick={() => moveOrder(sub as unknown as Category, "down", cat.children)}
                                 disabled={subIndex === cat.children.length - 1}
-                                className="p-0.5 text-xs text-gray-500 hover:text-gray-800 disabled:opacity-20"
+                                className="w-5 h-5 flex items-center justify-center text-xs text-gray-600 hover:text-black bg-white border border-gray-200 rounded disabled:opacity-20"
                                 title="Bajar"
                               >
                                 ▼
                               </button>
                             </div>
 
-                            <span className="text-gray-400 font-body text-sm">↳</span>
-                            <div>
-                              <span className="font-body text-sm font-medium text-gray-900">
-                                {sub.name}
-                              </span>
-                              {sub.description && (
-                                <p className="font-body text-xs text-gray-500">
-                                  {sub.description}
-                                </p>
-                              )}
-                            </div>
+                            <span className="text-base font-semibold text-gray-900">
+                              {sub.name}
+                            </span>
                           </div>
 
-                          <div className="flex items-center gap-2 self-end sm:self-center">
+                          <div className="flex items-center gap-2">
                             <button
                               type="button"
                               onClick={() => openEdit(sub as unknown as Category, cat.name)}
-                              className="px-2.5 py-1 text-xs text-gray-700 bg-white border border-gray-200 hover:bg-gray-100 rounded transition-colors"
+                              className="px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-md transition-colors"
                             >
-                              Editar
+                              Modificar
                             </button>
                             <button
                               type="button"
@@ -478,18 +469,18 @@ export default function AdminCategoriasPage() {
                                 setDeleteError(null);
                                 setDeleteTarget(sub as unknown as Category);
                               }}
-                              className="px-2.5 py-1 text-xs text-red-600 bg-white border border-red-200 hover:bg-red-50 rounded transition-colors"
+                              className="px-3 py-1.5 text-xs font-semibold text-red-600 bg-white border border-red-200 hover:bg-red-50 rounded-md transition-colors"
                             >
                               Borrar
                             </button>
                           </div>
-                        </li>
+                        </div>
                       ))}
-                    </ul>
+                    </div>
                   ) : (
-                    <p className="font-body text-xs text-gray-400 italic py-2">
-                      Sin subcategorías específicas (los productos se asocian directamente a {cat.name}).
-                    </p>
+                    <div className="p-4 bg-gray-50 border border-dashed border-gray-300 rounded-lg text-sm text-gray-500 text-center">
+                      No tiene subcategorías (los productos se cargan directo en {cat.name}).
+                    </div>
                   )}
                 </div>
               </div>
@@ -501,119 +492,92 @@ export default function AdminCategoriasPage() {
       {/* ── MODAL DE CREACIÓN / EDICIÓN ────────────────────────────────────── */}
       {modal.isOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl flex flex-col gap-5 animate-scale-up">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <h2 className="font-body text-lg font-bold text-gray-900">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8 shadow-2xl flex flex-col gap-6">
+            <div className="flex items-center justify-between border-b border-gray-200 pb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-950">
                 {modal.mode === "create_root"
-                  ? "Nueva Categoría Principal"
+                  ? "Crear Sección Principal"
                   : modal.mode === "create_sub"
-                  ? `Nueva Subcategoría en ${modal.parentName}`
-                  : `Editar: ${formName}`}
+                  ? `Agregar adentro de ${modal.parentName}`
+                  : `Modificar: ${formName}`}
               </h2>
               <button
                 type="button"
                 onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600 p-1 text-xl leading-none"
+                className="text-gray-400 hover:text-gray-900 text-2xl p-1 leading-none font-bold"
               >
                 ✕
               </button>
             </div>
 
-            <form onSubmit={handleSaveModal} className="flex flex-col gap-4">
+            <form onSubmit={handleSaveModal} className="flex flex-col gap-5">
               {modalError && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 font-body text-xs">
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm font-medium">
                   {modalError}
                 </div>
               )}
 
               {/* Nombre */}
               <div>
-                <label className="block font-body text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1.5">
-                  Nombre <span className="text-red-500">*</span>
+                <label className="block text-sm font-bold text-gray-800 mb-2">
+                  Nombre <span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
-                  placeholder={modal.mode === "create_sub" ? "Ej: Movado, Seiko, Anillos de Compromiso..." : "Ej: Relojes, Joyería, Platería..."}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg font-body text-base text-gray-900 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600"
+                  placeholder={modal.mode === "create_sub" ? "Ej: Anillos, Cadenas, Seiko..." : "Ej: Joyería, Relojes, Mates..."}
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base text-gray-950 focus:outline-none focus:border-gray-900"
                   required
                   autoFocus
                 />
-                <p className="font-body text-xs text-gray-500 mt-1">
-                  El enlace web (URL) se genera automáticamente con este nombre.
-                </p>
               </div>
 
               {/* Descripción */}
               <div>
-                <label className="block font-body text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1.5">
+                <label className="block text-sm font-bold text-gray-800 mb-2">
                   Descripción (Opcional)
                 </label>
                 <textarea
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
                   rows={3}
-                  placeholder="Detalle breve para guiar a los clientes o mejorar en Google..."
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg font-body text-sm text-gray-900 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 resize-none"
+                  placeholder="Detalle breve para explicar qué productos hay en esta sección..."
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm text-gray-950 focus:outline-none focus:border-gray-900 resize-none"
                 />
               </div>
 
-              {/* Orden en el menú */}
-              <div>
-                <label className="block font-body text-xs font-semibold text-gray-700 uppercase tracking-wide mb-1.5">
-                  Posición / Orden en el menú
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={formOrder}
-                  onChange={(e) => setFormOrder(parseInt(e.target.value, 10) || 0)}
-                  className="w-32 px-3 py-2 border border-gray-300 rounded-lg font-body text-sm text-gray-900 focus:outline-none focus:border-amber-600"
-                />
-                <p className="font-body text-xs text-gray-400 mt-1">
-                  Los números más chicos aparecen primero (ej. 0, 1, 2...).
-                </p>
-              </div>
-
-              {/* Visibilidad (en modo edición) */}
+              {/* Visibilidad en modo edición */}
               {modal.mode === "edit" && (
-                <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer border border-gray-200">
+                <label className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg cursor-pointer border border-gray-300">
                   <input
                     type="checkbox"
                     checked={formActive}
                     onChange={(e) => setFormActive(e.target.checked)}
-                    className="w-4 h-4 text-amber-600 rounded border-gray-300"
+                    className="w-5 h-5 text-gray-900 rounded border-gray-300"
                   />
-                  <span className="font-body text-sm font-medium text-gray-800">
-                    Visible en la tienda para los clientes
+                  <span className="text-base font-semibold text-gray-900">
+                    Mostrar esta sección en la tienda para los clientes
                   </span>
                 </label>
               )}
 
-              {/* Botones de acción */}
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 mt-2">
+              {/* Botones */}
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
                 <button
                   type="button"
                   onClick={closeModal}
                   disabled={saving}
-                  className="px-5 py-2.5 border border-gray-300 text-gray-700 rounded-lg font-body text-sm font-medium hover:bg-gray-50"
+                  className="px-6 py-3 border border-gray-300 text-gray-800 rounded-lg text-base font-medium hover:bg-gray-100"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-6 py-2.5 bg-amber-700 hover:bg-amber-800 text-white rounded-lg font-body text-sm font-semibold shadow disabled:opacity-50 flex items-center gap-2"
+                  className="px-7 py-3 bg-gray-900 hover:bg-black text-white rounded-lg text-base font-bold shadow disabled:opacity-50 flex items-center gap-2"
                 >
-                  {saving ? (
-                    <>
-                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Guardando...
-                    </>
-                  ) : (
-                    "Guardar categoría"
-                  )}
+                  {saving ? "Guardando..." : "Guardar"}
                 </button>
               </div>
             </form>
@@ -624,42 +588,42 @@ export default function AdminCategoriasPage() {
       {/* ── MODAL DE CONFIRMACIÓN DE ELIMINACIÓN ────────────────────────────── */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl flex flex-col gap-4">
-            <h2 className="font-body text-lg font-bold text-gray-900">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 md:p-8 shadow-2xl flex flex-col gap-5">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-950">
               ¿Eliminar &quot;{deleteTarget.name}&quot;?
             </h2>
 
             {deleteError ? (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 font-body text-sm">
-                <strong>No se pudo eliminar:</strong>
-                <p className="mt-1 text-xs leading-relaxed">{deleteError}</p>
+              <div className="p-4 bg-red-50 border-2 border-red-300 rounded-xl text-red-900 text-sm leading-relaxed">
+                <strong>No se pudo borrar:</strong>
+                <p className="mt-1 font-medium">{deleteError}</p>
                 <p className="mt-2 text-xs text-gray-600">
-                  Para poder borrarla, primero reasigná o eliminá los productos y subcategorías que dependen de ella.
+                  Si esta categoría contiene productos o subcategorías, primero debés cambiar de categoría esos productos o borrarlos.
                 </p>
               </div>
             ) : (
-              <p className="font-body text-sm text-gray-600 leading-relaxed">
-                Esta acción eliminará la categoría de forma permanente. Si tiene productos o subcategorías asociadas, el sistema no permitirá borrarla para proteger los datos.
+              <p className="text-base text-gray-700 leading-relaxed">
+                ¿Estás seguro de que querés borrar esta categoría? Si tiene productos asociados, el sistema no la borrará para no perder tus datos.
               </p>
             )}
 
-            <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
+            <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={deleting}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-body text-sm font-medium hover:bg-gray-50"
+                className="px-5 py-2.5 border border-gray-300 text-gray-800 rounded-lg text-base font-medium hover:bg-gray-100"
               >
-                {deleteError ? "Cerrar" : "Cancelar"}
+                {deleteError ? "Entendido, cerrar" : "Cancelar"}
               </button>
               {!deleteError && (
                 <button
                   type="button"
                   onClick={confirmDelete}
                   disabled={deleting}
-                  className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-body text-sm font-semibold shadow disabled:opacity-50 flex items-center gap-2"
+                  className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-base font-bold shadow disabled:opacity-50"
                 >
-                  {deleting ? "Eliminando..." : "Sí, eliminar"}
+                  {deleting ? "Borrando..." : "Sí, borrar"}
                 </button>
               )}
             </div>
