@@ -213,7 +213,7 @@ export default function Footer() {
       {/* ── Barra Inferior Copyright ────────────────────────────────────────── */}
       <div className="border-t border-gray-200 bg-gray-50/50">
         <div className="mx-auto max-w-7xl px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-500 font-body">
-          <p>© {new Date().getFullYear()} Petrucci Joyería. Todos los derechos reservados.</p>
+          <p suppressHydrationWarning>© {new Date().getFullYear()} Petrucci Joyería. Todos los derechos reservados.</p>
           <p>San Jorge, Santa Fe, Argentina</p>
         </div>
       </div>
