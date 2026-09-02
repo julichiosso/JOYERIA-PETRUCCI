@@ -1,80 +1,95 @@
+"use client";
+
 /**
  * components/sections/FeaturedProducts.tsx
- * Sección "Piezas Destacadas" del home: grilla de 3 productos.
- *
- * Server Component — fetch en servidor, sin hydration overhead en el cliente.
- * Muestra los primeros 3 productos activos del catálogo.
- * Si el backend no responde, la sección se omite silenciosamente.
+ * Sección "NOVEDADES" del home idéntica a Joyería El Rubí:
+ *  - Título central NOVEDADES en tipografía sans-serif limpia y sobria
+ *  - Grid de 4 columnas con botones laterales de desplazamiento (< y >)
+ *  - Pure white background, sin fuentes de IA ni emojis
  */
 
-import Link from "next/link";
-import { api } from "@/lib/api";
+import { useRef, useState, useEffect } from "react";
 import ProductCard from "@/components/catalog/ProductCard";
+import type { Product } from "@/types/product";
+import { api } from "@/lib/api";
 
-export default async function FeaturedProducts() {
-  let products = [];
+export default function FeaturedProducts() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  try {
-    const response = await api.catalog.getProducts({ limit: 3, page: 1 });
-    products = response.items.filter((p) => p.status === "ACTIVE");
-  } catch {
-    // Si el backend no responde, se omite la sección sin error visible
-    return null;
-  }
+  useEffect(() => {
+    async function load() {
+      try {
+        const res = await api.catalog.getProducts({ limit: 12, page: 1 });
+        setProducts(res.items.filter((p) => p.status === "ACTIVE"));
+      } catch {
+        // silenciar si no hay productos
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
 
-  if (products.length === 0) return null;
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const amount = scrollRef.current.clientWidth * 0.75;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -amount : amount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  if (loading || products.length === 0) return null;
 
   return (
-    <section
-      className="mx-auto max-w-7xl px-6 md:px-10 py-16 md:py-20"
-      aria-labelledby="featured-heading"
-    >
-      {/* ── Encabezado ──────────────────────────────────────────────────── */}
-      <div className="flex items-end justify-between mb-10 md:mb-12">
-        <div>
-          <p className="font-body text-[10px] tracking-[0.25em] uppercase text-petrucci-gray mb-2">
-            Selección especial
-          </p>
-          <h2
-            id="featured-heading"
-            className="font-display text-3xl md:text-4xl text-petrucci-black"
+    <section className="bg-white py-10 sm:py-14 border-b border-gray-100" aria-label="Novedades de la tienda">
+      <div className="mx-auto max-w-7xl px-4 md:px-8">
+        {/* Título Central "NOVEDADES" idéntico a El Rubí */}
+        <h2 className="font-body text-base sm:text-lg font-bold tracking-[0.2em] text-gray-900 text-center uppercase mb-8 sm:mb-10">
+          NOVEDADES
+        </h2>
+
+        {/* Carrusel de Productos con flechas laterales */}
+        <div className="relative group">
+          {/* Botón Flecha Izquierda */}
+          <button
+            type="button"
+            onClick={() => scroll("left")}
+            aria-label="Ver productos anteriores"
+            className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 items-center justify-center bg-white border border-gray-200 shadow-md text-gray-700 hover:text-black hover:scale-105 transition-all rounded-full"
           >
-            Piezas Destacadas
-          </h2>
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+              <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          {/* Grilla / Carrusel scrolleable */}
+          <div
+            ref={scrollRef}
+            className="grid grid-flow-col auto-cols-[calc(50%-0.625rem)] sm:auto-cols-[calc(33.333%-1rem)] lg:auto-cols-[calc(25%-1.125rem)] gap-4 sm:gap-6 overflow-x-auto scrollbar-hide scroll-smooth pb-4 px-1"
+          >
+            {products.map((product, index) => (
+              <div key={product.id} className="min-w-0">
+                <ProductCard product={product} priority={index < 4} />
+              </div>
+            ))}
+          </div>
+
+          {/* Botón Flecha Derecha */}
+          <button
+            type="button"
+            onClick={() => scroll("right")}
+            aria-label="Ver productos siguientes"
+            className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 items-center justify-center bg-white border border-gray-200 shadow-md text-gray-700 hover:text-black hover:scale-105 transition-all rounded-full"
+          >
+            <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+              <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
-        <Link
-          href="/joyeria"
-          className="hidden md:inline-flex items-center gap-1.5 font-body text-xs tracking-[0.15em] uppercase text-petrucci-black hover:text-petrucci-gold transition-colors border-b border-petrucci-black hover:border-petrucci-gold pb-0.5"
-        >
-          Ver todo el catálogo
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-            <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </Link>
-      </div>
-
-      {/* ── Grilla de 3 productos ────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-5 md:gap-8">
-        {products.map((product, index) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            priority={index < 2} // LCP: las primeras 2 imágenes con priority
-          />
-        ))}
-      </div>
-
-      {/* Ver todo — solo visible en mobile */}
-      <div className="mt-8 text-center md:hidden">
-        <Link
-          href="/joyeria"
-          className="inline-flex items-center gap-1.5 font-body text-xs tracking-[0.15em] uppercase text-petrucci-black hover:text-petrucci-gold transition-colors border-b border-petrucci-black hover:border-petrucci-gold pb-0.5"
-        >
-          Ver todo el catálogo
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-            <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-        </Link>
       </div>
     </section>
   );
