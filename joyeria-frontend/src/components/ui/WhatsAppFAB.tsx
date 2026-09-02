@@ -19,23 +19,22 @@
 import { motion } from "framer-motion";
 
 interface WhatsAppFABProps {
-  /** URL completa wa.me/... — null mientras el endpoint no esté listo */
-  href: string | null;
+  /** URL completa wa.me/... */
+  href?: string | null;
 }
 
 export default function WhatsAppFAB({ href }: WhatsAppFABProps) {
-  const isReady = Boolean(href);
+  const targetHref = href || "https://wa.me/5493426444040";
 
   const commonProps = {
     "aria-label": "Consultá por WhatsApp",
     initial: { scale: 0, opacity: 0 },
     animate: { scale: 1, opacity: 1 },
-    transition: { delay: 1.2, type: "spring" as const, stiffness: 260, damping: 20 },
-    whileHover: { scale: isReady ? 1.1 : 1 },
-    whileTap: { scale: isReady ? 0.95 : 1 },
+    transition: { delay: 0.5, type: "spring" as const, stiffness: 260, damping: 20 },
+    whileHover: { scale: 1.1 },
+    whileTap: { scale: 0.95 },
     className:
-      "fixed bottom-6 right-5 z-40 flex items-center justify-center w-14 h-14 rounded-full shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#25D366] group",
-    style: { backgroundColor: isReady ? "#25D366" : "#9CA3AF" } as React.CSSProperties,
+      "fixed bottom-6 right-5 z-40 flex items-center justify-center w-14 h-14 rounded-full shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#25D366] bg-[#25D366] hover:bg-[#20bd5a] transition-colors group",
   };
 
   const inner = (
@@ -48,28 +47,19 @@ export default function WhatsAppFAB({ href }: WhatsAppFABProps) {
         className="absolute right-16 bg-petrucci-black text-petrucci-cream text-xs font-body tracking-wide py-1.5 px-3 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
         role="tooltip"
       >
-        {isReady ? "¡Consultá por WhatsApp!" : "WhatsApp próximamente"}
+        ¡Consultá por WhatsApp!
       </span>
     </>
   );
 
-  if (href) {
-    return (
-      <motion.a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        {...commonProps}
-      >
-        {inner}
-      </motion.a>
-    );
-  }
-
-  // Sin href: renderizar como <div> — visible pero no navegable
   return (
-    <motion.div {...commonProps}>
+    <motion.a
+      href={targetHref}
+      target="_blank"
+      rel="noopener noreferrer"
+      {...commonProps}
+    >
       {inner}
-    </motion.div>
+    </motion.a>
   );
 }

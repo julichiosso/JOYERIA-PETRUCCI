@@ -1,12 +1,5 @@
 "use client";
 
-/**
- * components/layout/NewsletterForm.tsx
- * Formulario de suscripción al newsletter.
- * Client Component separado para poder manejar el onSubmit.
- * TODO: conectar con backend cuando se implemente el endpoint de newsletter.
- */
-
 import { useState } from "react";
 
 export default function NewsletterForm() {
@@ -16,35 +9,40 @@ export default function NewsletterForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    // TODO: llamar al endpoint de newsletter cuando esté disponible
     setSubmitted(true);
   };
 
   if (submitted) {
     return (
-      <p className="font-body text-sm text-petrucci-gold">
-        ¡Gracias! Te avisamos cuando haya novedades.
+      <p className="text-xs text-emerald-600 font-medium py-2">
+        ¡Gracias por suscribirte!
       </p>
     );
   }
 
   return (
-    <form className="flex flex-col sm:flex-row gap-2" onSubmit={handleSubmit}>
-      <input
-        type="email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="tu@email.com"
-        required
-        className="flex-1 px-4 py-2.5 border border-petrucci-border bg-white font-body text-sm text-petrucci-black placeholder:text-petrucci-gray focus:outline-none focus:border-petrucci-gold transition-colors"
-        aria-label="Tu email para suscribirte al newsletter"
-      />
-      <button
-        type="submit"
-        className="px-6 py-2.5 bg-petrucci-black text-petrucci-cream font-body text-xs tracking-[0.15em] uppercase hover:bg-petrucci-gold transition-colors duration-200"
-      >
-        Suscribirme
-      </button>
+    <form className="w-full max-w-sm" onSubmit={handleSubmit}>
+      <div className="flex items-center border border-gray-300 rounded-md bg-white px-3 py-2 focus-within:border-gray-900 transition-colors shadow-2xs">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Email"
+          required
+          className="w-full bg-transparent text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none"
+          aria-label="Email para suscribirse al newsletter"
+        />
+        <button
+          type="submit"
+          className="text-gray-700 hover:text-black transition-colors px-1 cursor-pointer shrink-0"
+          aria-label="Enviar suscripción"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+        </button>
+      </div>
     </form>
   );
 }
