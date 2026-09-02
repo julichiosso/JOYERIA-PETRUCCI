@@ -15,12 +15,12 @@ import type { PublicStoreConfig } from "@/types/store-config";
 import NewsletterForm from "./NewsletterForm";
 
 const DEFAULT_CONFIG: PublicStoreConfig = {
-  storeName: "Joyería El Rubí",
-  address: "San Martín 2334, Santa Fe",
+  storeName: "Petrucci Joyería",
+  address: "Eva perón 1574 San Jorge, Santa Fe",
   businessHours: "Lun–Vie 9:00–18:00 · Sáb 9:00–13:00",
-  instagramUrl: "https://instagram.com/joyeriaelrubi",
-  facebookUrl: "https://facebook.com/joyeriaelrubi",
-  whatsappNumber: "5493426444040",
+  instagramUrl: "https://www.instagram.com/joyeriapetrucci/",
+  facebookUrl: null,
+  whatsappNumber: "5493401417857",
   returnPolicy: null,
   shippingInfo: null,
 };
@@ -327,8 +327,8 @@ export default function Footer() {
               <a href={`https://wa.me/${rawWhatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors block">
                 +{rawWhatsapp}
               </a>
-              <a href="mailto:ventas@joyeriaelrubi.com.ar" className="hover:text-black transition-colors block">
-                ventas@joyeriaelrubi.com.ar
+              <a href="mailto:contacto@joyeriapetrucci.com.ar" className="hover:text-black transition-colors block">
+                contacto@joyeriapetrucci.com.ar
               </a>
               <p className="text-gray-700">{address}</p>
             </div>
@@ -360,7 +360,7 @@ export default function Footer() {
         {/* ── Texto Legal / Defensa del Consumidor / Copyright ───────────────── */}
         <div className="mt-8 text-center text-xs text-gray-600 leading-relaxed flex flex-col items-center gap-3">
           <p>
-            Copyright Joyería El Rubí - 2026. Todos los derechos reservados. Defensa de las y los consumidores. Para reclamos{" "}
+            Copyright Petrucci Joyería - 2026. Todos los derechos reservados. Defensa de las y los consumidores. Para reclamos{" "}
             <a href="https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario" target="_blank" rel="noopener noreferrer" className="font-bold text-gray-950 hover:underline">
               ingresá acá.
             </a>{" "}
