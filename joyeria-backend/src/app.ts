@@ -41,7 +41,7 @@ export async function buildApp() {
   });
 
   await app.register(rateLimit, {
-    max: 100,
+    max: 2000,
     timeWindow: '1 minute',
   });
 

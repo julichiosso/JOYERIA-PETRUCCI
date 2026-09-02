@@ -102,12 +102,15 @@ export default function ImageUploader({
           type="button"
           onClick={() => cameraInputRef.current?.click()}
           disabled={disabled}
-          className="flex items-center justify-center gap-3 p-4 bg-amber-50 hover:bg-amber-100 border-2 border-amber-300 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50 text-amber-950 font-body text-base font-semibold shadow-sm"
+          className="flex items-center justify-center gap-3.5 p-4 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg transition-all active:scale-[0.99] disabled:opacity-50 text-gray-900 font-body text-sm font-semibold shadow-xs"
         >
-          <span className="text-2xl" role="img" aria-label="Cámara">📸</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-gray-700">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+            <circle cx="12" cy="13" r="4" />
+          </svg>
           <div className="text-left">
             <p className="leading-tight">Sacar foto con la cámara</p>
-            <p className="text-xs font-normal text-amber-800">Abre la cámara del celular</p>
+            <p className="text-xs font-normal text-gray-500">Abrir cámara del celular</p>
           </div>
         </button>
 
@@ -116,9 +119,13 @@ export default function ImageUploader({
           type="button"
           onClick={() => galleryInputRef.current?.click()}
           disabled={disabled}
-          className="flex items-center justify-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 border-2 border-gray-300 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50 text-gray-900 font-body text-base font-semibold shadow-sm"
+          className="flex items-center justify-center gap-3.5 p-4 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-lg transition-all active:scale-[0.99] disabled:opacity-50 text-gray-900 font-body text-sm font-semibold shadow-xs"
         >
-          <span className="text-2xl" role="img" aria-label="Galería">🖼️</span>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-gray-700">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
           <div className="text-left">
             <p className="leading-tight">Elegir de la galería</p>
             <p className="text-xs font-normal text-gray-500">Subir una o varias fotos</p>
@@ -149,20 +156,20 @@ export default function ImageUploader({
       </div>
 
       {/* Contador de fotos */}
-      <div className="flex items-center justify-between text-sm text-gray-600 font-body px-1">
+      <div className="flex items-center justify-between text-xs text-gray-500 font-body px-1">
         <span>
           {images.length === 0
-            ? "Todavía no cargaste ninguna foto"
-            : `${images.length} foto${images.length > 1 ? "s" : ""} cargada${images.length > 1 ? "s" : ""}`}
+            ? "Ninguna foto cargada"
+            : `${images.length} foto${images.length > 1 ? "s" : ""} seleccionada${images.length > 1 ? "s" : ""}`}
         </span>
         {images.length > 0 && (
-          <span className="text-xs text-gray-400">
-            La primera foto es la que se ve en la vidriera
+          <span className="text-gray-400">
+            La primera foto es la portada del producto
           </span>
         )}
       </div>
 
-      {/* Grid de miniaturas grandes y cómodas */}
+      {/* Grid de miniaturas */}
       {images.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {images.map((img, index) => {
@@ -172,7 +179,7 @@ export default function ImageUploader({
             return (
               <div
                 key={img.id ?? img._localPreview ?? index}
-                className="relative flex flex-col bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm group"
+                className="relative flex flex-col bg-white border border-gray-200 rounded-lg overflow-hidden shadow-xs group"
               >
                 {/* Contenedor de la foto */}
                 <div className="relative aspect-square w-full bg-gray-100">
@@ -187,14 +194,14 @@ export default function ImageUploader({
 
                   {/* Badge de Foto Principal */}
                   {index === 0 ? (
-                    <span className="absolute top-2 left-2 bg-amber-600 text-white font-body text-xs font-bold px-2.5 py-1 rounded-md shadow-md">
-                      ⭐ Principal
+                    <span className="absolute top-2 left-2 bg-gray-900 text-white font-body text-[11px] font-medium px-2 py-0.5 rounded shadow-sm">
+                      Principal
                     </span>
                   ) : (
                     <button
                       type="button"
                       onClick={() => setAsMain(index)}
-                      className="absolute top-2 left-2 bg-black/70 hover:bg-amber-600 text-white font-body text-[11px] px-2 py-1 rounded-md shadow transition-colors"
+                      className="absolute top-2 left-2 bg-black/70 hover:bg-gray-900 text-white font-body text-[11px] px-2 py-0.5 rounded shadow transition-colors"
                       title="Hacer foto principal"
                     >
                       Hacer principal
