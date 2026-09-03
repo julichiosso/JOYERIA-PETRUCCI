@@ -35,6 +35,7 @@ export type ProductSlugParam = z.infer<typeof productSlugParamSchema>;
 export const productListQuerySchema = z.object({
   categoryId: z.string().optional(),
   status: productStatusEnum.optional(),
+  search: z.string().optional(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
 });

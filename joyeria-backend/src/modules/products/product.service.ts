@@ -125,11 +125,12 @@ export const productService = {
     await productRepository.delete(id);
   },
 
-  async list(params: { categoryId?: string; status?: string; page: number; limit: number }) {
+  async list(params: { categoryId?: string; status?: string; search?: string; page: number; limit: number }) {
     const skip = (params.page - 1) * params.limit;
     const { items, total } = await productRepository.list({
       categoryId: params.categoryId,
       status: params.status,
+      search: params.search,
       skip,
       take: params.limit,
     });

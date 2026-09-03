@@ -214,7 +214,7 @@ export default function AdminLayout({
 
         {/* Contenido principal */}
         <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
-          <div className="mx-auto max-w-4xl px-4 md:px-8 py-6 md:py-8">
+          <div className="mx-auto max-w-7xl px-4 md:px-8 py-6 md:py-8">
             {children}
           </div>
         </main>

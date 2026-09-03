@@ -80,12 +80,20 @@ export const productRepository = {
    async list(params: {
     categoryId?: string;
     status?: string;
+    search?: string;
     skip: number;
     take: number;
   }) {
     const where: Prisma.ProductWhereInput = {
       ...(params.categoryId ? { categoryId: params.categoryId } : {}),
       ...(params.status !== undefined ? { status: params.status as Prisma.ProductWhereInput['status'] } : {}),
+      ...(params.search ? {
+        OR: [
+          { name: { contains: params.search, mode: 'insensitive' } },
+          { description: { contains: params.search, mode: 'insensitive' } },
+          { variantLabel: { contains: params.search, mode: 'insensitive' } },
+        ]
+      } : {}),
     };
 
     const [items, total] = await Promise.all([
