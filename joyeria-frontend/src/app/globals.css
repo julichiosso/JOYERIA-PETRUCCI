@@ -72,11 +72,10 @@ img, video {
   display: block;
 }
 
-/* Focus visible accesible (Lighthouse: Accessibility) */
+/* Focus visible accesible limpio y neutro */
 :focus-visible {
-  outline: 2px solid var(--color-petrucci-gold);
-  outline-offset: 2px;
-  border-radius: 2px;
+  outline: 1px solid #111111;
+  outline-offset: 1px;
 }
 
 

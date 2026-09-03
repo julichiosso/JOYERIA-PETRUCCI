@@ -44,7 +44,7 @@ async function apiFetch<T>(endpoint: string, options?: RequestInit): Promise<T> 
 
 export const api = {
   catalog: {
-    getProducts: (params?: { categoryId?: string; page?: number; limit?: number }) => {
+    getProducts: (params?: { categoryId?: string; search?: string; page?: number; limit?: number }) => {
       const qs = new URLSearchParams(
         Object.entries(params ?? {})
           .filter(([, v]) => v !== undefined)
