@@ -175,23 +175,28 @@ export default function Header() {
       className="sticky top-0 z-50 w-full bg-white font-body"
       onMouseLeave={() => setActiveMegaMenu(null)}
     >
-      {/* ── 1. Barra de Anuncios Superior ──────────────────────────────────── */}
+      {/* ── 1. Barra de Anuncios Superior (se esconde al scrollear hacia abajo) ── */}
       <div
-        className="bg-black text-white overflow-hidden flex items-center justify-center"
-        style={{ height: "2.125rem" }}
+        className={cn(
+          "bg-black text-white overflow-hidden flex items-center justify-center transition-all duration-300 ease-in-out",
+          scrolled ? "max-h-0 opacity-0 py-0 pointer-events-none" : "max-h-9 opacity-100 py-1"
+        )}
+        style={{ height: scrolled ? "0px" : "2.125rem" }}
       >
         <AnimatePresence mode="wait" initial={false}>
-          <motion.p
-            key={announcementIndex}
-            initial={{ y: "100%", opacity: 0 }}
-            animate={{ y: "0%", opacity: 1 }}
-            exit={{ y: "-100%", opacity: 0 }}
-            transition={{ duration: 0.35, ease: "easeInOut" }}
-            className="text-center font-body text-[11px] tracking-wide uppercase leading-8 px-4 whitespace-nowrap"
-            aria-live="polite"
-          >
-            {ANNOUNCEMENTS[announcementIndex]}
-          </motion.p>
+          {!scrolled && (
+            <motion.p
+              key={announcementIndex}
+              initial={{ y: "100%", opacity: 0 }}
+              animate={{ y: "0%", opacity: 1 }}
+              exit={{ y: "-100%", opacity: 0 }}
+              transition={{ duration: 0.35, ease: "easeInOut" }}
+              className="text-center font-body text-[11px] tracking-wide uppercase leading-8 px-4 whitespace-nowrap"
+              aria-live="polite"
+            >
+              {ANNOUNCEMENTS[announcementIndex]}
+            </motion.p>
+          )}
         </AnimatePresence>
       </div>
 

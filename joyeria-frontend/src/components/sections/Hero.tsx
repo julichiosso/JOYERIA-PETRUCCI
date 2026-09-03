@@ -5,106 +5,182 @@
  * Hero Banner principal — estilo editorial de lujo (referencia: joyeriaelrubi.com.ar).
  *
  * Características:
- *  - Banner único edge-to-edge a pantalla completa (sin columnas ni particiones).
- *  - Carrusel de imágenes de alta resolución.
- *  - Flechas de navegación `<` y `>` en los laterales.
+ *  - Banner interactivo con soporte de arrastre (drag / swipe) tanto en mobile como en desktop.
+ *  - Transición fluida entre imágenes con física táctil y de cursor.
+ *  - Flechas de navegación `<` y `>` laterales con área táctil cómoda.
  *  - Puntos de paginación inferiores (dots).
- *  - Efecto de ZOOM-IN sutil al hacer scroll (scale 1.0 -> 1.08 mediante Framer Motion).
- *  - Cero scroll horizontal (overflow-hidden estricto).
+ *  - Efecto de ZOOM-IN sutil al hacer scroll (scale 1.0 -> 1.06).
+ *  - Auto-avance pausado al interactuar o pasar el mouse por encima.
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, PanInfo } from "framer-motion";
 
 const SLIDES = [
   {
     src: "/banner-1.jpg",
     alt: "Colección Alta Joyería — Petrucci Joyería",
-    href: "/joyeria/anillos",
+    href: "/joyeria",
   },
   {
     src: "/banner-2.jpg",
     alt: "Anillos y Joyas Artesanales — Petrucci Joyería",
-    href: "/joyeria/cadenas",
+    href: "/joyeria/anillos-2",
+  },
+  {
+    src: "/hero-1.jpg",
+    alt: "Relojes de Alta Gama — Marcas Suizas",
+    href: "/relojes",
+  },
+  {
+    src: "/hero-2.jpg",
+    alt: "Trabajos Personalizados y Alianzas — Petrucci Joyería",
+    href: "/trabajos-personalizados",
   },
 ];
 
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? "100%" : "-100%",
+    opacity: 0.3,
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? "100%" : "-100%",
+    opacity: 0.3,
+  }),
+};
+
 export default function Hero() {
-  const [active, setActive] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const [paused, setPaused] = useState(false);
+  const [page, setPage] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Hook de Framer Motion para el efecto de Zoom-in al hacer scroll
+  // Hook de Framer Motion para efecto de Zoom-in al hacer scroll
   const { scrollY } = useScroll();
-  // De scrollY 0 a 400px -> scale pasa de 1 a 1.08 de forma ultra suave
-  const scale = useTransform(scrollY, [0, 400], [1, 1.08]);
+  const scale = useTransform(scrollY, [0, 400], [1, 1.06]);
 
-  const next = useCallback(() => {
-    setDirection(1);
-    setActive((i) => (i + 1) % SLIDES.length);
+  const activeIndex = ((page % SLIDES.length) + SLIDES.length) % SLIDES.length;
+
+  const paginate = useCallback((newDirection: number) => {
+    setDirection(newDirection);
+    setPage((prevPage) => prevPage + newDirection);
   }, []);
 
-  const prev = useCallback(() => {
-    setDirection(-1);
-    setActive((i) => (i - 1 + SLIDES.length) % SLIDES.length);
-  }, []);
+  const goToSlide = (index: number) => {
+    const diff = index - activeIndex;
+    if (diff === 0) return;
+    setDirection(diff > 0 ? 1 : -1);
+    setPage((prev) => prev + diff);
+  };
 
-  // Auto-avance cada 5 segundos si no está en hover
+  // Auto-avance cada 6 segundos si no está pausado ni arrastrando
   useEffect(() => {
-    if (paused) return;
-    const timer = setInterval(next, 5000);
+    if (isPaused || isDragging) return;
+    const timer = setInterval(() => {
+      paginate(1);
+    }, 6000);
     return () => clearInterval(timer);
-  }, [next, paused]);
+  }, [paginate, isPaused, isDragging]);
 
-  const currentSlide = SLIDES[active];
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, { offset, velocity }: PanInfo) => {
+    const swipeThreshold = 50;
+    const velocityThreshold = 400;
+
+    if (offset.x < -swipeThreshold || velocity.x < -velocityThreshold) {
+      paginate(1);
+    } else if (offset.x > swipeThreshold || velocity.x > velocityThreshold) {
+      paginate(-1);
+    }
+
+    // Pequeño timeout para no abrir el link accidentalmente tras soltar el arrastre
+    setTimeout(() => {
+      setIsDragging(false);
+    }, 120);
+  };
+
+  const currentSlide = SLIDES[activeIndex];
 
   return (
     <section
       ref={containerRef}
-      className="relative w-full overflow-hidden bg-gray-100"
+      className="relative w-full overflow-hidden bg-gray-900 select-none"
       aria-label="Colección destacada Petrucci"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onTouchStart={() => setIsPaused(true)}
+      onTouchEnd={() => setIsPaused(false)}
     >
-      {/* ── Contenedor de imagen edge-to-edge con zoom al scroll ── */}
-      <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[2.4/1] max-h-[75vh] overflow-hidden">
-        <Link
-          href={currentSlide.href}
-          className="block relative w-full h-full focus-visible:outline-none"
-          tabIndex={0}
-          aria-label={currentSlide.alt}
-        >
-          <AnimatePresence initial={false} custom={direction}>
-            <motion.div
-              key={currentSlide.src}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
-              style={{ scale }}
-              className="absolute inset-0 w-full h-full origin-center will-change-transform"
+      {/* ── Contenedor de imagen edge-to-edge con soporte de arrastre/swipe ── */}
+      <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[2.4/1] max-h-[75vh] overflow-hidden cursor-grab active:cursor-grabbing">
+        <AnimatePresence initial={false} custom={direction}>
+          <motion.div
+            key={page}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "spring", stiffness: 280, damping: 32 },
+              opacity: { duration: 0.3 },
+            }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.85}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+            style={{ scale }}
+            className="absolute inset-0 w-full h-full origin-center will-change-transform touch-pan-y"
+          >
+            <Link
+              href={currentSlide.href}
+              onClick={(e) => {
+                if (isDragging) {
+                  e.preventDefault();
+                }
+              }}
+              className="block relative w-full h-full focus-visible:outline-none pointer-events-auto"
+              tabIndex={0}
+              aria-label={currentSlide.alt}
+              draggable={false}
             >
               <Image
                 src={currentSlide.src}
                 alt={currentSlide.alt}
                 fill
-                priority={active === 0}
+                priority={activeIndex === 0}
                 quality={92}
                 sizes="100vw"
-                className="object-cover object-center"
+                draggable={false}
+                className="object-cover object-center pointer-events-none select-none"
               />
-            </motion.div>
-          </AnimatePresence>
-        </Link>
+            </Link>
+          </motion.div>
+        </AnimatePresence>
 
         {/* ── Flechas de navegación laterales (< y >) estilo joyeriaelrubi ── */}
         <button
-          onClick={prev}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            paginate(-1);
+          }}
           aria-label="Imagen anterior"
-          className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 md:w-11 md:h-11 bg-white/70 hover:bg-white text-petrucci-black shadow-sm flex items-center justify-center transition-all duration-200 focus-visible:outline-none rounded-full"
+          className="absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 md:w-11 md:h-11 bg-white/75 hover:bg-white text-petrucci-black shadow-md flex items-center justify-center transition-all duration-200 focus-visible:outline-none rounded-full cursor-pointer"
         >
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M10 3L5 8l5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -112,9 +188,13 @@ export default function Hero() {
         </button>
 
         <button
-          onClick={next}
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            paginate(1);
+          }}
           aria-label="Imagen siguiente"
-          className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 md:w-11 md:h-11 bg-white/70 hover:bg-white text-petrucci-black shadow-sm flex items-center justify-center transition-all duration-200 focus-visible:outline-none rounded-full"
+          className="absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-20 w-8 h-8 md:w-11 md:h-11 bg-white/75 hover:bg-white text-petrucci-black shadow-md flex items-center justify-center transition-all duration-200 focus-visible:outline-none rounded-full cursor-pointer"
         >
           <svg width="18" height="18" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M6 3l5 5-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -130,15 +210,16 @@ export default function Hero() {
           {SLIDES.map((_, idx) => (
             <button
               key={idx}
+              type="button"
               role="tab"
-              aria-selected={idx === active}
+              aria-selected={idx === activeIndex}
               aria-label={`Slide ${idx + 1}`}
-              onClick={() => {
-                setDirection(idx > active ? 1 : -1);
-                setActive(idx);
+              onClick={(e) => {
+                e.stopPropagation();
+                goToSlide(idx);
               }}
-              className={`rounded-full transition-all duration-300 focus-visible:outline-none ${
-                idx === active
+              className={`rounded-full transition-all duration-300 focus-visible:outline-none cursor-pointer ${
+                idx === activeIndex
                   ? "w-6 h-1.5 bg-white shadow-sm"
                   : "w-2 h-2 bg-white/60 hover:bg-white/90"
               }`}
