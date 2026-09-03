@@ -80,6 +80,47 @@ img, video {
 }
 
 
+/* Fix iOS Safari: zoom automático al enfocar inputs con font-size < 16px.
+   Safari hace zoom en cualquier input/select/textarea con menos de 16px.
+   Forzamos 16px en todos los campos de formulario para evitarlo. */
+input,
+select,
+textarea {
+  font-size: 16px !important;
+}
+
+/* En desktop podemos usar tamaños más pequeños si el viewport es grande */
+@media (min-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 14px !important;
+  }
+}
+
+/* ── Marquesina de medios de pago (Footer) ──────────────────────────────── */
+@keyframes paymentMarquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.payment-marquee-container:hover .payment-marquee-track {
+  animation-play-state: paused;
+}
+
+.payment-marquee-track {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  animation: paymentMarquee 40s linear infinite;
+  opacity: 0.85;
+  transition: opacity 0.3s;
+}
+
+.payment-marquee-container:hover .payment-marquee-track {
+  opacity: 1;
+}
+
 /* Ocultar scrollbar manteniendo funcionalidad (sección de chips mobile) */
 .scrollbar-hide {
   -ms-overflow-style: none;   /* IE / Edge */

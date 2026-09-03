@@ -13,6 +13,7 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 import type { PublicStoreConfig } from "@/types/store-config";
 import NewsletterForm from "./NewsletterForm";
+import PaymentMarquee from "./PaymentMarquee";
 
 const DEFAULT_CONFIG: PublicStoreConfig = {
   storeName: "Petrucci Joyería",
@@ -256,6 +257,9 @@ export default function Footer() {
 
   return (
     <footer className="w-full border-t border-gray-200 bg-white text-gray-800 font-sans">
+      {/* ── Marquesina animada de medios de pago en el tope ──────────────── */}
+      <PaymentMarquee />
+
       {/* ── Grid Principal de 3 Columnas ──────────────────────────────────── */}
       <div className="mx-auto max-w-6xl px-6 pt-12 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 lg:gap-12">
