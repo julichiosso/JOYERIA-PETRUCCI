@@ -74,7 +74,7 @@ export async function buildApp() {
 
     request.log.error(error);
     return reply.status(500).send({
-      error: error.message || 'Error interno del servidor',
+      error: error instanceof Error ? error.message : 'Error interno del servidor',
     });
   });
 
