@@ -160,8 +160,16 @@ export async function adminFetchMultipart<T>(
     let message = `Error ${res.status}`;
     try {
       const body = await res.json();
-      message = (body as { error?: string }).error ?? message;
-    } catch {}
+      message =
+        (body as { error?: string; message?: string }).error ||
+        (body as { error?: string; message?: string }).message ||
+        message;
+    } catch {
+      try {
+        const text = await res.text();
+        if (text) message = text;
+      } catch {}
+    }
     throw new AdminApiError(res.status, message);
   }
 

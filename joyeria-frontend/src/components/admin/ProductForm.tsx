@@ -194,20 +194,30 @@ export default function ProductForm({ initialData }: ProductFormProps) {
       // Subir archivos nuevos pendientes
       const filesToUpload = images.filter((img) => img._file);
       if (filesToUpload.length > 0 && productId) {
-        const fd = new FormData();
-        filesToUpload.forEach((img) => {
-          if (img._file) {
-            fd.append("file", img._file);
-            if (img.altText) {
-              fd.append("altText", img.altText);
+        try {
+          const fd = new FormData();
+          filesToUpload.forEach((img) => {
+            if (img._file) {
+              fd.append("file", img._file);
+              if (img.altText) {
+                fd.append("altText", img.altText);
+              }
             }
-          }
-        });
+          });
 
-        await adminFetchMultipart(
-          `/admin/media/products/${productId}/images`,
-          fd
-        );
+          await adminFetchMultipart(
+            `/admin/media/products/${productId}/images`,
+            fd
+          );
+        } catch (imgErr) {
+          const error = imgErr as AdminApiError;
+          if (error.status === 401) {
+            router.push("/admin/login");
+            return;
+          }
+          setSubmitError(`La información se guardó correctamente, pero hubo un error al subir las fotos: ${error.message}`);
+          return;
+        }
       }
 
       router.push("/admin/productos");

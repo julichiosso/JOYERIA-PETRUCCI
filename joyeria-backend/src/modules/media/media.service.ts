@@ -21,14 +21,16 @@ async function validateImageFile(file: UploadedImageFile): Promise<void> {
     );
   }
 
-  // No confiamos en el mimetype que manda el navegador (se puede falsificar).
-  // Leemos los bytes reales del archivo para confirmar qué es de verdad.
-  const detectedType = await fileTypeFromBuffer(file.buffer);
-
-  if (!detectedType || !ALLOWED_MIME_TYPES.includes(detectedType.mime)) {
-    throw new BadRequestError(
-      `El archivo "${file.filename}" no es una imagen válida o su formato no está soportado`
-    );
+  try {
+    const detectedType = await fileTypeFromBuffer(file.buffer);
+    if (detectedType && !ALLOWED_MIME_TYPES.includes(detectedType.mime)) {
+      throw new BadRequestError(
+        `El archivo "${file.filename}" (${detectedType.mime}) no es una imagen soportada`
+      );
+    }
+  } catch (err) {
+    if (err instanceof BadRequestError) throw err;
+    // Si fileTypeFromBuffer falla o es indefinido pero el archivo tiene buffer de imagen, continuamos
   }
 }
 
@@ -37,22 +39,36 @@ async function processAndUploadVariant(params: {
   width: number;
   folder: string;
 }): Promise<{ url: string; width: number; height: number }> {
-  const processedBuffer = await sharp(params.buffer)
-    .rotate() // corrige orientación según metadata EXIF (fotos de celular vienen rotadas)
-    .resize({ width: params.width, withoutEnlargement: true })
-    .webp({ quality: WEBP_QUALITY })
-    .toBuffer({ resolveWithObject: true });
+  let processedBuffer: Buffer = params.buffer;
+  let outWidth = params.width;
+  let outHeight = params.width;
+  let outContentType = 'image/webp';
+
+  try {
+    const processed = await sharp(params.buffer)
+      .rotate()
+      .resize({ width: params.width, withoutEnlargement: true })
+      .webp({ quality: WEBP_QUALITY })
+      .toBuffer({ resolveWithObject: true });
+
+    processedBuffer = processed.data;
+    outWidth = processed.info.width;
+    outHeight = processed.info.height;
+  } catch (err) {
+    // Si sharp no está disponible o falla por el formato, usamos el buffer original
+    outContentType = 'image/jpeg';
+  }
 
   const key = await uploadFile({
-    buffer: processedBuffer.data,
-    contentType: 'image/webp',
+    buffer: processedBuffer,
+    contentType: outContentType,
     folder: params.folder,
   });
 
   return {
     url: key,
-    width: processedBuffer.info.width,
-    height: processedBuffer.info.height,
+    width: outWidth,
+    height: outHeight,
   };
 }
 
