@@ -110,9 +110,9 @@ textarea {
 
 .payment-marquee-track {
   display: flex;
-  gap: 1rem;
+  gap: 0.65rem;
   width: max-content;
-  animation: paymentMarquee 40s linear infinite;
+  animation: paymentMarquee 45s linear infinite;
   opacity: 0.85;
   transition: opacity 0.3s;
 }
