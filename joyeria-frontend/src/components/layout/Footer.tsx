@@ -125,8 +125,8 @@ export default function Footer() {
               <a href={`https://wa.me/${rawWhatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors block">
                 +{rawWhatsapp}
               </a>
-              <a href="mailto:contacto@joyeriapetrucci.com.ar" className="hover:text-black transition-colors block">
-                contacto@joyeriapetrucci.com.ar
+              <a href="mailto:victorpetrucci84@gmail.com" className="hover:text-black transition-colors block">
+                victorpetrucci84@gmail.com
               </a>
               <p className="text-gray-700">{address}</p>
             </div>

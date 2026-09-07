@@ -34,7 +34,6 @@ const JOYAS_MEGA_MENU = [
       { label: "Mujer", href: "/joyeria/anillos-2" },
       { label: "Cintillos", href: "/joyeria/anillos-2" },
       { label: "Alianzas", href: "/joyeria/anillos-2" },
-      { label: "Hombre", href: "/joyeria/anillos-2" },
       { label: "Con Piedras", href: "/joyeria/anillos-2" },
       { label: "Sin Piedras", href: "/joyeria/anillos-2" },
       { label: "Plata y Oro", href: "/joyeria/anillos-2" },
@@ -98,7 +97,7 @@ const JOYAS_MEGA_MENU = [
   },
   {
     title: "DESPERTADORES",
-    href: "/relojes",
+    href: "/despertadores",
     items: [
       { label: "Ver disponibles", href: "/despertadores"}
     ],

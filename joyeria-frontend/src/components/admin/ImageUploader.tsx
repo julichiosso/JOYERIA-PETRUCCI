@@ -215,7 +215,7 @@ export default function ImageUploader({
             <circle cx="12" cy="13" r="4" />
           </svg>
           <div className="text-left">
-            <p className="leading-tight">📷 Sacar foto con la cámara</p>
+            <p className="leading-tight">Tomar una foto</p>
             <p className="text-sm font-normal text-gray-500">Se comprime automáticamente</p>
           </div>
         </button>
@@ -233,7 +233,7 @@ export default function ImageUploader({
             <polyline points="21 15 16 10 5 21" />
           </svg>
           <div className="text-left">
-            <p className="leading-tight">🖼️ Elegir de la galería</p>
+            <p className="leading-tight">Elegir de la galería</p>
             <p className="text-sm font-normal text-gray-500">Una o varias fotos a la vez</p>
           </div>
         </button>
