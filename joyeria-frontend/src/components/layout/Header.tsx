@@ -68,11 +68,11 @@ const JOYAS_MEGA_MENU = [
       { label: "Plata y Oro", href: "/joyeria/pulseras" },
       { label: "Plata", href: "/joyeria/pulseras" },
     ],
-    secondaryTitle: "GARGANTILLAS Y CADENAS",
-    secondaryHref: "/joyeria/cadenas",
+    secondaryTitle: "GARGANTILLAS",
+    secondaryHref: "/joyeria/gargantillas",
     secondaryItems: [
-      { label: "De Oro", href: "/joyeria/cadenas" },
-      { label: "De Plata", href: "/joyeria/cadenas" },
+      { label: "Plata", href: "/joyeria/gargantillas" },
+      { label: "Plata y Oro", href: "/joyeria/gargantillas" },
     ],
   },
   {
@@ -97,21 +97,6 @@ const JOYAS_MEGA_MENU = [
       { label: "Joyas talladas con nombre", href: "/trabajos-personalizados" },
       { label: "Alianzas grabadas", href: "/trabajos-personalizados" },
       { label: "Diseños a pedido", href: "/trabajos-personalizados" },
-    ],
-  },
-  {
-    title: "RELOJES",
-    href: "/relojes",
-    items: [
-      { label: "Victorinox", href: "/relojes" },
-      { label: "Tag Heuer", href: "/relojes" },
-      { label: "Movado", href: "/relojes" },
-      { label: "Tissot", href: "/relojes" },
-      { label: "Tommy Hilfiger", href: "/relojes" },
-      { label: "Festina", href: "/relojes" },
-      { label: "Seiko", href: "/relojes" },
-      { label: "Orient", href: "/relojes" },
-      { label: "Edox", href: "/relojes" },
     ],
   },
 ];
