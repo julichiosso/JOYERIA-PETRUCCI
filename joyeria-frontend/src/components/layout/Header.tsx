@@ -76,7 +76,7 @@ const JOYAS_MEGA_MENU = [
     ],
   },
   {
-    title: "PULSERAS DE BEBÉ",
+    title: "PULSERAS BEBÉ",
     href: "/joyeria/pulseras-bebe",
     items: [
       { label: "Plata y Oro", href: "/joyeria/pulseras-bebe" },
@@ -94,6 +94,13 @@ const JOYAS_MEGA_MENU = [
     secondaryHref: "/trabajos-personalizados",
     secondaryItems: [
       { label: "Diseños exclusivos", href: "/trabajos-personalizados" }
+    ],
+  },
+  {
+    title: "DESPERTADORES",
+    href: "/relojes",
+    items: [
+      { label: "Ver disponibles", href: "/despertadores"}
     ],
   }
 ];
