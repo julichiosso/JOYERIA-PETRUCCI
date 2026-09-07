@@ -100,15 +100,13 @@ const JOYAS_MEGA_MENU = [
 
 const RELOJES_MEGA_MENU = [
   {
-    title: "MARCAS SUIZAS & PRESTIGE",
+    title: "DEPORTIVOS Y TÉCNICOS",
     href: "/relojes",
     items: [
-      { label: "Tag Heuer", href: "/relojes" },
-      { label: "Movado", href: "/relojes" },
-      { label: "Tissot", href: "/relojes" },
-      { label: "Victorinox", href: "/relojes" },
-      { label: "Edox", href: "/relojes" },
-    ],
+      { label: "Casio", href: "/relojes" },
+      { label: "Catterpillar", href: "/relojes"},
+      { label: "Nockout", href: "/relojes"}
+    ]
   },
   {
     title: "CLÁSICOS & JAPÓN",
@@ -116,31 +114,22 @@ const RELOJES_MEGA_MENU = [
     items: [
       { label: "Seiko", href: "/relojes" },
       { label: "Orient", href: "/relojes" },
-      { label: "Festina", href: "/relojes" },
+      { label: "Citizen", href: "/relojes" },
     ],
   },
   {
     title: "MODA & TENDENCIA",
     href: "/relojes",
     items: [
-      { label: "Tommy Hilfiger", href: "/relojes" },
-      { label: "Michael Kors", href: "/relojes" },
-      { label: "Gucci", href: "/relojes" },
+      { label: "Tommy Hilfiger", href: "/relojes" }
     ],
   },
   {
-    title: "RELOJES",
+    title: "ECONÓMICOS Y CASUAL",
     href: "/relojes",
     items: [
-      { label: "Victorinox", href: "/relojes" },
-      { label: "Tag Heuer", href: "/relojes" },
-      { label: "Movado", href: "/relojes" },
-      { label: "Tissot", href: "/relojes" },
-      { label: "Tommy Hilfiger", href: "/relojes" },
-      { label: "Festina", href: "/relojes" },
-      { label: "Seiko", href: "/relojes" },
-      { label: "Orient", href: "/relojes" },
-      { label: "Edox", href: "/relojes" },
+      { label: "Tressa", href: "/relojes" },
+      { label: "Smarts", href: "/relojes" }
     ],
   },
 ];
