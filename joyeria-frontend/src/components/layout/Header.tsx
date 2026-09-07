@@ -46,7 +46,8 @@ const JOYAS_MEGA_MENU = [
     href: "/joyeria/aros",
     items: [
       { label: "Aros de oro", href: "/joyeria/aros" },
-      { label: "Abridores", href: "/joyeria/aros" },
+      { label: "Abridores de acero", href: "/joyeria/aros" },
+      { label: "Abridores de oro", href: "/joyeria/aros" },
       { label: "Cierre Rosca", href: "/joyeria/aros" },
       { label: "Argollitas", href: "/joyeria/aros" },
       { label: "Aros de plata", href: "/joyeria/aros" },
