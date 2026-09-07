@@ -88,14 +88,12 @@ const JOYAS_MEGA_MENU = [
     href: "/joyeria",
     items: [
       { label: "Pulseras (Plata y Oro)", href: "/joyeria/pulseras" },
-      { label: "Anillos (Plata y Plata y Oro)", href: "/joyeria/anillos" }
+      { label: "Anillos (Plata & Plata y Oro)", href: "/joyeria/anillos" }
     ],
     secondaryTitle: "PERSONALIZADOS",
     secondaryHref: "/trabajos-personalizados",
     secondaryItems: [
-      { label: "Joyas talladas con nombre", href: "/trabajos-personalizados" },
-      { label: "Alianzas grabadas", href: "/trabajos-personalizados" },
-      { label: "Diseños a pedido", href: "/trabajos-personalizados" },
+      { label: "Diseños exclusivos", href: "/trabajos-personalizados" }
     ],
   }
 ];
