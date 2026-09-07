@@ -76,6 +76,14 @@ const JOYAS_MEGA_MENU = [
     ],
   },
   {
+    title: "PULSERAS DE BEBÉ",
+    href: "/joyeria/pulseras-bebe",
+    items: [
+      { label: "Plata y Oro", href: "/joyeria/pulseras-bebe" },
+      { label: "Plata", href: "/joyeria/pulseras-bebe" }
+    ],
+  },
+  {
     title: "HOMBRE",
     href: "/joyeria",
     items: [
