@@ -55,9 +55,9 @@ const JOYAS_MEGA_MENU = [
     secondaryTitle: "DIJES Y COLGANTES",
     secondaryHref: "/joyeria/dijes",
     secondaryItems: [
-      { label: "De Oro", href: "/joyeria/dijes" },
+      { label: "Oro", href: "/joyeria/dijes" },
       { label: "Plata y Oro", href: "/joyeria/dijes"},
-      { label: "De Plata", href: "/joyeria/dijes" },
+      { label: "Plata", href: "/joyeria/dijes" },
     ],
   },
   {
