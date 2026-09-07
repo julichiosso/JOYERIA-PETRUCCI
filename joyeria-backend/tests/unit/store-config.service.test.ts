@@ -15,7 +15,7 @@ const mockConfig = {
   id: 'config_1',
   tenantId: 'default',
   storeName: 'Joyería Petrucci',
-  whatsappNumber: '5493406419495',
+  whatsappNumber: '5493406642761',
   whatsappMessageTemplate: null,
   instagramUrl: null,
   facebookUrl: null,
@@ -82,7 +82,7 @@ describe('storeConfigService.buildWhatsappLink', () => {
       productUrl: 'https://petrucci.com/joyeria/anillos/anillo-solitario',
     });
 
-    expect(link).toContain('https://wa.me/5493406419495?text=');
+    expect(link).toContain('https://wa.me/5493406642761?text=');
     expect(decodeURIComponent(link.split('text=')[1])).toContain('Anillo Solitario');
     expect(decodeURIComponent(link.split('text=')[1])).toContain('150000');
     expect(decodeURIComponent(link.split('text=')[1])).toContain(

@@ -21,7 +21,7 @@ const DEFAULT_CONFIG: PublicStoreConfig = {
   businessHours: "Lun–Vie 9:00–18:00 · Sáb 9:00–13:00",
   instagramUrl: "https://www.instagram.com/joyeriapetrucci/",
   facebookUrl: null,
-  whatsappNumber: "5493401417857",
+  whatsappNumber: "5493406642761",
   returnPolicy: null,
   shippingInfo: null,
 };

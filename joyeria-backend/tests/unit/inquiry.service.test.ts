@@ -66,7 +66,7 @@ describe('inquiryService.createInquiry', () => {
     vi.clearAllMocks();
     process.env['FRONTEND_URL'] = 'https://petrucci.com';
     vi.mocked(storeConfigService.buildWhatsappLink).mockResolvedValue(
-      'https://wa.me/5493406419495?text=Hola'
+      'https://wa.me/5493406642761?text=Hola'
     );
     vi.mocked(inquiryRepository.create).mockResolvedValue({
       id: 'inq_1',
@@ -125,7 +125,7 @@ describe('inquiryService.createInquiry', () => {
       })
     );
     expect(result.inquiryId).toBe('inq_1');
-    expect(result.whatsappUrl).toBe('https://wa.me/5493406419495?text=Hola');
+    expect(result.whatsappUrl).toBe('https://wa.me/5493406642761?text=Hola');
   });
 
   it('guarda el precio de la variante cuando showPrice es true y tiene precio propio', async () => {
