@@ -100,7 +100,7 @@ const JOYAS_MEGA_MENU = [
 
 const RELOJES_MEGA_MENU = [
   {
-    title: "DEPORTIVOS Y TÉCNICOS",
+    title: "DEPORTIVOS & TÉCNICOS",
     href: "/relojes",
     items: [
       { label: "Casio", href: "/relojes" },
@@ -125,7 +125,7 @@ const RELOJES_MEGA_MENU = [
     ],
   },
   {
-    title: "ECONÓMICOS Y CASUAL",
+    title: "ECONÓMICOS & CASUAL",
     href: "/relojes",
     items: [
       { label: "Tressa", href: "/relojes" },
