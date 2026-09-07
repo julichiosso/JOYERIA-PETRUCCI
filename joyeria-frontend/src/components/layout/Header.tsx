@@ -38,6 +38,7 @@ const JOYAS_MEGA_MENU = [
       { label: "Con Piedras", href: "/joyeria/anillos-2" },
       { label: "Sin Piedras", href: "/joyeria/anillos-2" },
       { label: "Plata y Oro", href: "/joyeria/anillos-2" },
+      { label: "Plata", href: "/joyeria/anillos-2"}
     ],
   },
   {
