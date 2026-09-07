@@ -56,7 +56,7 @@ const JOYAS_MEGA_MENU = [
     secondaryHref: "/joyeria/dijes",
     secondaryItems: [
       { label: "De Oro", href: "/joyeria/dijes" },
-      { label: "Cruces", href: "/joyeria/dijes" },
+      { label: "Plata y Oro", href: "/joyeria/dijes"},
       { label: "De Plata", href: "/joyeria/dijes" },
     ],
   },
@@ -64,11 +64,9 @@ const JOYAS_MEGA_MENU = [
     title: "PULSERAS",
     href: "/joyeria/pulseras",
     items: [
-      { label: "De Oro", href: "/joyeria/pulseras" },
-      { label: "Esclavas", href: "/joyeria/pulseras" },
-      { label: "Eslabones", href: "/joyeria/pulseras" },
-      { label: "Identidad", href: "/joyeria/pulseras" },
-      { label: "De Plata", href: "/joyeria/pulseras" },
+      { label: "Oro", href: "/joyeria/pulseras" },
+      { label: "Plata y Oro", href: "/joyeria/pulseras" },
+      { label: "Plata", href: "/joyeria/pulseras" },
     ],
     secondaryTitle: "GARGANTILLAS Y CADENAS",
     secondaryHref: "/joyeria/cadenas",
