@@ -109,7 +109,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
     const autoTitle = `${rawName} | Petrucci Joyería`;
 
     // 2. Meta Description atractiva con palabras clave locales
-    const autoMetaDesc = `Comprá ${rawName} en Petrucci Joyería. Pieza artesanal de alta calidad, atención personalizada y envíos a todo el país desde San Jorge, Santa Fe.`;
+    const autoMetaDesc = `Comprá ${rawName} en Petrucci Joyería. Pieza artesanal de alta calidad, atención personalizada. Desde San Jorge, Santa Fe.`;
 
     // 3. Descripción profesional sugerida si está vacía
     let autoDesc = formData.description;

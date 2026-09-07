@@ -209,18 +209,12 @@ export default function AdminConfiguracionPage() {
       <section className="bg-white border border-gray-200 rounded-lg p-5 md:p-6 flex flex-col gap-5">
         <h2 className="font-body text-sm font-semibold text-gray-900">Información para clientes</h2>
 
-        <div>
-          <FieldLabel htmlFor="shipping">Información de envíos</FieldLabel>
-          <textarea id="shipping" value={form.shippingInfo ?? ""} onChange={set("shippingInfo")} rows={3} placeholder="Hacemos envíos a todo el país por correo o mensajería…" className={`${inputClass} resize-none`} />
-        </div>
 
         <div>
           <FieldLabel htmlFor="returns">Política de devoluciones</FieldLabel>
           <textarea id="returns" value={form.returnPolicy ?? ""} onChange={set("returnPolicy")} rows={3} placeholder="Para cambios o devoluciones comunicarse dentro de los 7 días…" className={`${inputClass} resize-none`} />
         </div>
       </section>
-
-      {/* ── Feedback + Submit ─────────────────────────────────────────────── */}
       {error && (
         <div role="alert" className="bg-red-50 border border-red-200 rounded-md px-4 py-3 font-body text-sm text-red-700">
           {error}

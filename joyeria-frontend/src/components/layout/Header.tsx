@@ -19,7 +19,7 @@ import { api } from "@/lib/api";
 import type { Product } from "@/types/product";
 
 const ANNOUNCEMENTS = [
-  "ENVÍOS A TODO EL PAÍS · ABONANDO MEDIANTE TRANSFERENCIA 10% OFF",
+  "ABONANDO MEDIANTE TRANSFERENCIA 15% OFF",
   "GRABADOS PERSONALIZADOS · CONSULTÁ POR WHATSAPP",
   "RETIRO EN LOCAL · SAN JORGE, SANTA FE",
 ];
@@ -432,7 +432,7 @@ export default function Header() {
                                       <p className="text-xs font-semibold text-gray-900">
                                         {formattedPrice}
                                         <span className="text-[11px] font-normal text-gray-500 ml-1">
-                                          | 10% OFF transferencia
+                                          | 15% OFF transferencia
                                         </span>
                                       </p>
                                     </div>

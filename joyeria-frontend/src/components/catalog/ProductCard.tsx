@@ -7,7 +7,7 @@
  *  - Badge "ENVÍO GRATIS" en rojo sólido arriba a la izquierda
  *  - Nombre en tipografía sans-serif natural (Inter)
  *  - Precio principal en negrita
- *  - Precio con 10% de descuento por transferencia bancaria debajo
+ *  - Precio con 15% de descuento por transferencia bancaria debajo
  */
 
 import Image from "next/image";
@@ -36,7 +36,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
   // Calcular precio con 10% de descuento por transferencia si hay precio numérico
   const numericPrice = product.showPrice && product.price ? parseFloat(product.price) : null;
-  const transferPrice = numericPrice ? formatPrice(String(numericPrice * 0.9)) : null;
+  const transferPrice = numericPrice ? formatPrice(String(numericPrice * 0.85)) : null;
 
   return (
     <article className="group relative flex flex-col bg-white">
@@ -95,7 +95,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             </p>
             {transferPrice && (
               <p className="font-body text-[11px] text-gray-600 font-normal mt-0.5 leading-tight">
-                <span className="font-semibold text-gray-800">{transferPrice}</span> con Transferencia o depósito
+                <span className="font-semibold text-gray-800">{transferPrice}</span> con Transferencia
               </p>
             )}
           </div>
