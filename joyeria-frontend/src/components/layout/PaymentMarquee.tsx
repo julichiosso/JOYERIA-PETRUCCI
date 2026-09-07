@@ -18,7 +18,7 @@ const paymentLogos = [
 ];
 
 export default function PaymentMarquee() {
-  // Duplicamos 4 veces para animación continua
+  // Duplicamos 4 veces para la animación continuA
   const repeated = [...paymentLogos, ...paymentLogos, ...paymentLogos, ...paymentLogos];
 
   return (
