@@ -84,12 +84,11 @@ const JOYAS_MEGA_MENU = [
     ],
   },
   {
-    title: "HOMBRE",
+    title: "HOMBRES",
     href: "/joyeria",
     items: [
-      { label: "Anillos", href: "/joyeria/anillos-2" },
-      { label: "Cadenas", href: "/joyeria/cadenas" },
-      { label: "Llaveros", href: "/marroquineria" },
+      { label: "Pulseras (Plata y Oro)", href: "/joyeria/pulseras" },
+      { label: "Anillos (Plata y Plata y Oro)", href: "/joyeria/anillos" }
     ],
     secondaryTitle: "PERSONALIZADOS",
     secondaryHref: "/trabajos-personalizados",
@@ -98,7 +97,7 @@ const JOYAS_MEGA_MENU = [
       { label: "Alianzas grabadas", href: "/trabajos-personalizados" },
       { label: "Diseños a pedido", href: "/trabajos-personalizados" },
     ],
-  },
+  }
 ];
 
 const RELOJES_MEGA_MENU = [
@@ -129,6 +128,21 @@ const RELOJES_MEGA_MENU = [
       { label: "Tommy Hilfiger", href: "/relojes" },
       { label: "Michael Kors", href: "/relojes" },
       { label: "Gucci", href: "/relojes" },
+    ],
+  },
+  {
+    title: "RELOJES",
+    href: "/relojes",
+    items: [
+      { label: "Victorinox", href: "/relojes" },
+      { label: "Tag Heuer", href: "/relojes" },
+      { label: "Movado", href: "/relojes" },
+      { label: "Tissot", href: "/relojes" },
+      { label: "Tommy Hilfiger", href: "/relojes" },
+      { label: "Festina", href: "/relojes" },
+      { label: "Seiko", href: "/relojes" },
+      { label: "Orient", href: "/relojes" },
+      { label: "Edox", href: "/relojes" },
     ],
   },
 ];
