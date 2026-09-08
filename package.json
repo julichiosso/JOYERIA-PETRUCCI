@@ -1,0 +1,8 @@
+{
+  "name": "joyeria-petrucci",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --dir backend dev & pnpm --dir frontend dev"
+  }
+}
