@@ -2,7 +2,8 @@
 
 /**
  * components/admin/ProductForm.tsx
- * Formulario inteligente para crear y editar piezas con sugerencias automáticas de SEO y descripción.
+ * Formulario inteligente para crear y editar piezas con sugerencias automáticas de SEO,
+ * formateo visual de precios sin salto de cursor, indicador de pasos y botones adaptativos.
  */
 
 import { useState, useEffect } from "react";
@@ -11,6 +12,7 @@ import { adminFetch, adminFetchMultipart } from "@/lib/auth";
 import type { AdminApiError } from "@/lib/auth";
 import ImageUploader, { type LocalProductImage } from "./ImageUploader";
 import type { Category } from "@/types/category";
+import { useToast } from "@/hooks/useToast";
 
 type ProductStatus = "ACTIVE" | "DRAFT" | "OUT_OF_STOCK";
 
@@ -19,7 +21,7 @@ interface ProductFormData {
   description: string;
   categoryId: string;
   status: ProductStatus;
-  price: string;
+  price: string; // Guarda los dígitos puros (ej: "1850000")
   showPrice: boolean;
   variantLabel: string;
   metaTitle: string;
@@ -53,16 +55,27 @@ function inputClass(error?: boolean) {
   return `w-full px-3.5 py-2.5 bg-gray-50 border ${error ? "border-red-400 bg-red-50/20" : "border-gray-300"} rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition-colors`;
 }
 
+// Función helper para formatear miles visualmente
+function formatPriceDisplay(rawDigits: string): string {
+  const digits = rawDigits.replace(/\D/g, "");
+  if (!digits) return "";
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
 export default function ProductForm({ initialData }: ProductFormProps) {
   const router = useRouter();
+  const toast = useToast();
   const isEditing = Boolean(initialData?.id);
+
+  // Inicializar price como dígitos puros
+  const initialPriceDigits = initialData?.price ? String(initialData.price).replace(/\D/g, "") : "";
 
   const [formData, setFormData] = useState<ProductFormData>({
     name: initialData?.name ?? "",
     description: initialData?.description ?? "",
     categoryId: initialData?.categoryId ?? "",
     status: initialData?.status ?? "ACTIVE",
-    price: initialData?.price ?? "",
+    price: initialPriceDigits,
     showPrice: initialData?.showPrice ?? false,
     variantLabel: initialData?.variantLabel ?? "",
     metaTitle: initialData?.metaTitle ?? "",
@@ -94,30 +107,62 @@ export default function ProductForm({ initialData }: ProductFormProps) {
     setFieldErrors((prev) => ({ ...prev, [key]: undefined }));
   };
 
-  // Asistente inteligente de SEO y descripción para agilizarle el trabajo al dueño
+  // Manejador especializado de precio con formateo en vivo y preservación de cursor
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputEl = e.target;
+    const selectionStart = inputEl.selectionStart ?? 0;
+    const oldValue = inputEl.value;
+
+    // Conteo de dígitos antes del cursor en el texto modificado
+    const digitsBeforeCursor = oldValue.slice(0, selectionStart).replace(/\D/g, "").length;
+
+    const rawDigits = oldValue.replace(/\D/g, "");
+    const formatted = formatPriceDisplay(rawDigits);
+
+    setFormData((prev) => ({ ...prev, price: rawDigits }));
+    setFieldErrors((prev) => ({ ...prev, price: undefined }));
+
+    // Preservar la posición exacta del cursor después del formateo
+    requestAnimationFrame(() => {
+      if (!inputEl) return;
+      let newPos = 0;
+      let digitCount = 0;
+
+      for (let i = 0; i < formatted.length; i++) {
+        if (/\d/.test(formatted[i])) {
+          digitCount++;
+        }
+        if (digitCount === digitsBeforeCursor) {
+          newPos = i + 1;
+          break;
+        }
+      }
+      if (digitCount < digitsBeforeCursor || digitsBeforeCursor === 0) {
+        newPos = formatted.length;
+      }
+      inputEl.setSelectionRange(newPos, newPos);
+    });
+  };
+
+  // Asistente inteligente de SEO y descripción
   const handleAutoSuggest = () => {
     const rawName = formData.name.trim();
     if (!rawName) {
-      alert("Ingresá primero el nombre del producto para generar sugerencias automáticas.");
+      toast.error("Ingresá primero el nombre del producto para generar sugerencias automáticas.");
       return;
     }
 
     const matchedCat = categories.find((c) => c.id === formData.categoryId);
     const catName = matchedCat ? matchedCat.name : "Joyería Fina";
 
-    // 1. Meta Title optimizado para Google
     const autoTitle = `${rawName} | Petrucci Joyería`;
-
-    // 2. Meta Description atractiva con palabras clave locales
     const autoMetaDesc = `Comprá ${rawName} en Petrucci Joyería. Pieza artesanal de alta calidad, atención personalizada. Desde San Jorge, Santa Fe.`;
 
-    // 3. Descripción profesional sugerida si está vacía
     let autoDesc = formData.description;
     if (!autoDesc.trim()) {
       autoDesc = `Pieza exclusiva de ${catName.toLowerCase()} elaborada con materiales de máxima pureza y acabado artesanal de alta precisión. Diseñada para lucir con elegancia y perdurar en el tiempo.\n\n• Materiales garantizados de primera calidad.\n• Incluye estuche premium de presentación Petrucci.\n• Consultanos por grabados personalizados o medidas especiales.`;
     }
 
-    // 4. Variantes sugeridas si está vacío
     let autoVariant = formData.variantLabel;
     if (!autoVariant.trim()) {
       const lower = rawName.toLowerCase();
@@ -142,6 +187,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
 
     setAppliedSuggestion(true);
     setSeoOpen(true);
+    toast.success("✨ Sugerencias de descripción y SEO aplicadas con éxito.");
     setTimeout(() => setAppliedSuggestion(false), 4000);
   };
 
@@ -191,7 +237,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         productId = created.id;
       }
 
-      // Subir archivos nuevos pendientes
+      // Subir fotos pendientes
       const filesToUpload = images.filter((img) => img._file);
       if (filesToUpload.length > 0 && productId) {
         try {
@@ -215,11 +261,14 @@ export default function ProductForm({ initialData }: ProductFormProps) {
             router.push("/admin/login");
             return;
           }
-          setSubmitError(`La información se guardó correctamente, pero hubo un error al subir las fotos: ${error.message}`);
+          const msg = `La joya se guardó pero hubo un problema al subir imágenes: ${error.message}`;
+          setSubmitError(msg);
+          toast.error(msg);
           return;
         }
       }
 
+      toast.success(isEditing ? `"${formData.name}" guardado exitosamente` : `"${formData.name}" publicado exitosamente`);
       router.push("/admin/productos");
       router.refresh();
     } catch (err) {
@@ -227,15 +276,96 @@ export default function ProductForm({ initialData }: ProductFormProps) {
       if (error.status === 401) {
         router.push("/admin/login");
       } else {
-        setSubmitError(error.message ?? "Ocurrió un error al guardar el producto.");
+        const msg = error.message ?? "Ocurrió un error al guardar el producto.";
+        setSubmitError(msg);
+        toast.error(msg);
       }
     } finally {
       setSubmitting(false);
     }
   };
 
+  // Botón adaptativo de CTA según el status seleccionado
+  const getCtaButton = () => {
+    if (submitting) {
+      return (
+        <span className="flex items-center gap-2">
+          <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          Guardando y procesando imágenes…
+        </span>
+      );
+    }
+
+    switch (formData.status) {
+      case "DRAFT":
+        return (
+          <span className="flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            Guardar como Borrador (Oculto)
+          </span>
+        );
+      case "OUT_OF_STOCK":
+        return (
+          <span className="flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="8" y1="12" x2="16" y2="12" />
+            </svg>
+            Guardar como Sin Stock
+          </span>
+        );
+      case "ACTIVE":
+      default:
+        return (
+          <span className="flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+            {isEditing ? "Guardar y Publicar Pieza" : "Publicar Joya en Tienda"}
+          </span>
+        );
+    }
+  };
+
+  const getCtaBg = () => {
+    switch (formData.status) {
+      case "DRAFT":
+        return "bg-amber-800 hover:bg-amber-900 text-white";
+      case "OUT_OF_STOCK":
+        return "bg-rose-800 hover:bg-rose-900 text-white";
+      case "ACTIVE":
+      default:
+        return "bg-gray-900 hover:bg-gray-800 text-white";
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6 max-w-4xl mx-auto font-body text-gray-900 pb-16">
+
+      {/* ── Indicador de Pasos Visuales (Progress Steps) ───────────────────── */}
+      <div className="bg-white border border-gray-200 rounded-xl p-3.5 shadow-2xs">
+        <div className="flex items-center justify-between gap-2 overflow-x-auto text-xs py-1 scrollbar-hide">
+          {[
+            { step: 1, title: "1. Datos Básicos", isDone: Boolean(formData.name.trim() && formData.categoryId) },
+            { step: 2, title: "2. Precio & Variantes", isDone: Boolean(formData.price || formData.variantLabel) },
+            { step: 3, title: "3. Fotos", isDone: images.length > 0 },
+            { step: 4, title: "4. Posicionamiento SEO", isDone: Boolean(formData.metaTitle || formData.metaDescription) },
+          ].map((s) => (
+            <div key={s.step} className="flex items-center gap-2 shrink-0">
+              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${s.isDone ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-500"}`}>
+                {s.isDone ? "✓" : s.step}
+              </span>
+              <span className={`font-medium whitespace-nowrap ${s.isDone ? "text-gray-900" : "text-gray-500"}`}>
+                {s.title}
+              </span>
+              {s.step < 4 && <span className="text-gray-300 hidden sm:inline ml-1">›</span>}
+            </div>
+          ))}
+        </div>
+      </div>
 
       {/* ── Encabezado de la página ────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-4">
@@ -252,7 +382,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         <button
           type="button"
           onClick={handleAutoSuggest}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300/80 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300/80 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
         >
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-700">
             <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
@@ -369,20 +499,19 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-          {/* Precio en ARS */}
+          {/* Precio en ARS formateado en vivo sin salto de cursor */}
           <div>
             <FieldLabel htmlFor="prod-price">Precio en Pesos (ARS)</FieldLabel>
             <div className="relative">
               <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400">$</span>
               <input
                 id="prod-price"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formData.price}
-                onChange={set("price")}
-                placeholder="0.00"
-                className={`${inputClass(Boolean(fieldErrors.price))} pl-8`}
+                type="text"
+                inputMode="numeric"
+                value={formatPriceDisplay(formData.price)}
+                onChange={handlePriceChange}
+                placeholder="1.850.000"
+                className={`${inputClass(Boolean(fieldErrors.price))} pl-8 font-semibold tracking-wide`}
               />
             </div>
             {fieldErrors.price && (
@@ -440,6 +569,14 @@ export default function ProductForm({ initialData }: ProductFormProps) {
           onImagesChange={setImages}
           disabled={submitting}
         />
+
+        {/* Nota aclaratoria sobre texto alternativo (Alt) */}
+        <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-lg text-xs text-amber-900 flex items-start gap-2.5 mt-1">
+          <span className="text-sm shrink-0">ℹ️</span>
+          <p>
+            <strong>Texto alternativo (Alt):</strong> Ayuda a posicionar tus fotos en las búsquedas de Google. Si lo dejás vacío, la tienda usará automáticamente el nombre de la joya como descripción.
+          </p>
+        </div>
       </section>
 
       {/* ── 4. Posicionamiento SEO para Google (Colapsable) ────────────────── */}
@@ -513,13 +650,13 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         </div>
       )}
 
-      {/* ── Botones de Guardar ─────────────────────────────────────────────── */}
+      {/* ── Botones de Guardar Adaptativos ─────────────────────────────────── */}
       <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-2">
         <button
           type="button"
           onClick={() => router.back()}
           disabled={submitting}
-          className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+          className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 min-h-[44px]"
         >
           Cancelar
         </button>
@@ -527,18 +664,9 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full sm:w-auto px-8 py-3 bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold rounded-lg shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+          className={`w-full sm:w-auto px-8 py-3 text-sm font-semibold rounded-lg shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer min-h-[44px] ${getCtaBg()}`}
         >
-          {submitting ? (
-            <>
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              <span>Guardando y procesando imágenes…</span>
-            </>
-          ) : isEditing ? (
-            "Guardar Cambios"
-          ) : (
-            "Publicar Joya / Pieza"
-          )}
+          {getCtaButton()}
         </button>
       </div>
     </form>

@@ -161,7 +161,6 @@ export default function AdminLoginPage() {
             </div>
           )}
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading || !email || !password}
@@ -178,7 +177,7 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        {/* Footer de la card */}
+
         <p className="text-center font-body text-xs text-gray-400 mt-6">
           ¿Problemas para ingresar?{" "}
           <a

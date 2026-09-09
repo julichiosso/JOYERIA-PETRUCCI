@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "pnpm --dir backend dev & pnpm --dir frontend dev"
+    "dev": "concurrently \"pnpm --dir joyeria-backend dev\" \"pnpm --dir joyeria-frontend dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
   }
 }

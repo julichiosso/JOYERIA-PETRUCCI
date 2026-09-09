@@ -21,6 +21,8 @@ import Image from "next/image";
 import { adminFetch } from "@/lib/auth";
 import { formatPrice } from "@/lib/utils";
 import type { Category } from "@/types/category";
+import { useToast } from "@/hooks/useToast";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
 type ProductStatus = "ACTIVE" | "DRAFT" | "OUT_OF_STOCK";
 
@@ -63,12 +65,14 @@ const STATUS_CONFIG: Record<ProductStatus, { label: string; badgeClass: string }
 
 export default function AdminProductsPage() {
   const router = useRouter();
+  const toast = useToast();
 
   const [products, setProducts] = useState<AdminProduct[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [deleteModalProduct, setDeleteModalProduct] = useState<AdminProduct | null>(null);
 
   // Filtros
   const [activeSection, setActiveSection] = useState<string>("ALL");
@@ -197,34 +201,76 @@ export default function AdminProductsPage() {
     return { total, active, draft, outOfStock };
   }, [products]);
 
-  // Eliminar producto
-  const handleDelete = async (product: AdminProduct) => {
-    if (!confirm(`¿Estás seguro de eliminar "${product.name}"? Esta acción no se puede deshacer.`)) return;
-    setDeletingId(product.id);
+  // Iniciar modal de confirmación de eliminación
+  const handleDeleteClick = (product: AdminProduct) => {
+    setDeleteModalProduct(product);
+  };
+
+  // Confirmar eliminación desde el modal
+  const confirmDeleteProduct = async () => {
+    if (!deleteModalProduct) return;
+    const prod = deleteModalProduct;
+    setDeletingId(prod.id);
     try {
-      await adminFetch(`/admin/products/${product.id}`, { method: "DELETE" });
-      setProducts((prev) => prev.filter((p) => p.id !== product.id));
+      await adminFetch(`/admin/products/${prod.id}`, { method: "DELETE" });
+      setProducts((prev) => prev.filter((p) => p.id !== prod.id));
+      toast.success(`"${prod.name}" fue eliminado del catálogo`);
+      setDeleteModalProduct(null);
     } catch (err: unknown) {
       const e = err as { message?: string };
-      alert(e.message ?? "No se pudo eliminar el producto.");
+      toast.error(e.message ?? "No se pudo eliminar el producto.");
     } finally {
       setDeletingId(null);
     }
   };
 
-  // Cambio rápido de estado
+  // Cambio rápido de estado con toast + deshacer
   const handleQuickStatusChange = async (product: AdminProduct, newStatus: ProductStatus) => {
+    const previousStatus = product.status;
+    if (previousStatus === newStatus) return;
+
+    // Actualización optimista
+    setProducts((prev) =>
+      prev.map((p) => (p.id === product.id ? { ...p, status: newStatus } : p))
+    );
+
     try {
       await adminFetch(`/admin/products/${product.id}`, {
         method: "PATCH",
         body: JSON.stringify({ status: newStatus }),
       });
-      setProducts((prev) =>
-        prev.map((p) => (p.id === product.id ? { ...p, status: newStatus } : p))
-      );
+
+      if (newStatus === "ACTIVE") {
+        toast.success(`"${product.name}" ahora está activo en la tienda`);
+      } else {
+        const label = newStatus === "DRAFT" ? "Borrador (oculto)" : "Sin stock";
+        toast.undo(
+          `"${product.name}" cambiado a ${label}`,
+          async () => {
+            // Callback de Deshacer
+            try {
+              await adminFetch(`/admin/products/${product.id}`, {
+                method: "PATCH",
+                body: JSON.stringify({ status: previousStatus }),
+              });
+              setProducts((prev) =>
+                prev.map((p) => (p.id === product.id ? { ...p, status: previousStatus } : p))
+              );
+              toast.info(`Se restauró el estado de "${product.name}"`);
+            } catch (err: unknown) {
+              const e = err as { message?: string };
+              toast.error(e.message ?? "No se pudo deshacer el cambio.");
+            }
+          }
+        );
+      }
     } catch (err: unknown) {
+      // Revertir en caso de error
+      setProducts((prev) =>
+        prev.map((p) => (p.id === product.id ? { ...p, status: previousStatus } : p))
+      );
       const e = err as { message?: string };
-      alert(e.message ?? "No se pudo actualizar el estado.");
+      toast.error(e.message ?? "No se pudo actualizar el estado.");
     }
   };
 
@@ -282,11 +328,10 @@ export default function AdminProductsPage() {
               key={sec.id}
               type="button"
               onClick={() => handleSectionChange(sec.id)}
-              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${
-                activeSection === sec.id
-                  ? "bg-gray-900 text-white shadow-xs"
-                  : "bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-              }`}
+              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${activeSection === sec.id
+                ? "bg-gray-900 text-white shadow-xs"
+                : "bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                }`}
             >
               {sec.name}
             </button>
@@ -360,11 +405,10 @@ export default function AdminProductsPage() {
                 setStatusFilter(opt.value);
                 setCurrentPage(1);
               }}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
-                statusFilter === opt.value
-                  ? "bg-amber-800 text-white shadow-xs"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+              className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${statusFilter === opt.value
+                ? "bg-amber-800 text-white shadow-xs"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
             >
               {opt.label}
             </button>
@@ -489,7 +533,7 @@ export default function AdminProductsPage() {
                       </Link>
                       <button
                         type="button"
-                        onClick={() => handleDelete(product)}
+                        onClick={() => handleDeleteClick(product)}
                         disabled={deletingId === product.id}
                         className="text-xs text-red-600 hover:text-red-800 px-2 py-1 rounded hover:bg-red-50 disabled:opacity-40"
                       >
@@ -591,7 +635,7 @@ export default function AdminProductsPage() {
 
                           <button
                             type="button"
-                            onClick={() => handleDelete(product)}
+                            onClick={() => handleDeleteClick(product)}
                             disabled={deletingId === product.id}
                             className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-40"
                             title="Eliminar producto"
@@ -647,6 +691,19 @@ export default function AdminProductsPage() {
         </>
       )}
 
+      {/* ── Banner informativo de ayuda al pie ────────────────────────────── */}
+      <div className="bg-amber-50/60 border border-amber-200/80 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-amber-900 mt-2">
+        <div className="flex items-center gap-2.5">
+          <span className="text-base shrink-0">💡</span>
+          <div>
+            <p className="font-semibold">¿Cómo impactan los estados en la joyería?</p>
+            <p className="text-amber-800/90 mt-0.5">
+              &quot;Activo&quot; publica la pieza inmediatamente. &quot;Borrador&quot; la mantiene guardada en el admin sin mostrarla a los clientes. &quot;Sin stock&quot; muestra la pieza con etiqueta de no disponible.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* ── Botón flotante Mobile (+) ─────────────────────────────────────── */}
       <Link
         href="/admin/productos/nuevo"
@@ -658,6 +715,19 @@ export default function AdminProductsPage() {
           <line x1="5" y1="12" x2="19" y2="12" />
         </svg>
       </Link>
+
+      {/* ── Modal de Confirmación de Eliminación ──────────────────────────── */}
+      <ConfirmModal
+        isOpen={!!deleteModalProduct}
+        title="Eliminar producto"
+        message={`¿Estás seguro de eliminar "${deleteModalProduct?.name}"? Esta acción borrará la pieza del catálogo y no se podrá deshacer.`}
+        confirmLabel="Eliminar pieza"
+        cancelLabel="Cancelar"
+        variant="danger"
+        isLoading={deletingId === deleteModalProduct?.id}
+        onConfirm={confirmDeleteProduct}
+        onCancel={() => setDeleteModalProduct(null)}
+      />
     </div>
   );
 }
