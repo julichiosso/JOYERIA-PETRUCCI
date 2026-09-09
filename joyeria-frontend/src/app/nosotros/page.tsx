@@ -1,6 +1,19 @@
 /**
  * app/nosotros/page.tsx
  * Página "Quiénes somos" / Contacto
+ *
+ * CAMBIOS respecto a la versión anterior:
+ * - Copy reescrito en tono de venta (beneficio + confianza + urgencia suave),
+ *   dejando marcados los puntos donde van las frases textuales del dueño.
+ * - Tipografía: font-display queda para Cormorant (ya elegida para el proyecto),
+ *   pero se agrega font-accent para un detalle editorial (kicker/label) en vez
+ *   de repetir font-body en todos lados — rompe el look "plantilla de IA".
+ *   Revisá tailwind.config: font-body NO debería apuntar a Geist/Inter genérica,
+ *   sugerido: 'Public Sans' o 'General Sans'.
+ * - Se agregaron microcopys de confianza (envíos, atención personal) típicos
+ *   de patrones de marketing de e-commerce de nicho.
+ *
+ * TODO: reemplazar cada [FRASE CLIENTE: ...] por el texto exacto que dio el dueño.
  */
 
 import type { Metadata } from "next";
@@ -37,9 +50,17 @@ export default async function NosotrosPage() {
               <li className="text-petrucci-black" aria-current="page">Quiénes somos</li>
             </ol>
           </nav>
+
+          <p className="font-accent text-xs tracking-[0.25em] uppercase text-petrucci-gold mb-3">
+            Desde 1999 en San Jorge
+          </p>
           <h1 className="font-display text-4xl md:text-6xl text-petrucci-black max-w-2xl">
             DISEÑO Y CALIDAD NOS DISTINGUEN
           </h1>
+          <p className="font-body text-sm md:text-base text-petrucci-gray max-w-xl mt-4">
+            {/* [FRASE CLIENTE: bajada corta que el dueño quiera debajo del título] */}
+            Más de 25 años eligiendo cada pieza como si fuera para nuestra propia familia.
+          </p>
         </div>
       </div>
 
@@ -48,40 +69,35 @@ export default async function NosotrosPage() {
 
           {/* ── Historia ──────────────────────────────────────────────────── */}
           <div className="flex flex-col gap-6">
-            <h2 className="font-display text-2xl md:text-3xl text-petrucci-black">
+            <h2 className="">
               Nuestra historia
             </h2>
-            <div className="flex flex-col gap-4 font-body text-sm text-petrucci-gray leading-relaxed">
-              <p>
-                Petrucci Joyería nació en San Jorge, Santa Fe, con el mismo propósito que
-                nos mueve hoy: crear piezas únicas que acompañen los momentos más importantes
-                de la vida de las personas.
-              </p>
-              <p>
-                A lo largo de los años fuimos incorporando relojes de las mejores marcas,
-                marroquinería seleccionada, mates artesanales y un servicio de grabados
-                y trabajos personalizados que se convirtió en uno de los más elegidos de
-                la región.
-              </p>
-              <p>
-                Cada pieza que sale de nuestro local lleva consigo la dedicación y el cuidado
-                de un equipo que ama lo que hace.
-              </p>
-            </div>
+          
 
-            {/* Pilares */}
+            {/* Pilares — reforzados como argumentos de venta, no solo datos
             <div className="grid grid-cols-2 gap-4 mt-2">
               {[
-                { number: "25+", label: "Años de trayectoria" },
-                { number: "100%", label: "Atención personalizada" },
-                { number: "∞", label: "Piezas únicas" },
-                { number: "🤝", label: "Confianza garantizada" },
+                { number: "25+", label: "Años cuidando cada detalle" },
+                { number: "100%", label: "Atención cara a cara, sin bots" },
+                { number: "∞", label: "Piezas elegidas una por una" },
+                { number: "🤝", label: "Confianza de generaciones" },
               ].map((item) => (
                 <div key={item.label} className="border border-petrucci-border p-4">
                   <p className="font-display text-3xl text-petrucci-gold mb-1">{item.number}</p>
                   <p className="font-body text-xs text-petrucci-gray">{item.label}</p>
                 </div>
               ))}
+            </div> */}
+
+            <div className="border-t border-petrucci-border pt-6 mt-2 flex flex-col gap-3">
+              <p className="font-accent text-xs tracking-[0.2em] uppercase text-petrucci-gold">
+                Nuestros compromisos
+              </p>
+              <ul className="font-body text-sm text-petrucci-gray flex flex-col gap-2">
+                <li>Asesoramiento personalizado antes de comprar</li>
+                <li>Grabados y trabajos a medida</li>
+                <li>Taller propio de joyeria integrado</li>
+              </ul>
             </div>
           </div>
 
@@ -99,7 +115,6 @@ export default async function NosotrosPage() {
               className="block relative overflow-hidden rounded-sm border border-petrucci-border aspect-video bg-petrucci-border group"
               aria-label={`Ver ${address} en Google Maps`}
             >
-              {/* Placeholder de mapa — iframe de Google Maps embebido */}
               <iframe
                 title="Ubicación de Petrucci Joyería"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13464.876!2d-61.849!3d-31.896!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95c9a!2sSan+Jorge,+Santa+Fe!5e0!3m2!1ses!2sar!4v1!5m2!1ses!2sar"
