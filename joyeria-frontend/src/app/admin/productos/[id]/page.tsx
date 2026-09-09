@@ -48,6 +48,7 @@ export default function EditarProductoPage() {
         setLoading(false);
       })
       .catch((err: { status?: number; message?: string }) => {
+        { /*return in case of error push to login or 404*/ }
         if (err.status === 401) {
           router.push("/admin/login");
         } else if (err.status === 404) {
