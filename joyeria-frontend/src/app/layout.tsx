@@ -82,6 +82,7 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      data-scroll-behavior="smooth"
       className={`${cormorant.variable} ${plusJakarta.variable} ${proximaNova.variable}`}
     >
       <body>

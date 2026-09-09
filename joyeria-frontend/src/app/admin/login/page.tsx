@@ -14,7 +14,7 @@ import Image from "next/image";
 import { setToken, setUser, isAuthenticated } from "@/lib/auth";
 import type { AdminUser } from "@/lib/auth";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 interface LoginResponse {
   accessToken: string;
@@ -141,12 +141,12 @@ export default function AdminLoginPage() {
               >
                 {showPassword ? (
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <path d="M1 1l16 16M7.5 7.57A2.5 2.5 0 0 0 11.43 11.5M6.65 3.28C7.4 3.1 8.2 3 9 3c4 0 7 4 7 6 0 .94-.35 1.9-.93 2.79M3.27 5.27C2.28 6.3 1.5 7.57 1.5 9c0 2 3 6 7.5 6a8 8 0 0 0 3.73-.93" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                    <path d="M1 1l16 16M7.5 7.57A2.5 2.5 0 0 0 11.43 11.5M6.65 3.28C7.4 3.1 8.2 3 9 3c4 0 7 4 7 6 0 .94-.35 1.9-.93 2.79M3.27 5.27C2.28 6.3 1.5 7.57 1.5 9c0 2 3 6 7.5 6a8 8 0 0 0 3.73-.93" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
                   </svg>
                 ) : (
                   <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                    <path d="M1.5 9C1.5 7 4.5 3 9 3s7.5 4 7.5 6-3 6-7.5 6S1.5 11 1.5 9z" stroke="currentColor" strokeWidth="1.3"/>
-                    <circle cx="9" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.3"/>
+                    <path d="M1.5 9C1.5 7 4.5 3 9 3s7.5 4 7.5 6-3 6-7.5 6S1.5 11 1.5 9z" stroke="currentColor" strokeWidth="1.3" />
+                    <circle cx="9" cy="9" r="2.5" stroke="currentColor" strokeWidth="1.3" />
                   </svg>
                 )}
               </button>
@@ -160,8 +160,8 @@ export default function AdminLoginPage() {
               className="flex items-start gap-2.5 bg-red-50 border border-red-200 rounded-md px-4 py-3"
             >
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" className="shrink-0 mt-0.5 text-red-500">
-                <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.3"/>
-                <path d="M8 5v3.5M8 11h.01" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.3" />
+                <path d="M8 5v3.5M8 11h.01" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
               </svg>
               <p className="font-body text-xs text-red-700 leading-relaxed">{error}</p>
             </div>
