@@ -468,14 +468,19 @@ export default function Header() {
               </div>
             </div>
 
-            {/* Centro: Logo Petrucci */}
-            <div className="flex justify-center flex-1 md:w-1/3">
+            {/* Centro: Logo Petrucci SVG */}
+            <div className="flex justify-center items-center flex-1 md:w-1/3 py-1">
               <Link
                 href="/"
-                className="font-display text-2xl md:text-3xl tracking-[0.22em] text-gray-950 hover:text-amber-800 transition-colors uppercase text-center font-normal"
+                className="flex items-center justify-center group"
                 aria-label="Petrucci Joyería — Inicio"
               >
-                PETRUCCI
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="/logo-petrucci-v2.svg"
+                  alt="Petrucci Joyería y Relojería"
+                  className="h-12 md:h-16 lg:h-[68px] max-h-[72px] w-auto object-contain transition-transform duration-200 group-hover:scale-[1.03]"
+                />
               </Link>
             </div>
 

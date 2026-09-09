@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Inter } from "next/font/google";
+import localFont from "next/font/local";
+import { Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import AppShell from "@/components/layout/AppShell";
 
@@ -10,10 +11,42 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-plus-jakarta",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+const proximaNova = localFont({
+  src: [
+    {
+      path: "../../proxima-nova/Proxima Nova/Proxima Nova Light/Proxima Nova Light.ttf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../proxima-nova/Proxima Nova/Proxima Nova Regular/Proxima Nova Regular.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../proxima-nova/Proxima Nova/Proxima Nova Semibold/Proxima Nova Semibold.ttf",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../proxima-nova/Proxima Nova/Proxima Nova Extrabold/Proxima Nova Extrabold.ttf",
+      weight: "800",
+      style: "normal",
+    },
+    {
+      path: "../../proxima-nova/Proxima Nova/Proxima Nova Black/Proxima Nova Black.ttf",
+      weight: "900",
+      style: "normal",
+    },
+  ],
+  variable: "--font-proxima",
   display: "swap",
 });
 
@@ -47,7 +80,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${cormorant.variable} ${inter.variable}`}>
+    <html
+      lang="es"
+      className={`${cormorant.variable} ${plusJakarta.variable} ${proximaNova.variable}`}
+    >
       <body>
         <AppShell>{children}</AppShell>
       </body>
