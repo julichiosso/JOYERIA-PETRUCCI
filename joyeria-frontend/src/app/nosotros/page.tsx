@@ -38,7 +38,7 @@ export default async function NosotrosPage() {
             </ol>
           </nav>
           <h1 className="font-display text-4xl md:text-6xl text-petrucci-black max-w-2xl">
-            Más de 25 años haciendo joyas con historia
+            DISEÑO Y CALIDAD NOS DISTINGUEN
           </h1>
         </div>
       </div>
