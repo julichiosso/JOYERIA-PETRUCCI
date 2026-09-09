@@ -1,19 +1,7 @@
 /**
  * app/nosotros/page.tsx
- * Página "Quiénes somos" / Contacto
- *
- * CAMBIOS respecto a la versión anterior:
- * - Copy reescrito en tono de venta (beneficio + confianza + urgencia suave),
- *   dejando marcados los puntos donde van las frases textuales del dueño.
- * - Tipografía: font-display queda para Cormorant (ya elegida para el proyecto),
- *   pero se agrega font-accent para un detalle editorial (kicker/label) en vez
- *   de repetir font-body en todos lados — rompe el look "plantilla de IA".
- *   Revisá tailwind.config: font-body NO debería apuntar a Geist/Inter genérica,
- *   sugerido: 'Public Sans' o 'General Sans'.
- * - Se agregaron microcopys de confianza (envíos, atención personal) típicos
- *   de patrones de marketing de e-commerce de nicho.
- *
- * TODO: reemplazar cada [FRASE CLIENTE: ...] por el texto exacto que dio el dueño.
+ * Página "Quiénes Somos" / Nosotros — Petrucci Joyería
+ * Tipografía Proxima Nova adoptada con diseño minimalista inspirado en Joyería El Rubí.
  */
 
 import type { Metadata } from "next";
@@ -21,9 +9,9 @@ import Link from "next/link";
 import { api } from "@/lib/api";
 
 export const metadata: Metadata = {
-  title: "Quiénes somos — Petrucci Joyería",
+  title: "Quiénes Somos — Petrucci Joyería",
   description:
-    "Conocé la historia de Petrucci Joyería, más de 25 años en San Jorge, Santa Fe. Joyas, relojes y trabajos personalizados con atención personalizada.",
+    "Joyería Petrucci: más de 25 años de tradición, taller propio y pasión orfebre en San Jorge, Santa Fe. Oro 18k, Plata 925 y relojería de precisión.",
 };
 
 export default async function NosotrosPage() {
@@ -35,86 +23,232 @@ export default async function NosotrosPage() {
   }
 
   const address = storeConfig?.address ?? "Eva Perón 1574, San Jorge, Santa Fe";
-  const businessHours = storeConfig?.businessHours ?? "Lun–Vie 9:00–18:00 · Sáb 9:00–13:00";
-  const instagramUrl = storeConfig?.instagramUrl ?? "https://instagram.com/joyeriapetrucci";
+  const businessHours =
+    storeConfig?.businessHours ?? "Lun–Vie 9:00–18:00 · Sáb 9:00–13:00";
+  const instagramUrl =
+    storeConfig?.instagramUrl ?? "https://instagram.com/joyeriapetrucci";
+  const facebookUrl = storeConfig?.facebookUrl ?? null;
+  const whatsappNumber =
+    storeConfig?.whatsappNumber?.replace(/\D/g, "") ?? "5493406440000";
 
   return (
-    <>
-      {/* ── Hero de sección ──────────────────────────────────────────────── */}
-      <div className="border-b border-petrucci-border">
-        <div className="mx-auto max-w-7xl px-6 md:px-10 py-12 md:py-20">
-          <nav aria-label="Migas de pan" className="mb-5">
-            <ol className="flex items-center gap-1.5 font-body text-xs text-petrucci-gray">
-              <li><Link href="/" className="hover:text-petrucci-gold transition-colors">Inicio</Link></li>
-              <li aria-hidden="true">›</li>
-              <li className="text-petrucci-black" aria-current="page">Quiénes somos</li>
+    <div className="font-proxima bg-white text-[#222222] min-h-screen">
+      {/* ── Breadcrumb & Header ────────────────────────────────────────── */}
+      <section className="border-b border-gray-100 bg-[#FAF9F7]/60">
+        <div className="mx-auto max-w-5xl px-6 py-8 md:py-12">
+          <nav aria-label="Migas de pan" className="mb-4">
+            <ol className="flex items-center gap-2 text-xs tracking-wider uppercase text-gray-500">
+              <li>
+                <Link
+                  href="/"
+                  className="hover:text-black transition-colors"
+                >
+                  Inicio
+                </Link>
+              </li>
+              <li aria-hidden="true" className="text-gray-300">
+                /
+              </li>
+              <li className="text-gray-900 font-semibold" aria-current="page">
+                Quiénes Somos
+              </li>
             </ol>
           </nav>
 
-          <p className="font-accent text-xs tracking-[0.25em] uppercase text-petrucci-gold mb-3">
-            Desde 1999 en San Jorge
-          </p>
-          <h1 className="font-display text-4xl md:text-6xl text-petrucci-black max-w-2xl">
-            DISEÑO Y CALIDAD NOS DISTINGUEN
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-gray-950 uppercase font-proxima">
+            Quiénes Somos
           </h1>
-          <p className="font-body text-sm md:text-base text-petrucci-gray max-w-xl mt-4">
-            {/* [FRASE CLIENTE: bajada corta que el dueño quiera debajo del título] */}
-            Más de 25 años eligiendo cada pieza como si fuera para nuestra propia familia.
-          </p>
+          <div className="h-0.5 w-12 bg-amber-700 mt-4" />
         </div>
-      </div>
+      </section>
 
-      <div className="mx-auto max-w-7xl px-6 md:px-10 py-12 md:py-20">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-14 md:gap-20">
-
-          {/* ── Historia ──────────────────────────────────────────────────── */}
-          <div className="flex flex-col gap-6">
-            <h2 className="">
-              Nuestra historia
-            </h2>
+      {/* ── Main Content Section ───────────────────────────────────────── */}
+      <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           
+          {/* Left Column: Storytelling & Philosophy (Inspired by Joyería El Rubí) */}
+          <div className="lg:col-span-7 flex flex-col gap-6 text-[15px] md:text-[16px] leading-relaxed text-gray-700">
+            <p className="font-medium text-gray-950 text-lg md:text-xl leading-snug">
+              Joyería Petrucci se erige como una empresa de continuidad ininterrumpida y tradición familiar desde 1999 en San Jorge, Santa Fe.
+            </p>
 
-            {/* Pilares — reforzados como argumentos de venta, no solo datos
-            <div className="grid grid-cols-2 gap-4 mt-2">
-              {[
-                { number: "25+", label: "Años cuidando cada detalle" },
-                { number: "100%", label: "Atención cara a cara, sin bots" },
-                { number: "∞", label: "Piezas elegidas una por una" },
-                { number: "🤝", label: "Confianza de generaciones" },
-              ].map((item) => (
-                <div key={item.label} className="border border-petrucci-border p-4">
-                  <p className="font-display text-3xl text-petrucci-gold mb-1">{item.number}</p>
-                  <p className="font-body text-xs text-petrucci-gray">{item.label}</p>
-                </div>
-              ))}
-            </div> */}
+            <p>
+              Con más de un cuarto de siglo de trayectoria y respaldada por la pasión del oficio orfebre, nuestra firma ha mantenido de manera constante la misma filosofía basada en la <strong>honestidad, la seriedad y el compromiso</strong> con cada cliente.
+            </p>
 
-            <div className="border-t border-petrucci-border pt-6 mt-2 flex flex-col gap-3">
-              <p className="font-accent text-xs tracking-[0.2em] uppercase text-petrucci-gold">
-                Nuestros compromisos
+            <p>
+              Nos apasiona el arte de la joyería y creemos profundamente en la <em>carga simbólica y la identidad</em> que cada pieza lleva consigo. Seleccionamos y confeccionamos piezas en <strong>Oro 18 quilates, Plata 925</strong> y diversas combinaciones con piedras preciosas y semipreciosas, junto a una selecta colección de <strong>relojería de precisión</strong>.
+            </p>
+
+            <div className="my-2 p-5 bg-[#FAF9F7] border-l-2 border-amber-700 rounded-xs">
+              <p className="italic text-gray-800 text-sm md:text-base leading-relaxed">
+                &ldquo;Nuestro perpetuo objetivo es aspirar siempre a que nuestras joyas no solo sean objetos de belleza y distinción, sino arquitectas de momentos únicos e inolvidables en la vida de quienes las eligen.&rdquo;
               </p>
-              <ul className="font-body text-sm text-petrucci-gray flex flex-col gap-2">
-                <li>Asesoramiento personalizado antes de comprar</li>
-                <li>Grabados y trabajos a medida</li>
-                <li>Taller propio de joyeria integrado</li>
-              </ul>
+            </div>
+
+            <p>
+              La unidad, la intuición orfebre, la vocación hacia el trabajo artesanal y el trato personalizado convergen para forjar el nombre que hoy resuena con confianza y reconocimiento en toda la región.
+            </p>
+
+            {/* ── Pilares / Compromisos ─────────────────────────────────── */}
+            <div className="pt-6 mt-4 border-t border-gray-100">
+              <h2 className="text-xs tracking-[0.2em] font-bold uppercase text-amber-800 mb-5">
+                Nuestros Pilares &amp; Compromisos
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 border border-gray-200/80 rounded-xs bg-white hover:border-gray-400 transition-colors">
+                  <div className="text-amber-800 font-bold text-sm tracking-wider uppercase mb-1">
+                    Oro 18K &amp; Plata 925
+                  </div>
+                  <p className="text-xs text-gray-600 leading-normal">
+                    Garantía de pureza y autenticidad en cada pieza y metal noble.
+                  </p>
+                </div>
+
+                <div className="p-4 border border-gray-200/80 rounded-xs bg-white hover:border-gray-400 transition-colors">
+                  <div className="text-amber-800 font-bold text-sm tracking-wider uppercase mb-1">
+                    Taller Propio
+                  </div>
+                  <p className="text-xs text-gray-600 leading-normal">
+                    Grabados, alianzas de boda a medida y service especializado.
+                  </p>
+                </div>
+
+                <div className="p-4 border border-gray-200/80 rounded-xs bg-white hover:border-gray-400 transition-colors">
+                  <div className="text-amber-800 font-bold text-sm tracking-wider uppercase mb-1">
+                    25+ Años de Confianza
+                  </div>
+                  <p className="text-xs text-gray-600 leading-normal">
+                    Atención personalizada cara a cara y acompañamiento en cada elección.
+                  </p>
+                </div>
+
+                <div className="p-4 border border-gray-200/80 rounded-xs bg-white hover:border-gray-400 transition-colors">
+                  <div className="text-amber-800 font-bold text-sm tracking-wider uppercase mb-1">
+                    Envíos Seguros
+                  </div>
+                  <p className="text-xs text-gray-600 leading-normal">
+                    Llegamos a todo el país con packaging de regalo y máxima seguridad.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* ── Contacto ──────────────────────────────────────────────────── */}
-          <div className="flex flex-col gap-8">
-            <h2 className="font-display text-2xl md:text-3xl text-petrucci-black">
-              Dónde encontrarnos
-            </h2>
+          {/* Right Column: Location, Hours, Contact Card & Map */}
+          <div className="lg:col-span-5 flex flex-col gap-6">
+            <div className="bg-[#FAF9F7] p-6 md:p-8 border border-gray-200/70 rounded-xs">
+              <h2 className="text-sm font-bold tracking-widest uppercase text-gray-950 mb-6 pb-2 border-b border-gray-200">
+                Dónde encontrarnos
+              </h2>
 
-            {/* Mapa estático (link a Google Maps) */}
-            <a
-              href={`https://maps.google.com/?q=${encodeURIComponent(address)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block relative overflow-hidden rounded-sm border border-petrucci-border aspect-video bg-petrucci-border group"
-              aria-label={`Ver ${address} en Google Maps`}
-            >
+              <address className="not-italic space-y-5 text-sm text-gray-700">
+                <div className="flex items-start gap-3.5">
+                  <svg
+                    className="w-5 h-5 text-amber-800 shrink-0 mt-0.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  <div>
+                    <span className="block text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-0.5">
+                      Dirección
+                    </span>
+                    <span className="font-medium text-gray-900">{address}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3.5">
+                  <svg
+                    className="w-5 h-5 text-amber-800 shrink-0 mt-0.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <div>
+                    <span className="block text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-0.5">
+                      Horarios de Atención
+                    </span>
+                    <span className="font-medium text-gray-900">{businessHours}</span>
+                  </div>
+                </div>
+
+                {instagramUrl && (
+                  <div className="flex items-start gap-3.5">
+                    <svg
+                      className="w-5 h-5 text-amber-800 shrink-0 mt-0.5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect x="2" y="2" width="20" height="20" rx="5" strokeWidth={1.5} />
+                      <path
+                        strokeWidth={1.5}
+                        d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"
+                      />
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" strokeWidth={2} />
+                    </svg>
+                    <div>
+                      <span className="block text-[11px] uppercase tracking-wider text-gray-500 font-semibold mb-0.5">
+                        Instagram
+                      </span>
+                      <a
+                        href={instagramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-gray-900 hover:text-amber-800 transition-colors"
+                      >
+                        @joyeriapetrucci
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </address>
+
+              {/* WhatsApp Button CTA */}
+              <div className="mt-7 pt-5 border-t border-gray-200">
+                <a
+                  href={`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+                    "¡Hola! Me gustaría consultar por una joya o trabajo personalizado."
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2.5 w-full py-3.5 px-4 bg-gray-950 hover:bg-black text-white text-xs font-bold tracking-widest uppercase transition-all duration-200 shadow-xs hover:shadow-md"
+                >
+                  <svg
+                    className="w-4 h-4 fill-current text-green-400"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.664-.698c.969.542 1.875.83 2.796.83h.005c3.177 0 5.766-2.587 5.768-5.766.002-3.18-2.584-5.817-5.773-5.817zm7.969 5.766c-.003 4.418-3.593 8.007-8.006 8.007-1.349 0-2.673-.34-3.843-.984l-4.151 1.089 1.109-4.049c-.73-1.233-1.119-2.65-1.118-4.063.003-4.417 3.593-8.006 8.006-8.006 4.419 0 8.006 3.588 8.003 8.006z" />
+                  </svg>
+                  Consultar por WhatsApp
+                </a>
+              </div>
+            </div>
+
+            {/* Google Maps Iframe */}
+            <div className="overflow-hidden border border-gray-200 rounded-xs aspect-video bg-gray-100 shadow-2xs">
               <iframe
                 title="Ubicación de Petrucci Joyería"
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13464.876!2d-61.849!3d-31.896!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x95c9a!2sSan+Jorge,+Santa+Fe!5e0!3m2!1ses!2sar!4v1!5m2!1ses!2sar"
@@ -122,66 +256,11 @@ export default async function NosotrosPage() {
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
               />
-              <div className="absolute inset-0 bg-transparent group-hover:bg-petrucci-black/5 transition-colors" />
-            </a>
-
-            {/* Datos de contacto */}
-            <address className="not-italic flex flex-col gap-4">
-              <div className="flex items-start gap-3">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0 text-petrucci-gold">
-                  <path d="M8 1.5C5.515 1.5 3.5 3.515 3.5 6c0 3.5 4.5 8.5 4.5 8.5S12.5 9.5 12.5 6c0-2.485-2.015-4.5-4.5-4.5z" stroke="currentColor" strokeWidth="1.3" />
-                  <circle cx="8" cy="6" r="1.5" stroke="currentColor" strokeWidth="1.3" />
-                </svg>
-                <div>
-                  <p className="font-body text-xs tracking-wide text-petrucci-gray uppercase mb-0.5">Dirección</p>
-                  <p className="font-body text-sm text-petrucci-black">{address}</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="mt-0.5 shrink-0 text-petrucci-gold">
-                  <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.3" />
-                  <path d="M8 4.5V8l2.5 2" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-                </svg>
-                <div>
-                  <p className="font-body text-xs tracking-wide text-petrucci-gray uppercase mb-0.5">Horarios</p>
-                  <p className="font-body text-sm text-petrucci-black">{businessHours}</p>
-                </div>
-              </div>
-
-              {instagramUrl && (
-                <div className="flex items-start gap-3">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mt-0.5 shrink-0 text-petrucci-gold">
-                    <rect x="2" y="2" width="20" height="20" rx="5" />
-                    <circle cx="12" cy="12" r="4" />
-                    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor" stroke="none" />
-                  </svg>
-                  <div>
-                    <p className="font-body text-xs tracking-wide text-petrucci-gray uppercase mb-0.5">Instagram</p>
-                    <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="font-body text-sm text-petrucci-black hover:text-petrucci-gold transition-colors">
-                      @joyeriapetrucci
-                    </a>
-                  </div>
-                </div>
-              )}
-            </address>
-
-            {/* CTA WhatsApp */}
-            {/* TODO: reemplazar href por el resultado de GET /catalog/whatsapp-link cuando esté disponible */}
-            <a
-              href="#contacto"
-              aria-disabled="true"
-              className="flex items-center justify-center gap-3 w-full py-4 bg-petrucci-black text-petrucci-cream font-body text-sm tracking-[0.15em] uppercase hover:bg-petrucci-gold transition-colors duration-300 mt-2"
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-                <path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.553 4.112 1.522 5.839L.057 23.776a.5.5 0 0 0 .617.625l6.09-1.595A11.937 11.937 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.927 0-3.74-.518-5.297-1.424l-.38-.224-3.938 1.032 1.05-3.834-.247-.395A9.948 9.948 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
-              </svg>
-              Escribinos por WhatsApp
-            </a>
+            </div>
           </div>
+
         </div>
-      </div>
-    </>
+      </section>
+    </div>
   );
 }

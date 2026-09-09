@@ -10,6 +10,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { setToken, setUser, isAuthenticated } from "@/lib/auth";
 import type { AdminUser } from "@/lib/auth";
 
@@ -76,10 +77,15 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm px-6 py-8 md:px-8">
 
         {/* Logo */}
-        <div className="text-center mb-8">
-          <p className="font-display text-3xl tracking-[0.35em] text-gray-900 mb-1">
-            PETRUCCI
-          </p>
+        <div className="flex flex-col items-center justify-center text-center mb-7">
+          <Image
+            src="/logo-petrucci-v2.svg"
+            alt="Petrucci Joyería"
+            width={160}
+            height={146}
+            className="h-16 w-auto object-contain mb-3"
+            priority
+          />
           <p className="font-body text-xs tracking-[0.15em] uppercase text-gray-400">
             Panel de administración
           </p>
