@@ -4,11 +4,11 @@
  * app/admin/categorias/page.tsx
  * Panel de Categorías y Subcategorías diseñado especialmente para uso fácil, claro y directo.
  *
- * Características para personas mayores / facilidad de uso:
- *  - Textos grandes, claros y en español simple (sin jerga técnica).
- *  - Botones de gran tamaño y buen contraste para pulsar fácil.
- *  - Distinción visual obvia entre Categoría Principal y Subcategorías internas.
- *  - Confirmaciones y mensajes de ayuda paso a paso.
+ * Características de accesibilidad y UX:
+ *  - Textos grandes, claros y en español simple.
+ *  - Botones de gran tamaño táctil (mínimo 36px/44px) para pulsar fácil sin errores en móvil.
+ *  - Notificaciones toast integradas y modals con trampa de foco.
+ *  - Aclaraciones visuales explícitas ("Los clientes no la ven en la tienda").
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -16,6 +16,9 @@ import { useRouter } from "next/navigation";
 import { adminFetch } from "@/lib/auth";
 import type { Category } from "@/types/category";
 import CategoryMenuPreview from "@/components/admin/CategoryMenuPreview";
+import { useToast } from "@/hooks/useToast";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
+
 interface ModalState {
   isOpen: boolean;
   mode: "create_root" | "create_sub" | "edit";
@@ -26,12 +29,12 @@ interface ModalState {
 
 export default function AdminCategoriasPage() {
   const router = useRouter();
+  const toast = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  // Modal
+  // Modal de Formulario (Crear/Editar)
   const [modal, setModal] = useState<ModalState>({ isOpen: false, mode: "create_root" });
   const [formName, setFormName] = useState("");
   const [formDesc, setFormDesc] = useState("");
@@ -40,10 +43,9 @@ export default function AdminCategoriasPage() {
   const [saving, setSaving] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
 
-  // Eliminación
+  // Modal de Eliminación (ConfirmModal)
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
   const [deleting, setDeleting] = useState(false);
-  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const loadCategories = useCallback(async () => {
     try {
@@ -59,23 +61,20 @@ export default function AdminCategoriasPage() {
       if (e.status === 401) {
         router.push("/admin/login");
       } else {
-        setError(e.message ?? "No se pudieron cargar las categorías.");
+        const msg = e.message ?? "No se pudieron cargar las categorías.";
+        setError(msg);
+        toast.error(msg);
       }
     } finally {
       setLoading(false);
     }
-  }, [router]);
+  }, [router, toast]);
 
   useEffect(() => {
     loadCategories();
   }, [loadCategories]);
 
-  const showSuccess = (msg: string) => {
-    setSuccessMessage(msg);
-    setTimeout(() => setSuccessMessage(null), 4000);
-  };
-
-  // Toggle Activo
+  // Toggle Activo con feedback Toast
   const toggleActive = async (cat: Category) => {
     try {
       const nextActive = !cat.isActive;
@@ -83,15 +82,15 @@ export default function AdminCategoriasPage() {
         method: "PATCH",
         body: JSON.stringify({ isActive: nextActive }),
       });
-      showSuccess(`"${cat.name}" ahora está ${nextActive ? "visible en la tienda" : "oculta"}.`);
+      toast.success(`"${cat.name}" ahora está ${nextActive ? "visible en la tienda" : "oculta para los clientes"}.`);
       loadCategories();
     } catch (err: unknown) {
       const e = err as { message?: string };
-      alert(e.message ?? "No se pudo cambiar el estado.");
+      toast.error(e.message ?? "No se pudo cambiar el estado de visibilidad.");
     }
   };
 
-  // Mover orden
+  // Mover orden con feedback Toast en errores
   const moveOrder = async (cat: Category, direction: "up" | "down", siblings: (Category | Category["children"][0])[]) => {
     const currentIndex = siblings.findIndex((s) => s.id === cat.id);
     if (currentIndex === -1) return;
@@ -110,10 +109,11 @@ export default function AdminCategoriasPage() {
           body: JSON.stringify({ sortOrder: cat.sortOrder }),
         }),
       ]);
+      toast.info(`Orden actualizado para "${cat.name}".`);
       loadCategories();
     } catch (err: unknown) {
       const e = err as { message?: string };
-      alert(e.message ?? "No se pudo mover la posición.");
+      toast.error(e.message ?? "No se pudo cambiar el orden de la sección.");
     }
   };
 
@@ -159,7 +159,7 @@ export default function AdminCategoriasPage() {
     setModal({ isOpen: false, mode: "create_root" });
   };
 
-  // Guardar
+  // Guardar desde modal con Toast
   const handleSaveModal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName.trim()) {
@@ -180,7 +180,7 @@ export default function AdminCategoriasPage() {
             sortOrder: Number(formOrder) || 0,
           }),
         });
-        showSuccess(`Se creó la sección "${formName.trim()}" con éxito.`);
+        toast.success(`Se creó la sección "${formName.trim()}" con éxito.`);
       } else if (modal.mode === "create_sub") {
         await adminFetch("/admin/categories", {
           method: "POST",
@@ -191,7 +191,7 @@ export default function AdminCategoriasPage() {
             sortOrder: Number(formOrder) || 0,
           }),
         });
-        showSuccess(`Se agregó "${formName.trim()}" dentro de ${modal.parentName}.`);
+        toast.success(`Se agregó "${formName.trim()}" dentro de ${modal.parentName}.`);
       } else if (modal.mode === "edit" && modal.category) {
         await adminFetch(`/admin/categories/${modal.category.id}`, {
           method: "PATCH",
@@ -202,35 +202,37 @@ export default function AdminCategoriasPage() {
             isActive: formActive,
           }),
         });
-        showSuccess(`Cambios guardados en "${formName.trim()}".`);
+        toast.success(`Cambios guardados en "${formName.trim()}".`);
       }
 
       closeModal();
       loadCategories();
     } catch (err: unknown) {
       const e = err as { message?: string };
-      setModalError(e.message ?? "Ocurrió un error al guardar.");
+      const msg = e.message ?? "Ocurrió un error al guardar.";
+      setModalError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
   };
 
-  // Eliminar
+  // Eliminar con ConfirmModal y Toast
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     setDeleting(true);
-    setDeleteError(null);
 
     try {
       await adminFetch(`/admin/categories/${deleteTarget.id}`, {
         method: "DELETE",
       });
-      showSuccess(`Se eliminó "${deleteTarget.name}".`);
+      toast.success(`Se eliminó "${deleteTarget.name}".`);
       setDeleteTarget(null);
       loadCategories();
     } catch (err: unknown) {
       const e = err as { message?: string };
-      setDeleteError(e.message ?? "No se pudo eliminar.");
+      const msg = e.message ?? "No se pudo eliminar la categoría. Si contiene productos o subcategorías, primero debés reasignarlos o borrar sus productos.";
+      toast.error(msg);
     } finally {
       setDeleting(false);
     }
@@ -239,19 +241,20 @@ export default function AdminCategoriasPage() {
   return (
     <div className="flex flex-col gap-4 max-w-4xl mx-auto font-body text-gray-900 pb-16">
       {/* ── Encabezado Principal y Explicación ──────────────────────────────── */}
-      <div className="bg-white p-5 md:p-6 rounded-xl border border-gray-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-5 md:p-6 rounded-xl border border-gray-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-gray-950">
             Secciones y Rubros del Menú
           </h1>
           <p className="text-xs md:text-sm text-gray-600 mt-1">
-            Organiza las secciones del menú principal y sus subcategorías de joyas o marcas.
+            Organizá las secciones del menú principal y sus subcategorías de joyas o marcas.
           </p>
         </div>
+
         <button
           type="button"
           onClick={openCreateRoot}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-black text-white font-medium text-sm rounded-lg shadow-sm transition-all active:scale-[0.98] shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-black text-white font-medium text-sm rounded-lg shadow-sm transition-all active:scale-[0.98] shrink-0 min-h-[44px] cursor-pointer"
         >
           <span className="text-lg leading-none font-bold">+</span>
           <span>Nueva Sección Principal</span>
@@ -260,20 +263,10 @@ export default function AdminCategoriasPage() {
 
       {!loading && !error && <CategoryMenuPreview categories={categories} />}
 
-      {/* Mensaje de éxito verde */}
-      {successMessage && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-300 rounded-xl text-emerald-900 font-medium text-sm flex items-center gap-2.5 shadow-xs">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald-700 shrink-0">
-            <path d="M20 6L9 17l-5-5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
-          <span>{successMessage}</span>
-        </div>
-      )}
-
       {/* Mensaje de error general */}
       {error && (
         <div className="p-3.5 bg-red-50 border border-red-300 rounded-xl text-red-900 font-medium text-sm">
-          {error}
+          ⚠️ {error}
         </div>
       )}
 
@@ -296,7 +289,7 @@ export default function AdminCategoriasPage() {
               <button
                 type="button"
                 onClick={openCreateRoot}
-                className="px-5 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-semibold"
+                className="px-5 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-semibold min-h-[44px]"
               >
                 Crear la primera sección
               </button>
@@ -305,19 +298,19 @@ export default function AdminCategoriasPage() {
             categories.map((cat, rootIndex) => (
               <div
                 key={cat.id}
-                className="bg-white border border-gray-200 rounded-xl shadow-xs overflow-hidden transition-all hover:border-gray-300"
+                className="bg-white border border-gray-200 rounded-xl shadow-2xs overflow-hidden transition-all hover:border-gray-300"
               >
-                {/* ── Cabecera de Categoría Principal Compacta ── */}
+                {/* ── Cabecera de Categoría Principal ── */}
                 <div className="p-3.5 md:p-4 bg-gray-50/70 border-b border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    {/* Botones de orden compactos */}
-                    <div className="flex items-center gap-1 shrink-0">
+                    {/* Botones de orden agrandados para touch (mínimo 36px x 36px) */}
+                    <div className="flex items-center gap-1.5 shrink-0">
                       <button
                         type="button"
                         onClick={() => moveOrder(cat, "up", categories)}
                         disabled={rootIndex === 0}
                         title="Subir posición en el menú"
-                        className="w-7 h-7 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded text-xs text-gray-800 disabled:opacity-25 font-bold transition-colors"
+                        className="w-9 h-9 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded-lg text-sm text-gray-900 disabled:opacity-25 font-bold shadow-2xs active:scale-95 transition-all cursor-pointer"
                       >
                         ▲
                       </button>
@@ -326,38 +319,45 @@ export default function AdminCategoriasPage() {
                         onClick={() => moveOrder(cat, "down", categories)}
                         disabled={rootIndex === categories.length - 1}
                         title="Bajar posición en el menú"
-                        className="w-7 h-7 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded text-xs text-gray-800 disabled:opacity-25 font-bold transition-colors"
+                        className="w-9 h-9 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded-lg text-sm text-gray-900 disabled:opacity-25 font-bold shadow-2xs active:scale-95 transition-all cursor-pointer"
                       >
                         ▼
                       </button>
                     </div>
 
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[11px] font-bold uppercase tracking-wider bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
-                        #{rootIndex + 1}
-                      </span>
-                      <h2 className="text-base md:text-lg font-bold text-gray-950">
-                        {cat.name}
-                      </h2>
-                      {cat.isProtected && (
-                        <span className="bg-amber-50 text-amber-900 text-[11px] font-medium px-2 py-0.5 rounded border border-amber-200">
-                          Básica
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[11px] font-bold uppercase tracking-wider bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
+                          #{rootIndex + 1}
                         </span>
-                      )}
+                        <h2 className="text-base md:text-lg font-bold text-gray-950">
+                          {cat.name}
+                        </h2>
+                        {cat.isProtected && (
+                          <span className="bg-amber-50 text-amber-900 text-[11px] font-medium px-2 py-0.5 rounded border border-amber-200">
+                            Básica
+                          </span>
+                        )}
+                        {!cat.isActive && (
+                          <span className="bg-gray-200 text-gray-700 text-[11px] font-semibold px-2 py-0.5 rounded">
+                            Oculta
+                          </span>
+                        )}
+                      </div>
                       {!cat.isActive && (
-                        <span className="bg-gray-200 text-gray-600 text-[11px] font-medium px-2 py-0.5 rounded">
-                          Oculta
+                        <span className="text-[11px] text-amber-800 font-normal block mt-0.5">
+                          🔒 Los clientes no la ven en la tienda
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Acciones principales compactas */}
+                  {/* Acciones principales con buen target táctil */}
                   <div className="flex items-center gap-2 flex-wrap self-end md:self-auto">
                     <button
                       type="button"
                       onClick={() => openCreateSub(cat)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-amber-900 hover:text-amber-950 py-1.5 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg transition-colors"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-amber-900 hover:text-amber-950 py-2 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg transition-colors min-h-[36px] cursor-pointer"
                     >
                       <span>+ Sub-rubro</span>
                     </button>
@@ -365,11 +365,10 @@ export default function AdminCategoriasPage() {
                     <button
                       type="button"
                       onClick={() => toggleActive(cat)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-                        cat.isActive
-                          ? "bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100"
-                          : "bg-gray-100 border-gray-300 text-gray-600 hover:bg-gray-200"
-                      }`}
+                      className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-colors min-h-[36px] cursor-pointer ${cat.isActive
+                        ? "bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100"
+                        : "bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200"
+                        }`}
                     >
                       {cat.isActive ? "✓ Visible" : "○ Oculta"}
                     </button>
@@ -377,14 +376,14 @@ export default function AdminCategoriasPage() {
                     <button
                       type="button"
                       onClick={() => openEdit(cat)}
-                      className="px-3 py-1.5 bg-white border border-gray-300 text-gray-800 hover:bg-gray-100 text-xs font-semibold rounded-lg transition-colors"
+                      className="px-3 py-2 bg-white border border-gray-300 text-gray-800 hover:bg-gray-100 text-xs font-semibold rounded-lg transition-colors min-h-[36px] cursor-pointer"
                     >
                       Modificar
                     </button>
 
                     {cat.isProtected ? (
                       <span
-                        className="px-2.5 py-1.5 text-[11px] text-gray-400 bg-gray-100 rounded-lg border border-gray-200 cursor-not-allowed"
+                        className="px-2.5 py-2 text-[11px] text-gray-400 bg-gray-100 rounded-lg border border-gray-200 cursor-not-allowed min-h-[36px] flex items-center"
                         title="Esta sección es fija y no puede borrarse"
                       >
                         Fija
@@ -392,11 +391,8 @@ export default function AdminCategoriasPage() {
                     ) : (
                       <button
                         type="button"
-                        onClick={() => {
-                          setDeleteError(null);
-                          setDeleteTarget(cat);
-                        }}
-                        className="px-3 py-1.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold rounded-lg transition-colors"
+                        onClick={() => setDeleteTarget(cat)}
+                        className="px-3 py-2 bg-white border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold rounded-lg transition-colors min-h-[36px] cursor-pointer"
                       >
                         Borrar
                       </button>
@@ -404,7 +400,7 @@ export default function AdminCategoriasPage() {
                   </div>
                 </div>
 
-                {/* ── Subcategorías compactas ── */}
+                {/* ── Subcategorías ── */}
                 <div className="p-3 md:p-4 bg-white">
                   {cat.children && cat.children.length > 0 ? (
                     <div className="flex flex-col gap-2 pl-3 border-l-2 border-amber-300">
@@ -413,14 +409,14 @@ export default function AdminCategoriasPage() {
                           key={sub.id}
                           className="flex items-center justify-between p-2.5 bg-gray-50/80 border border-gray-200 rounded-lg hover:bg-gray-100/70 transition-colors gap-2"
                         >
-                          <div className="flex items-center gap-2">
-                            {/* Orden sub */}
-                            <div className="flex items-center gap-0.5">
+                          <div className="flex items-center gap-2.5">
+                            {/* Orden subcategoría agrandado (mínimo 32px x 32px) */}
+                            <div className="flex items-center gap-1">
                               <button
                                 type="button"
                                 onClick={() => moveOrder(sub as unknown as Category, "up", cat.children)}
                                 disabled={subIndex === 0}
-                                className="w-5 h-5 flex items-center justify-center text-[10px] text-gray-600 hover:text-black bg-white border border-gray-200 rounded disabled:opacity-20"
+                                className="w-8 h-8 flex items-center justify-center text-xs text-gray-800 hover:text-black bg-white border border-gray-300 rounded-md disabled:opacity-20 shadow-2xs font-bold active:scale-95 transition-all cursor-pointer"
                                 title="Subir"
                               >
                                 ▲
@@ -429,14 +425,14 @@ export default function AdminCategoriasPage() {
                                 type="button"
                                 onClick={() => moveOrder(sub as unknown as Category, "down", cat.children)}
                                 disabled={subIndex === cat.children.length - 1}
-                                className="w-5 h-5 flex items-center justify-center text-[10px] text-gray-600 hover:text-black bg-white border border-gray-200 rounded disabled:opacity-20"
+                                className="w-8 h-8 flex items-center justify-center text-xs text-gray-800 hover:text-black bg-white border border-gray-300 rounded-md disabled:opacity-20 shadow-2xs font-bold active:scale-95 transition-all cursor-pointer"
                                 title="Bajar"
                               >
                                 ▼
                               </button>
                             </div>
 
-                            <span className="text-xs md:text-sm font-medium text-gray-900">
+                            <span className="text-xs md:text-sm font-semibold text-gray-950">
                               {sub.name}
                             </span>
                           </div>
@@ -445,17 +441,14 @@ export default function AdminCategoriasPage() {
                             <button
                               type="button"
                               onClick={() => openEdit(sub as unknown as Category, cat.name)}
-                              className="px-2.5 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-md transition-colors"
+                              className="px-2.5 py-1.5 text-xs font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-md transition-colors cursor-pointer min-h-[32px]"
                             >
                               Modificar
                             </button>
                             <button
                               type="button"
-                              onClick={() => {
-                                setDeleteError(null);
-                                setDeleteTarget(sub as unknown as Category);
-                              }}
-                              className="px-2.5 py-1 text-xs font-medium text-red-600 bg-white border border-red-200 hover:bg-red-50 rounded-md transition-colors"
+                              onClick={() => setDeleteTarget(sub as unknown as Category)}
+                              className="px-2.5 py-1.5 text-xs font-semibold text-red-600 bg-white border border-red-200 hover:bg-red-50 rounded-md transition-colors cursor-pointer min-h-[32px]"
                             >
                               Borrar
                             </button>
@@ -484,13 +477,13 @@ export default function AdminCategoriasPage() {
                 {modal.mode === "create_root"
                   ? "Crear Sección Principal"
                   : modal.mode === "create_sub"
-                  ? `Agregar adentro de ${modal.parentName}`
-                  : `Modificar: ${formName}`}
+                    ? `Agregar adentro de ${modal.parentName}`
+                    : `Modificar: ${formName}`}
               </h2>
               <button
                 type="button"
                 onClick={closeModal}
-                className="text-gray-400 hover:text-gray-900 text-2xl p-1 leading-none font-bold"
+                className="text-gray-400 hover:text-gray-900 text-2xl p-1 leading-none font-bold cursor-pointer"
               >
                 ✕
               </button>
@@ -499,7 +492,7 @@ export default function AdminCategoriasPage() {
             <form onSubmit={handleSaveModal} className="flex flex-col gap-5">
               {modalError && (
                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm font-medium">
-                  {modalError}
+                  ⚠️ {modalError}
                 </div>
               )}
 
@@ -554,14 +547,14 @@ export default function AdminCategoriasPage() {
                   type="button"
                   onClick={closeModal}
                   disabled={saving}
-                  className="px-6 py-3 border border-gray-300 text-gray-800 rounded-lg text-base font-medium hover:bg-gray-100"
+                  className="px-6 py-3 border border-gray-300 text-gray-800 rounded-lg text-base font-medium hover:bg-gray-100 min-h-[44px] cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-7 py-3 bg-gray-900 hover:bg-black text-white rounded-lg text-base font-bold shadow disabled:opacity-50 flex items-center gap-2"
+                  className="px-7 py-3 bg-gray-900 hover:bg-black text-white rounded-lg text-base font-bold shadow disabled:opacity-50 flex items-center gap-2 min-h-[44px] cursor-pointer"
                 >
                   {saving ? "Guardando..." : "Guardar"}
                 </button>
@@ -571,51 +564,18 @@ export default function AdminCategoriasPage() {
         </div>
       )}
 
-      {/* ── MODAL DE CONFIRMACIÓN DE ELIMINACIÓN ────────────────────────────── */}
-      {deleteTarget && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 md:p-8 shadow-2xl flex flex-col gap-5">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-950">
-              ¿Eliminar &quot;{deleteTarget.name}&quot;?
-            </h2>
-
-            {deleteError ? (
-              <div className="p-4 bg-red-50 border-2 border-red-300 rounded-xl text-red-900 text-sm leading-relaxed">
-                <strong>No se pudo borrar:</strong>
-                <p className="mt-1 font-medium">{deleteError}</p>
-                <p className="mt-2 text-xs text-gray-600">
-                  Si esta categoría contiene productos o subcategorías, primero debés cambiar de categoría esos productos o borrarlos.
-                </p>
-              </div>
-            ) : (
-              <p className="text-base text-gray-700 leading-relaxed">
-                ¿Estás seguro de que querés borrar esta categoría? Si tiene productos asociados, el sistema no la borrará para no perder tus datos.
-              </p>
-            )}
-
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
-              <button
-                type="button"
-                onClick={() => setDeleteTarget(null)}
-                disabled={deleting}
-                className="px-5 py-2.5 border border-gray-300 text-gray-800 rounded-lg text-base font-medium hover:bg-gray-100"
-              >
-                {deleteError ? "Entendido, cerrar" : "Cancelar"}
-              </button>
-              {!deleteError && (
-                <button
-                  type="button"
-                  onClick={confirmDelete}
-                  disabled={deleting}
-                  className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-base font-bold shadow disabled:opacity-50"
-                >
-                  {deleting ? "Borrando..." : "Sí, borrar"}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── MODAL DE CONFIRMACIÓN DE ELIMINACIÓN CON CONFIRM MODAL ───────── */}
+      <ConfirmModal
+        isOpen={!!deleteTarget}
+        title={`¿Eliminar "${deleteTarget?.name}"?`}
+        message="¿Estás seguro de que querés borrar esta categoría? Si contiene joyas asociadas o subcategorías, el sistema evitará la eliminación para no desarmar tu catálogo."
+        confirmLabel="Sí, borrar"
+        cancelLabel="Cancelar"
+        variant="danger"
+        isLoading={deleting}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

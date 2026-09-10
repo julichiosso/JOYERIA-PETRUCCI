@@ -16,6 +16,8 @@ import Link from "next/link";
 import { isAuthenticated, clearAuth, getUser } from "@/lib/auth";
 import type { AdminUser } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import { ToastProvider } from "@/hooks/useToast";
+import { ToastContainer } from "@/components/ui/Toast";
 
 const NAV_ITEMS = [
   {
@@ -203,24 +205,27 @@ export default function AdminLayout({
   }
 
   return (
-        <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
-      {/* Topbar */}
-      <TopBar user={user} />
+    <ToastProvider>
+      <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
+        {/* Topbar */}
+        <TopBar user={user} />
 
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar desktop */}
-        <SidebarDesktop pathname={pathname} />
+        <div className="flex flex-1 overflow-hidden">
+          {/* Sidebar desktop */}
+          <SidebarDesktop pathname={pathname} />
 
-        {/* Contenido principal */}
-        <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
-          <div className="mx-auto max-w-7xl px-4 md:px-8 py-6 md:py-8">
-            {children}
-          </div>
-        </main>
+          {/* Contenido principal */}
+          <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
+            <div className="mx-auto max-w-7xl px-4 md:px-8 py-6 md:py-8">
+              {children}
+            </div>
+          </main>
+        </div>
+
+        {/* Bottom bar mobile */}
+        <BottomBarMobile pathname={pathname} />
       </div>
-
-      {/* Bottom bar mobile */}
-      <BottomBarMobile pathname={pathname} />
-    </div>
+      <ToastContainer />
+    </ToastProvider>
   );
 }
