@@ -148,12 +148,17 @@ export default function Footer() {
 
           <div className="flex items-center justify-center gap-1 text-[11px] text-gray-500">
             <span>Impulsado por</span>
-            <div className="flex items-center gap-1 font-bold text-gray-800">
+            <a
+              href="https://webya-landing.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 font-bold text-gray-800 hover:text-black transition-colors"
+            >
               <svg width="14" height="10" viewBox="0 0 24 16" fill="currentColor">
                 <path d="M7 13a5 5 0 0 1-2-9.6A7 7 0 0 1 18 6a4 4 0 0 1 0 7z" />
               </svg>
               <span>WebYa</span>
-            </div>
+            </a>
           </div>
         </div>
       </div>

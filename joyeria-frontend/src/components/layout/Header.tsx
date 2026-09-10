@@ -12,7 +12,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn, formatPrice, getImageUrl } from "@/lib/utils";
 import { api } from "@/lib/api";
@@ -24,7 +24,7 @@ const ANNOUNCEMENTS = [
   "RETIRO EN LOCAL · SAN JORGE, SANTA FE",
 ];
 
-// Estructura completa de columnas del Mega Menú (según catálogo Petrucci & referencia El Rubí)
+// Estructura completa de columnas del Mega Menú (exacta según pedido del cliente)
 const JOYAS_MEGA_MENU = [
   {
     title: "ANILLOS",
@@ -37,7 +37,7 @@ const JOYAS_MEGA_MENU = [
       { label: "Con Piedras", href: "/joyeria/anillos-2" },
       { label: "Sin Piedras", href: "/joyeria/anillos-2" },
       { label: "Plata y Oro", href: "/joyeria/anillos-2" },
-      { label: "Plata", href: "/joyeria/anillos-2"}
+      { label: "Plata", href: "/joyeria/anillos-2" }
     ],
   },
   {
@@ -55,7 +55,7 @@ const JOYAS_MEGA_MENU = [
     secondaryHref: "/joyeria/dijes",
     secondaryItems: [
       { label: "Oro", href: "/joyeria/dijes" },
-      { label: "Plata y Oro", href: "/joyeria/dijes"},
+      { label: "Plata y Oro", href: "/joyeria/dijes" },
       { label: "Plata", href: "/joyeria/dijes" },
     ],
   },
@@ -99,7 +99,7 @@ const JOYAS_MEGA_MENU = [
     title: "DESPERTADORES",
     href: "/despertadores",
     items: [
-      { label: "Ver disponibles", href: "/despertadores"}
+      { label: "Ver disponibles", href: "/despertadores" }
     ],
   }
 ];
@@ -110,8 +110,8 @@ const RELOJES_MEGA_MENU = [
     href: "/relojes",
     items: [
       { label: "Casio", href: "/relojes" },
-      { label: "Catterpillar", href: "/relojes"},
-      { label: "Nockout", href: "/relojes"}
+      { label: "Catterpillar", href: "/relojes" },
+      { label: "Nockout", href: "/relojes" }
     ]
   },
   {
@@ -140,6 +140,23 @@ const RELOJES_MEGA_MENU = [
   },
 ];
 
+function highlightMatch(text: string, query: string) {
+  if (!query.trim()) return text;
+  const regex = new RegExp(`(${query.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`, "gi");
+  const parts = text.split(regex);
+  return parts.map((part, i) =>
+    regex.test(part) ? (
+      <strong key={i} className="font-bold text-gray-950">
+        {part}
+      </strong>
+    ) : (
+      <span key={i} className="font-normal text-gray-800">
+        {part}
+      </span>
+    )
+  );
+}
+
 function buildProductUrl(product: Product): string {
   const { slug, category } = product;
   if (category?.parent) {
@@ -148,53 +165,25 @@ function buildProductUrl(product: Product): string {
   return `/${category?.slug ?? "joyeria"}/${slug}`;
 }
 
-// Resaltar en negrita las partes del texto que coinciden con la búsqueda
-function highlightMatch(text: string, query: string) {
-  if (!query.trim()) return <span>{text}</span>;
-  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const parts = text.split(new RegExp(`(${escaped})`, "gi"));
-  return (
-    <span>
-      {parts.map((part, i) =>
-        part.toLowerCase() === query.toLowerCase() ? (
-          <strong key={i} className="font-bold text-gray-950">
-            {part}
-          </strong>
-        ) : (
-          <span key={i} className="font-normal text-gray-800">
-            {part}
-          </span>
-        )
-      )}
-    </span>
-  );
-}
-
 export default function Header() {
+  const [announcementIndex, setAnnouncementIndex] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const [activeMegaMenu, setActiveMegaMenu] = useState<"joyas" | "relojes" | null>(null);
+
+  // Estados del Buscador en Vivo
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [announcementIndex, setAnnouncementIndex] = useState(0);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-  // Control de Mega Menú en desktop
-  const [activeMegaMenu, setActiveMegaMenu] = useState<"joyas" | "relojes" | null>(null);
-
+  const router = useRouter();
+  const pathname = usePathname();
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const mobileSearchContainerRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
 
-  // Ocultar barra al scrollear
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Rotador de avisos
+  // Rotación del anuncio cada 4.5 segundos
   useEffect(() => {
     const timer = setInterval(() => {
       setAnnouncementIndex((prev) => (prev + 1) % ANNOUNCEMENTS.length);
@@ -202,7 +191,42 @@ export default function Header() {
     return () => clearInterval(timer);
   }, []);
 
-  // Click outside para cerrar dropdown de búsqueda
+  // Detectar scroll para achicar header
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 30);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Búsqueda en vivo con debounce de 250ms
+  useEffect(() => {
+    const query = searchQuery.trim();
+    if (query.length < 2) {
+      setSearchResults([]);
+      setDropdownOpen(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const timeout = setTimeout(async () => {
+      try {
+        const res = await api.catalog.getProducts({ search: query, limit: 6 });
+        const activeItems = res.items.filter((p) => p.status === "ACTIVE");
+        setSearchResults(activeItems);
+        setDropdownOpen(true);
+      } catch {
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 250);
+
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
+
+  // Cerrar dropdown al hacer click afuera
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -217,32 +241,6 @@ export default function Header() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  // Búsqueda en vivo (Live search con debounce de 200ms)
-  useEffect(() => {
-    const q = searchQuery.trim();
-    if (q.length < 2) {
-      setSearchResults([]);
-      setDropdownOpen(false);
-      setIsSearching(false);
-      return;
-    }
-
-    setIsSearching(true);
-    const timeout = setTimeout(async () => {
-      try {
-        const res = await api.catalog.getProducts({ search: q, limit: 6 });
-        setSearchResults(res.items.filter((p) => p.status === "ACTIVE"));
-        setDropdownOpen(true);
-      } catch {
-        setSearchResults([]);
-      } finally {
-        setIsSearching(false);
-      }
-    }, 200);
-
-    return () => clearTimeout(timeout);
-  }, [searchQuery]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -265,12 +263,21 @@ export default function Header() {
     router.push(url);
   };
 
+  const navItemClass = (isActive: boolean) =>
+    cn(
+      "relative py-3.5 flex items-center gap-1 font-body text-[13px] tracking-normal text-gray-800 hover:text-black transition-colors duration-200 cursor-pointer group whitespace-nowrap",
+      "after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-gray-950 after:transition-transform after:duration-200 after:origin-left",
+      isActive
+        ? "text-black font-semibold after:scale-x-100"
+        : "after:scale-x-0 group-hover:after:scale-x-100"
+    );
+
   return (
     <header
       className="sticky top-0 z-50 w-full bg-white font-body"
       onMouseLeave={() => setActiveMegaMenu(null)}
     >
-      {/* ── 1. Barra de Anuncios Superior (se esconde al scrollear hacia abajo) ── */}
+      {/* ── 1. Barra de Anuncios Superior ── */}
       <div
         className={cn(
           "bg-black text-white overflow-hidden flex items-center justify-center transition-all duration-300 ease-in-out",
@@ -286,7 +293,7 @@ export default function Header() {
               animate={{ y: "0%", opacity: 1 }}
               exit={{ y: "-100%", opacity: 0 }}
               transition={{ duration: 0.35, ease: "easeInOut" }}
-              className="text-center font-body text-[11px] tracking-wide uppercase leading-8 px-4 whitespace-nowrap"
+              className="text-center font-body text-[11px] tracking-[0.12em] font-medium uppercase leading-8 px-4 whitespace-nowrap"
               aria-live="polite"
             >
               {ANNOUNCEMENTS[announcementIndex]}
@@ -307,41 +314,27 @@ export default function Header() {
 
             {/* Izquierda: Buscador con Dropdown en Vivo (Desktop) */}
             <div className="flex items-center gap-3 w-1/3" ref={searchContainerRef}>
-              {/* Botón Menú Mobile */}
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="md:hidden p-1.5 text-gray-800 hover:text-black transition-colors"
-                aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
+                aria-label="Abrir menú"
               >
-                {menuOpen ? (
-                  <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
-                    <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                ) : (
-                  <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
-                    <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                )}
+                <svg width="22" height="22" viewBox="0 0 20 20" fill="none"><path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
               </button>
 
-              {/* Botón Lupa Mobile */}
               <button
                 onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
                 className="md:hidden p-1.5 text-gray-800 hover:text-black transition-colors"
                 aria-label="Abrir buscador"
               >
-                <svg width="19" height="19" viewBox="0 0 16 16" fill="none">
-                  <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.4" />
-                  <path d="M10 10l3.5 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                </svg>
+                <svg width="19" height="19" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.4" /><path d="M10 10l3.5 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
               </button>
 
-              {/* Formulario Buscador Desktop */}
               <div className="hidden md:block relative w-full max-w-[290px]">
                 <form
                   onSubmit={handleSearchSubmit}
                   role="search"
-                  className="relative flex items-center"
+                  className="relative flex items-center w-full"
                 >
                   <input
                     type="text"
@@ -354,10 +347,10 @@ export default function Header() {
                     }}
                     placeholder="¿Qué estás buscando?"
                     aria-label="Buscar productos"
-                    className="w-full pl-3 pr-14 py-2 bg-white border border-gray-300 rounded-none font-body text-[13px] text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-black transition-colors shadow-2xs"
+                    className="w-full h-11 pl-3.5 pr-11 py-2.5 bg-white border border-gray-300 rounded-none font-body text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
                   />
 
-                  <div className="absolute right-2 flex items-center gap-1.5">
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-auto">
                     {searchQuery && (
                       <button
                         type="button"
@@ -365,264 +358,84 @@ export default function Header() {
                         className="text-gray-400 hover:text-gray-700 p-0.5"
                         aria-label="Limpiar búsqueda"
                       >
-                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                          <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                        </svg>
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
                       </button>
                     )}
 
                     <button
                       type="submit"
                       aria-label="Buscar"
-                      className="text-gray-500 hover:text-black transition-colors p-0.5 cursor-pointer"
+                      className="text-gray-500 hover:text-black transition-colors p-0.5 cursor-pointer flex items-center justify-center"
                     >
                       {isSearching ? (
                         <div className="w-3.5 h-3.5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
                       ) : (
-                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                          <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.4" />
-                          <path d="M10 10l3.5 3.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                        </svg>
+                        <svg width="15" height="15" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.3" /><path d="M10 10l3.5 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg>
                       )}
                     </button>
                   </div>
                 </form>
 
-                {/* ── Dropdown de Resultados en Vivo (Desktop) ─────────────── */}
                 {dropdownOpen && (
-                  <div className="absolute top-full left-0 mt-1 w-[320px] lg:w-[360px] bg-white border border-gray-200 shadow-2xl z-50 overflow-hidden divide-y divide-gray-100 animate-in fade-in slide-in-from-top-1 duration-150">
-                    {searchResults.length > 0 ? (
-                      <>
-                        <div className="max-h-[380px] overflow-y-auto divide-y divide-gray-100">
-                          {searchResults.map((product) => {
-                            const thumb = product.images?.find((i) => i.order === 0) ?? product.images?.[0];
-                            const productUrl = buildProductUrl(product);
-                            const formattedPrice = formatPrice(product.price);
-
-                            return (
-                              <button
-                                key={product.id}
-                                type="button"
-                                onClick={() => handleProductClick(productUrl)}
-                                className="w-full text-left p-3 hover:bg-gray-50 flex items-center gap-3 transition-colors group cursor-pointer"
-                              >
-                                {/* Foto de la joya */}
-                                <div className="relative w-11 h-11 shrink-0 bg-white border border-gray-100 flex items-center justify-center p-0.5">
-                                  {thumb ? (
-                                    <Image
-                                      src={getImageUrl(thumb.thumbnailUrl ?? thumb.url)}
-                                      alt={thumb.altText ?? product.name}
-                                      fill
-                                      className="object-contain"
-                                      sizes="44px"
-                                    />
-                                  ) : (
-                                    <div className="text-[9px] text-gray-300">Sin foto</div>
-                                  )}
-                                </div>
-
-                                {/* Info */}
-                                <div className="flex-1 min-w-0 leading-snug">
-                                  <p className="text-xs text-gray-900 group-hover:text-amber-900 transition-colors line-clamp-1">
-                                    {highlightMatch(product.name, searchQuery)}
-                                  </p>
-
-                                  {product.showPrice && formattedPrice ? (
-                                    <div className="mt-0.5">
-                                      <p className="text-xs font-semibold text-gray-900">
-                                        {formattedPrice}
-                                        <span className="text-[11px] font-normal text-gray-500 ml-1">
-                                          | 15% OFF transferencia
-                                        </span>
-                                      </p>
-                                    </div>
-                                  ) : (
-                                    <p className="text-[11px] text-amber-800 font-medium mt-0.5">
-                                      Consultar precio
-                                    </p>
-                                  )}
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-
-                        {/* Pie del dropdown: Ver todos */}
-                        <Link
-                          href={`/buscar?q=${encodeURIComponent(searchQuery.trim())}`}
-                          onClick={() => setDropdownOpen(false)}
-                          className="block p-2.5 bg-gray-50 hover:bg-gray-100 text-center text-xs font-semibold text-gray-900 transition-colors"
-                        >
-                          Ver todos los resultados para &quot;{searchQuery}&quot; →
-                        </Link>
-                      </>
-                    ) : (
-                      !isSearching && (
-                        <div className="p-4 text-center text-xs text-gray-500">
-                          No encontramos productos para &quot;{searchQuery}&quot;
-                        </div>
-                      )
-                    )}
+                  <div className="absolute top-full left-0 mt-1 w-[320px] lg:w-[360px] bg-white border border-gray-200 shadow-2xl z-50 overflow-hidden divide-y divide-gray-100">
+                    <div className="max-h-[380px] overflow-y-auto divide-y divide-gray-100">
+                      {searchResults.map((product) => {
+                        const thumb = product.images?.find((i) => i.order === 0) ?? product.images?.[0];
+                        return (
+                          <button
+                            key={product.id}
+                            type="button"
+                            onClick={() => handleProductClick(buildProductUrl(product))}
+                            className="w-full text-left p-3 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+                          >
+                            <div className="relative w-11 h-11 shrink-0 bg-white border border-gray-100 flex items-center justify-center">
+                              {thumb && <Image src={getImageUrl(thumb.thumbnailUrl ?? thumb.url)} alt={product.name} fill className="object-contain" sizes="44px" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs text-gray-900 line-clamp-1">{highlightMatch(product.name, searchQuery)}</p>
+                              {product.showPrice && <p className="text-xs font-semibold text-gray-900">{formatPrice(product.price)}</p>}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <Link href={`/buscar?q=${encodeURIComponent(searchQuery.trim())}`} onClick={() => setDropdownOpen(false)} className="block p-2.5 bg-gray-50 hover:bg-gray-100 text-center text-xs font-semibold">Ver todos los resultados →</Link>
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Centro: Logo Petrucci SVG */}
-            <div className="flex justify-center items-center flex-1 md:w-1/3 py-1">
-              <Link
-                href="/"
-                className="flex items-center justify-center group"
-                aria-label="Petrucci Joyería — Inicio"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/logo-petrucci-v2.svg"
-                  alt="Petrucci Joyería y Relojería"
-                  className="h-12 md:h-16 lg:h-[68px] max-h-[72px] w-auto object-contain transition-transform duration-200 group-hover:scale-[1.03]"
-                />
-              </Link>
+            <div className="flex justify-center items-center flex-1 md:w-1/3">
+              <Link href="/" className="group"><img src="/logo-petrucci-v2.svg" alt="Petrucci" className="h-12 md:h-16 w-auto object-contain transition-transform group-hover:scale-[1.03]" /></Link>
             </div>
 
-            {/* Derecha: Ingresá / Carrito */}
             <div className="flex items-center justify-end gap-4 md:gap-6 w-1/3">
-              <Link
-                href="/admin/login"
-                className="hidden md:flex items-center gap-1.5 font-body text-[13px] text-gray-800 hover:text-black transition-colors font-medium"
-              >
-                <svg width="16" height="16" viewBox="0 0 18 18" fill="none">
-                  <circle cx="9" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.3" />
-                  <path d="M2 15.5c0-3.038 3.134-5.5 7-5.5s7 2.462 7 5.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-                </svg>
-                <span>Ingresá / Registráte</span>
-              </Link>
-
-              <Link
-                href="#contacto"
-                className="flex items-center gap-1.5 font-body text-[13px] text-gray-800 hover:text-black transition-colors font-medium"
-                aria-label="Carrito de compras"
-              >
-                <svg width="17" height="17" viewBox="0 0 18 18" fill="none">
-                  <path d="M3.5 5h11L16 14H2L3.5 5Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-                  <path d="M6.5 5V4A2.5 2.5 0 0 1 11.5 4v1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-                </svg>
-                <span className="hidden sm:inline">Carrito (0)</span>
-              </Link>
+              <Link href="/admin/login" className="hidden md:flex items-center gap-1.5 text-[13px] text-gray-800 hover:text-black font-medium"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.3" /><path d="M2 15.5c0-3.038 3.134-5.5 7-5.5s7 2.462 7 5.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg> Ingresá</Link>
+              <Link href="#contacto" className="flex items-center gap-1.5 text-[13px] text-gray-800 hover:text-black font-medium"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M3.5 5h11L16 14H2L3.5 5Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /><path d="M6.5 5V4A2.5 2.5 0 0 1 11.5 4v1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg> <span className="hidden sm:inline">Carrito (0)</span></Link>
             </div>
           </div>
         </div>
 
-        {/* ── 3. Fila de Navegación (Desktop) ─────────────────────────────────── */}
-        <nav
-          aria-label="Navegación principal de la tienda"
-          className="hidden md:flex justify-center border-t border-gray-100 bg-white"
-        >
-          <ul className="flex items-center gap-8 lg:gap-10 font-body text-[13px] font-normal text-gray-800 tracking-normal">
-
-            {/* Estuches */}
-            <li>
-              <Link
-                href="/estuches"
-                className="hover:text-black transition-colors py-3 block"
-              >
-                Estuches
-              </Link>
-            </li>
-
-            {/* Joyas (Mega Menú) */}
-            <li
-              className="relative"
-              onMouseEnter={() => setActiveMegaMenu("joyas")}
-            >
-              <button
-                type="button"
-                onClick={() => setActiveMegaMenu(activeMegaMenu === "joyas" ? null : "joyas")}
-                className={cn(
-                  "hover:text-black transition-colors py-3 flex items-center gap-1 cursor-pointer",
-                  activeMegaMenu === "joyas" ? "text-black font-medium" : ""
-                )}
-                aria-expanded={activeMegaMenu === "joyas"}
-                aria-haspopup="true"
-              >
+        <nav className="hidden md:flex justify-center border-t border-gray-100 bg-white">
+          <ul className="flex items-center gap-7 lg:gap-9 font-body text-[13px] font-normal text-gray-800 tracking-normal">
+            <li><Link href="/estuches" className={navItemClass(pathname === "/estuches")}>Estuches</Link></li>
+            <li className="relative" onMouseEnter={() => setActiveMegaMenu("joyas")}>
+              <button type="button" onClick={() => setActiveMegaMenu(activeMegaMenu === "joyas" ? null : "joyas")} className={navItemClass(activeMegaMenu === "joyas" || pathname.startsWith("/joyeria"))}>
                 <span>Joyas</span>
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-gray-400">
-                  <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-gray-400 group-hover:text-black transition-colors"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </button>
             </li>
-
-            {/* Relojes (Mega Menú) */}
-            <li
-              className="relative"
-              onMouseEnter={() => setActiveMegaMenu("relojes")}
-            >
-              <button
-                type="button"
-                onClick={() => setActiveMegaMenu(activeMegaMenu === "relojes" ? null : "relojes")}
-                className={cn(
-                  "hover:text-black transition-colors py-3 flex items-center gap-1 cursor-pointer",
-                  activeMegaMenu === "relojes" ? "text-black font-medium" : ""
-                )}
-                aria-expanded={activeMegaMenu === "relojes"}
-                aria-haspopup="true"
-              >
+            <li className="relative" onMouseEnter={() => setActiveMegaMenu("relojes")}>
+              <button type="button" onClick={() => setActiveMegaMenu(activeMegaMenu === "relojes" ? null : "relojes")} className={navItemClass(activeMegaMenu === "relojes" || pathname.startsWith("/relojes"))}>
                 <span>Relojes</span>
-                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-gray-400">
-                  <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-gray-400 group-hover:text-black transition-colors"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </button>
             </li>
-
-            {/* Personalizados */}
-            <li>
-              <Link
-                href="/trabajos-personalizados"
-                className="hover:text-black transition-colors py-3 block"
-              >
-                Personalizados
-              </Link>
-            </li>
-
-            {/* Contacto */}
-            <li>
-              <Link
-                href="/nosotros#contacto"
-                className="hover:text-black transition-colors py-3 block"
-              >
-                Contacto
-              </Link>
-            </li>
-
-            {/* Quiénes Somos */}
-            <li>
-              <Link
-                href="/nosotros"
-                className="hover:text-black transition-colors py-3 block"
-              >
-                Quiénes Somos
-              </Link>
-            </li>
-
-            {/* Marroquinería */}
-            <li>
-              <Link
-                href="/marroquineria"
-                className="hover:text-black transition-colors py-3 block"
-              >
-                Marroquinería
-              </Link>
-            </li>
-
-            {/* Mates */}
-            <li>
-              <Link
-                href="/mates"
-                className="hover:text-black transition-colors py-3 block"
-              >
-                Mates
-              </Link>
-            </li>
-
+            <li><Link href="/marroquineria" className={navItemClass(pathname === "/marroquineria")}>Marroquinería</Link></li>
+            <li><Link href="/trabajos-personalizados" className={navItemClass(pathname === "/trabajos-personalizados")}>Personalizados</Link></li>
+            <li><Link href="/nosotros#contacto" className={navItemClass(pathname === "/nosotros#contacto")}>Contacto</Link></li>
+            <li><Link href="/nosotros" className={navItemClass(pathname === "/nosotros")}>Quiénes Somos</Link></li>
+            <li><Link href="/mates" className={navItemClass(pathname === "/mates")}>Mates</Link></li>
           </ul>
         </nav>
 
@@ -634,7 +447,7 @@ export default function Header() {
             onMouseLeave={() => setActiveMegaMenu(null)}
           >
             <div className="mx-auto max-w-7xl px-8 py-8">
-              <div className="grid grid-cols-5 gap-8">
+              <div className="grid grid-cols-6 gap-6">
                 {JOYAS_MEGA_MENU.map((col, idx) => (
                   <div key={idx} className="flex flex-col gap-6">
                     <div>
@@ -695,7 +508,7 @@ export default function Header() {
             onMouseLeave={() => setActiveMegaMenu(null)}
           >
             <div className="mx-auto max-w-7xl px-8 py-8">
-              <div className="grid grid-cols-3 gap-8">
+              <div className="grid grid-cols-4 gap-8">
                 {RELOJES_MEGA_MENU.map((col, idx) => (
                   <div key={idx}>
                     <Link
