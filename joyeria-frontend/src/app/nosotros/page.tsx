@@ -123,15 +123,6 @@ export default async function NosotrosPage() {
                     Atención personalizada cara a cara y acompañamiento en cada elección.
                   </p>
                 </div>
-
-                <div className="p-4 border border-gray-200/80 rounded-xs bg-white hover:border-gray-400 transition-colors">
-                  <div className="text-amber-800 font-bold text-sm tracking-wider uppercase mb-1">
-                    Envíos Seguros
-                  </div>
-                  <p className="text-xs text-gray-600 leading-normal">
-                    Llegamos a todo el país con packaging de regalo y máxima seguridad.
-                  </p>
-                </div>
               </div>
             </div>
           </div>
