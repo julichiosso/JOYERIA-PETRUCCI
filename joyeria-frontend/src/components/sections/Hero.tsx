@@ -120,7 +120,7 @@ export default function Hero() {
       onTouchEnd={() => setIsPaused(false)}
     >
       {/* ── Contenedor de imagen edge-to-edge con soporte de arrastre/swipe ── */}
-      <div className="relative w-full aspect-[4/5] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[2.4/1] max-h-[75vh] overflow-hidden cursor-grab active:cursor-grabbing">
+      <div className="relative w-full aspect-[16/10] sm:aspect-[16/9] md:aspect-[21/9] lg:aspect-[2.4/1] max-h-[48vh] sm:max-h-[75vh] overflow-hidden cursor-grab active:cursor-grabbing">
         <AnimatePresence initial={false} custom={direction}>
           <motion.div
             key={page}

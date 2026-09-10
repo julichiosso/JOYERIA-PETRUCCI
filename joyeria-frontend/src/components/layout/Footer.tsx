@@ -60,20 +60,15 @@ export default function Footer() {
 
           {/* ── Columna 1: Atelier & Manufactura (Newsletter VIP) ──────────── */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-[11px] sm:text-xs font-bold text-gray-900 tracking-[0.2em] uppercase font-body">
-              ATELIER &amp; MANUFACTURA
-            </h3>
+            
             <p className="text-xs text-gray-600 leading-relaxed font-body">
-              Recibí lanzamientos de partidas limitadas, nuevas creaciones y beneficios exclusivos en tu casilla.
+              Recibí y enterate de lanzamientos de partidas limitadas, nuevas creaciones, ingresos y beneficios exclusivos en tu casilla.
             </p>
             <NewsletterForm />
           </div>
 
           {/* ── Columna 2: Asesoramiento Directo ───────────────────────────── */}
           <div className="flex flex-col gap-3 lg:pl-4">
-            <h3 className="text-[11px] sm:text-xs font-bold text-gray-900 tracking-[0.2em] uppercase font-body">
-              ASESORAMIENTO DIRECTO
-            </h3>
             <div className="flex flex-col gap-2.5 text-xs text-gray-600 font-body leading-relaxed">
               <a
                 href={`https://wa.me/${rawWhatsapp.replace(/\D/g, "")}?text=Hola%20Petrucci,%20quisiera%20hacer%20una%20consulta%20personalizada.`}
@@ -82,7 +77,7 @@ export default function Footer() {
                 className="flex items-center gap-2 text-emerald-800 font-semibold hover:text-emerald-950 transition-colors"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
-                WhatsApp Boutique: +{rawWhatsapp}
+                WhatsApp: +{rawWhatsapp}
               </a>
               <p className="text-gray-600">
                 Atención personalizada de lunes a sábado de 9 a 18 hs.
@@ -145,7 +140,7 @@ export default function Footer() {
         {/* ── Legales y Copyright ───────────────────────────────────────────── */}
         <div className="mt-12 pt-8 border-t border-gray-100 text-center text-xs text-gray-500 leading-relaxed flex flex-col items-center gap-3">
           <p className="font-body">
-            Copyright © 2026 Petrucci Joyería y Marroquinería • Buenos Aires / San Jorge. Todos los derechos reservados.
+            Copyright © 2026 Petrucci Joyería y Marroquinería •  San Jorge. Todos los derechos reservados.
           </p>
 
           <div className="flex items-center justify-center gap-1 text-[11px] text-gray-500">
