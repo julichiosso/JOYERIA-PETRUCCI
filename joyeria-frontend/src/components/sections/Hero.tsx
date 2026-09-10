@@ -20,11 +20,6 @@ import { motion, useScroll, useTransform, AnimatePresence, PanInfo } from "frame
 
 const SLIDES = [
   {
-    src: "/banner-1.jpg",
-    alt: "Colección Alta Joyería — Petrucci Joyería",
-    href: "/joyeria",
-  },
-  {
     src: "/banner-2.jpg",
     alt: "Anillos y Joyas Artesanales — Petrucci Joyería",
     href: "/joyeria/anillos-2",

@@ -55,10 +55,10 @@ export default async function NosotrosPage() {
             </ol>
           </nav>
 
-          <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-gray-950 uppercase font-proxima">
+          <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-gray-950 uppercase font-body">
             Quiénes Somos
           </h1>
-          <div className="h-0.5 w-12 bg-amber-700 mt-4" />
+          <div className="h-0.5 w-12 bg-gray-950 mt-4" />
         </div>
       </section>
 
@@ -66,7 +66,7 @@ export default async function NosotrosPage() {
       <section className="mx-auto max-w-5xl px-6 py-12 md:py-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
           
-          {/* Left Column: Storytelling & Philosophy (Inspired by Joyería El Rubí) */}
+          {/* Left Column: Storytelling & Philosophy */}
           <div className="lg:col-span-7 flex flex-col gap-6 text-[15px] md:text-[16px] leading-relaxed text-gray-700">
             <p className="font-medium text-gray-950 text-lg md:text-xl leading-snug">
               Joyería Petrucci se erige como una empresa de continuidad ininterrumpida y tradición familiar desde 1999 en San Jorge, Santa Fe.
@@ -77,11 +77,11 @@ export default async function NosotrosPage() {
             </p>
 
             <p>
-              Nos apasiona el arte de la joyería y creemos profundamente en la <em>carga simbólica y la identidad</em> que cada pieza lleva consigo. Seleccionamos y confeccionamos piezas en <strong>Oro 18 quilates, Plata 925</strong> y diversas combinaciones con piedras preciosas y semipreciosas, junto a una selecta colección de <strong>relojería de precisión</strong>.
+              Nos apasiona el arte de la joyería y creemos profundamente en la carga simbólica y la identidad que cada pieza lleva consigo. Seleccionamos y confeccionamos piezas en <strong>Oro 18 quilates, Plata 925</strong> y diversas combinaciones con piedras preciosas y semipreciosas, junto a una selecta colección de <strong>relojería de precisión</strong>.
             </p>
 
-            <div className="my-2 p-5 bg-[#FAF9F7] border-l-2 border-amber-700 rounded-xs">
-              <p className="italic text-gray-800 text-sm md:text-base leading-relaxed">
+            <div className="my-2 p-5 bg-[#FAF9F7] border-l-2 border-gray-900 rounded-sm">
+              <p className="text-gray-800 text-sm md:text-base leading-relaxed">
                 &ldquo;Nuestro perpetuo objetivo es aspirar siempre a que nuestras joyas no solo sean objetos de belleza y distinción, sino arquitectas de momentos únicos e inolvidables en la vida de quienes las eligen.&rdquo;
               </p>
             </div>
@@ -92,13 +92,13 @@ export default async function NosotrosPage() {
 
             {/* ── Pilares / Compromisos ─────────────────────────────────── */}
             <div className="pt-6 mt-4 border-t border-gray-100">
-              <h2 className="text-xs tracking-[0.2em] font-bold uppercase text-amber-800 mb-5">
-                Nuestros Pilares &amp; Compromisos
+              <h2 className="text-[11px] tracking-[0.2em] font-bold uppercase text-gray-900 mb-5 font-body">
+                NUESTROS PILARES &amp; COMPROMISOS
               </h2>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 border border-gray-200/80 rounded-xs bg-white hover:border-gray-400 transition-colors">
-                  <div className="text-amber-800 font-bold text-sm tracking-wider uppercase mb-1">
+                <div className="p-4 border border-gray-200 rounded-md bg-white hover:border-gray-400 transition-colors">
+                  <div className="text-gray-900 font-bold text-xs tracking-wider uppercase mb-1">
                     Oro 18K &amp; Plata 925
                   </div>
                   <p className="text-xs text-gray-600 leading-normal">
@@ -106,8 +106,8 @@ export default async function NosotrosPage() {
                   </p>
                 </div>
 
-                <div className="p-4 border border-gray-200/80 rounded-xs bg-white hover:border-gray-400 transition-colors">
-                  <div className="text-amber-800 font-bold text-sm tracking-wider uppercase mb-1">
+                <div className="p-4 border border-gray-200 rounded-md bg-white hover:border-gray-400 transition-colors">
+                  <div className="text-gray-900 font-bold text-xs tracking-wider uppercase mb-1">
                     Taller Propio
                   </div>
                   <p className="text-xs text-gray-600 leading-normal">
@@ -115,8 +115,8 @@ export default async function NosotrosPage() {
                   </p>
                 </div>
 
-                <div className="p-4 border border-gray-200/80 rounded-xs bg-white hover:border-gray-400 transition-colors">
-                  <div className="text-amber-800 font-bold text-sm tracking-wider uppercase mb-1">
+                <div className="p-4 border border-gray-200 rounded-md bg-white hover:border-gray-400 transition-colors">
+                  <div className="text-gray-900 font-bold text-xs tracking-wider uppercase mb-1">
                     25+ Años de Confianza
                   </div>
                   <p className="text-xs text-gray-600 leading-normal">
@@ -129,15 +129,15 @@ export default async function NosotrosPage() {
 
           {/* Right Column: Location, Hours, Contact Card & Map */}
           <div className="lg:col-span-5 flex flex-col gap-6">
-            <div className="bg-[#FAF9F7] p-6 md:p-8 border border-gray-200/70 rounded-xs">
-              <h2 className="text-sm font-bold tracking-widest uppercase text-gray-950 mb-6 pb-2 border-b border-gray-200">
-                Dónde encontrarnos
+            <div className="bg-[#FAF9F7] p-6 md:p-8 border border-gray-200 rounded-lg">
+              <h2 className="text-xs font-bold tracking-[0.2em] uppercase text-gray-950 mb-6 pb-2 border-b border-gray-200 font-body">
+                DÓNDE ENCONTRARNOS
               </h2>
 
               <address className="not-italic space-y-5 text-sm text-gray-700">
                 <div className="flex items-start gap-3.5">
                   <svg
-                    className="w-5 h-5 text-amber-800 shrink-0 mt-0.5"
+                    className="w-5 h-5 text-gray-900 shrink-0 mt-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -165,7 +165,7 @@ export default async function NosotrosPage() {
 
                 <div className="flex items-start gap-3.5">
                   <svg
-                    className="w-5 h-5 text-amber-800 shrink-0 mt-0.5"
+                    className="w-5 h-5 text-gray-900 shrink-0 mt-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -188,7 +188,7 @@ export default async function NosotrosPage() {
                 {instagramUrl && (
                   <div className="flex items-start gap-3.5">
                     <svg
-                      className="w-5 h-5 text-amber-800 shrink-0 mt-0.5"
+                      className="w-5 h-5 text-gray-900 shrink-0 mt-0.5"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -208,7 +208,7 @@ export default async function NosotrosPage() {
                         href={instagramUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-medium text-gray-900 hover:text-amber-800 transition-colors"
+                        className="font-medium text-gray-900 hover:text-black hover:underline transition-colors"
                       >
                         @joyeriapetrucci
                       </a>

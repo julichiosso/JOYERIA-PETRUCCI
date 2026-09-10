@@ -25,7 +25,7 @@ export default function Price({ value, size = "sm", className }: PriceProps) {
     return (
       <span
         className={cn(
-          "font-body text-petrucci-gray italic",
+          "font-body font-medium text-gray-900",
           size === "lg" ? "text-base" : "text-sm",
           className
         )}

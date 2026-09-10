@@ -14,8 +14,8 @@ export default function NewsletterForm() {
 
   if (submitted) {
     return (
-      <div className="h-11 flex items-center">
-        <p className="text-xs text-emerald-800 font-medium bg-emerald-50 border border-emerald-200 px-3.5 py-2.5 w-full">
+      <div className="h-10 flex items-center">
+        <p className="text-xs text-emerald-800 font-medium bg-emerald-50 border border-emerald-200/70 rounded-full px-4 py-2 w-full text-center">
           ✓ ¡Gracias por suscribirte al newsletter!
         </p>
       </div>
@@ -29,19 +29,19 @@ export default function NewsletterForm() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
+          placeholder="Ingresá tu email"
           required
-          className="w-full h-11 pl-3.5 pr-11 py-2.5 bg-white border border-gray-300 rounded-none font-body text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+          className="w-full h-10 pl-4 pr-11 py-2 bg-white border border-gray-300 rounded-full font-body text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-400 transition-all"
           aria-label="Email para suscribirse al newsletter"
         />
         <button
           type="submit"
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-700 hover:text-black transition-colors p-1 cursor-pointer flex items-center justify-center shrink-0"
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black transition-colors p-1 cursor-pointer flex items-center justify-center shrink-0"
           aria-label="Enviar suscripción"
         >
           <svg
-            width="18"
-            height="18"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"

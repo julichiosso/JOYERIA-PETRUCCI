@@ -60,8 +60,8 @@ export default function Footer() {
 
           {/* ── Columna 1: Atelier & Manufactura (Newsletter VIP) ──────────── */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-xs font-bold text-gray-900 tracking-[0.18em] uppercase font-body">
-              ATELIER & MANUFACTURA
+            <h3 className="text-[11px] sm:text-xs font-bold text-gray-900 tracking-[0.2em] uppercase font-body">
+              ATELIER &amp; MANUFACTURA
             </h3>
             <p className="text-xs text-gray-600 leading-relaxed font-body">
               Recibí lanzamientos de partidas limitadas, nuevas creaciones y beneficios exclusivos en tu casilla.
@@ -71,7 +71,7 @@ export default function Footer() {
 
           {/* ── Columna 2: Asesoramiento Directo ───────────────────────────── */}
           <div className="flex flex-col gap-3 lg:pl-4">
-            <h3 className="text-xs font-bold text-gray-900 tracking-[0.18em] uppercase font-body">
+            <h3 className="text-[11px] sm:text-xs font-bold text-gray-900 tracking-[0.2em] uppercase font-body">
               ASESORAMIENTO DIRECTO
             </h3>
             <div className="flex flex-col gap-2.5 text-xs text-gray-600 font-body leading-relaxed">
@@ -96,29 +96,29 @@ export default function Footer() {
 
           {/* ── Columna 3: Compromiso Petrucci ─────────────────────────────── */}
           <div className="flex flex-col gap-3 lg:pl-4">
-            <h3 className="text-xs font-bold text-gray-900 tracking-[0.18em] uppercase font-body">
+            <h3 className="text-[11px] sm:text-xs font-bold text-gray-900 tracking-[0.2em] uppercase font-body">
               COMPROMISO PETRUCCI
             </h3>
             <nav aria-label="Compromiso y manufactura" className="flex flex-col gap-2 text-xs text-gray-600 font-body">
               <Link href="/nosotros" className="hover:text-black transition-colors">
-                Quiénes Somos & Origen
+                Quiénes Somos &amp; Origen
               </Link>
               <Link href="/trabajos-personalizados" className="hover:text-black transition-colors">
                 Piezas y Trabajos a Medida
               </Link>
               <Link href="/nosotros#contacto" className="hover:text-black transition-colors">
-                Visita al Atelier & Cita Previa
+                Visita al Atelier &amp; Cita Previa
               </Link>
               <Link href="/joyeria" className="hover:text-black transition-colors">
-                Alta Joyería & Metales Nobles
+                Alta Joyería &amp; Metales Nobles
               </Link>
             </nav>
           </div>
 
           {/* ── Columna 4: Sanctuary Legal ─────────────────────────────────── */}
           <div className="flex flex-col gap-3 lg:pl-4">
-            <h3 className="text-xs font-bold text-gray-900 tracking-[0.18em] uppercase font-body">
-              INFORMACIÓN & LEGALES
+            <h3 className="text-[11px] sm:text-xs font-bold text-gray-900 tracking-[0.2em] uppercase font-body">
+              INFORMACIÓN &amp; LEGALES
             </h3>
             <nav aria-label="Enlaces legales y términos" className="flex flex-col gap-2 text-xs text-gray-600 font-body">
               <Link href="/terminos" className="hover:text-black transition-colors">

@@ -154,25 +154,22 @@ export default async function PublicProductDetailPage({ params }: PageProps) {
 
                     {/* ── 3. PRODUCTOS RELACIONADOS ───────────────────────────────────── */}
                     {relatedProducts.length > 0 && (
-                        <section className="mt-20 md:mt-28 pt-12 border-t border-gray-100">
+                        <section className="mt-16 md:mt-24 pt-10 border-t border-gray-100">
                             <div className="flex items-end justify-between mb-8">
                                 <div>
-                                    <h2 className="font-serif text-2xl md:text-3xl font-normal text-gray-950">
-                                        También te puede interesar
+                                    <h2 className="text-[13px] font-semibold tracking-[0.18em] uppercase text-[#111111]">
+                                        Productos relacionados
                                     </h2>
-                                    <p className="font-body text-xs text-gray-500 mt-1 tracking-wide">
-                                        Otras piezas de la colección {categoryName}
-                                    </p>
                                 </div>
                                 <Link
                                     href={`/productos?categoria=${product.category.slug}`}
-                                    className="font-body text-[11px] font-bold uppercase tracking-widest text-amber-800 hover:text-amber-950 transition-colors hidden sm:block"
+                                    className="text-xs text-gray-600 hover:text-black hover:underline transition-colors hidden sm:block font-medium"
                                 >
-                                    Ver colección →
+                                    Ver más en {categoryName} →
                                 </Link>
                             </div>
 
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 md:gap-6">
                                 {relatedProducts.map((rel) => (
                                     <ProductCard key={rel.id} product={rel} />
                                 ))}
@@ -181,7 +178,7 @@ export default async function PublicProductDetailPage({ params }: PageProps) {
                             <div className="sm:hidden text-center mt-6">
                                 <Link
                                     href={`/productos?categoria=${product.category.slug}`}
-                                    className="inline-block font-body text-xs font-bold uppercase tracking-widest text-amber-800 hover:text-amber-950 transition-colors"
+                                    className="inline-block text-xs font-semibold uppercase tracking-wider text-gray-700 hover:text-black hover:underline transition-colors"
                                 >
                                     Ver toda la colección →
                                 </Link>

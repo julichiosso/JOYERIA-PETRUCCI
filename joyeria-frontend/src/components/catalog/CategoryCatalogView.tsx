@@ -133,7 +133,7 @@ export default function CategoryCatalogView({
             {filteredAndSortedProducts.length} pieza{filteredAndSortedProducts.length !== 1 ? "s" : ""}
           </span>
           {hasActiveFilters && (
-            <span className="bg-amber-100 text-amber-900 text-[11px] font-medium px-2 py-0.5 rounded-full">
+            <span className="bg-gray-100 text-gray-900 text-[11px] font-medium px-2.5 py-0.5 rounded-full border border-gray-200">
               Filtros activos
             </span>
           )}
@@ -151,7 +151,7 @@ export default function CategoryCatalogView({
             </svg>
             <span>Filtrar</span>
             {hasActiveFilters && (
-              <span className="w-2 h-2 rounded-full bg-amber-600" />
+              <span className="w-2 h-2 rounded-full bg-gray-900" />
             )}
           </button>
 
@@ -186,7 +186,7 @@ export default function CategoryCatalogView({
           <button
             type="button"
             onClick={clearFilters}
-            className="font-body text-xs font-semibold text-amber-700 hover:underline uppercase tracking-wider"
+            className="font-body text-xs font-bold text-gray-900 hover:underline uppercase tracking-wider"
           >
             Restablecer filtros
           </button>
@@ -208,7 +208,7 @@ export default function CategoryCatalogView({
         <div className="fixed inset-0 z-50 bg-black/50 flex justify-end backdrop-blur-xs">
           <div className="bg-white w-full max-w-sm h-full flex flex-col p-6 shadow-2xl animate-slide-left overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6">
-              <h2 className="font-display text-2xl text-gray-900 font-normal">
+              <h2 className="font-body text-lg text-gray-900 font-semibold tracking-wide">
                 Filtrar {categoryName}
               </h2>
               <button

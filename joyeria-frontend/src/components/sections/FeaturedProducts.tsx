@@ -47,10 +47,10 @@ export default function FeaturedProducts() {
   };
 
   return (
-    <section className="bg-white py-10 sm:py-14 border-b border-gray-100 min-h-[380px]" aria-label="Novedades de la tienda">
+    <section className="bg-white py-14 sm:py-20 border-b border-gray-100 min-h-[420px]" aria-label="Novedades de la tienda">
       <div className="mx-auto max-w-7xl px-4 md:px-8">
         {/* Título Central "NOVEDADES" */}
-        <h2 className="font-body text-base sm:text-lg font-bold tracking-[0.2em] text-gray-900 text-center uppercase mb-8 sm:mb-10">
+        <h2 className="font-body text-xs sm:text-[13px] font-bold tracking-[0.22em] text-gray-900 text-center uppercase mb-8 sm:mb-12">
           NOVEDADES
         </h2>
 
@@ -69,7 +69,7 @@ export default function FeaturedProducts() {
               type="button"
               onClick={() => scroll("left")}
               aria-label="Ver productos anteriores"
-              className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 items-center justify-center bg-white border border-gray-200 shadow-md text-gray-700 hover:text-black hover:scale-105 transition-all rounded-full cursor-pointer"
+              className="hidden md:flex absolute -left-4 lg:-left-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 items-center justify-center bg-white/95 border border-gray-200/80 shadow-md hover:shadow-lg text-gray-700 hover:text-black hover:scale-105 active:scale-95 transition-all rounded-full cursor-pointer backdrop-blur-xs"
             >
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                 <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -93,7 +93,7 @@ export default function FeaturedProducts() {
               type="button"
               onClick={() => scroll("right")}
               aria-label="Ver productos siguientes"
-              className="hidden md:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 items-center justify-center bg-white border border-gray-200 shadow-md text-gray-700 hover:text-black hover:scale-105 transition-all rounded-full cursor-pointer"
+              className="hidden md:flex absolute -right-4 lg:-right-5 top-1/2 -translate-y-1/2 z-10 w-10 h-10 items-center justify-center bg-white/95 border border-gray-200/80 shadow-md hover:shadow-lg text-gray-700 hover:text-black hover:scale-105 active:scale-95 transition-all rounded-full cursor-pointer backdrop-blur-xs"
             >
               <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
                 <path d="M7.5 5L12.5 10L7.5 15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
