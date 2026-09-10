@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "petrucci-design-system": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "./docs/design"
+      ],
+      "env": {}
+    }
+  }
+}

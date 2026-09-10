@@ -1,0 +1,16 @@
+{
+  "name": "implement-petrucci-pdp",
+  "description": "Instrucciones de ingeniería de software para construir la PDP editorial de lujo de Petrucci con conversión exclusiva a WhatsApp.",
+  "arguments": [
+    {
+      "name": "whatsapp_number",
+      "description": "Número internacional de WhatsApp para el enlace directo (ej: 5491112345678)",
+      "required": true
+    },
+    {
+      "name": "framework",
+      "description": "Framework destino (ej: Next.js + Tailwind CSS, React, o HTML/CSS nativo)",
+      "required": false
+    }
+  ]
+}

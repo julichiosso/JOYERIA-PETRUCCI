@@ -405,8 +405,18 @@ export default function Header() {
               </div>
             </div>
 
-            <div className="flex justify-center items-center flex-1 md:w-1/3">
-              <Link href="/" className="group"><img src="/logo-petrucci-v2.svg" alt="Petrucci" className="h-12 md:h-16 w-auto object-contain transition-transform group-hover:scale-[1.03]" /></Link>
+            <div className="flex justify-center items-center flex-1 md:w-1/3 py-1">
+              <Link
+                href="/"
+                className="flex items-center justify-center group"
+                aria-label="Petrucci Joyería — Inicio"
+              >
+                <img
+                  src="/logo-petrucci-v2.svg"
+                  alt="Petrucci Joyería y Relojería"
+                  className="h-12 md:h-16 lg:h-[68px] max-h-[72px] w-auto object-contain transition-transform duration-200 group-hover:scale-[1.03]"
+                />
+              </Link>
             </div>
 
             <div className="flex items-center justify-end gap-4 md:gap-6 w-1/3">
@@ -418,7 +428,6 @@ export default function Header() {
 
         <nav className="hidden md:flex justify-center border-t border-gray-100 bg-white">
           <ul className="flex items-center gap-7 lg:gap-9 font-body text-[13px] font-normal text-gray-800 tracking-normal">
-            <li><Link href="/estuches" className={navItemClass(pathname === "/estuches")}>Estuches</Link></li>
             <li className="relative" onMouseEnter={() => setActiveMegaMenu("joyas")}>
               <button type="button" onClick={() => setActiveMegaMenu(activeMegaMenu === "joyas" ? null : "joyas")} className={navItemClass(activeMegaMenu === "joyas" || pathname.startsWith("/joyeria"))}>
                 <span>Joyas</span>
@@ -433,9 +442,10 @@ export default function Header() {
             </li>
             <li><Link href="/marroquineria" className={navItemClass(pathname === "/marroquineria")}>Marroquinería</Link></li>
             <li><Link href="/trabajos-personalizados" className={navItemClass(pathname === "/trabajos-personalizados")}>Personalizados</Link></li>
+            <li><Link href="/mates" className={navItemClass(pathname === "/mates")}>Mates</Link></li>
             <li><Link href="/nosotros#contacto" className={navItemClass(pathname === "/nosotros#contacto")}>Contacto</Link></li>
             <li><Link href="/nosotros" className={navItemClass(pathname === "/nosotros")}>Quiénes Somos</Link></li>
-            <li><Link href="/mates" className={navItemClass(pathname === "/mates")}>Mates</Link></li>
+           
           </ul>
         </nav>
 
