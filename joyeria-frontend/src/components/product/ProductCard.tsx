@@ -97,7 +97,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
                     {/* Nombre del producto */}
                     <Link href={`/productos/${product.slug}`} className="block">
-                        <h3 className="font-serif text-base md:text-lg font-medium text-gray-950 group-hover:text-amber-800 transition-colors line-clamp-2 leading-snug">
+                        <h3 className="font-serif text-base md:text-lg font-medium text-gray-950 group-hover:text-black transition-colors line-clamp-2 leading-snug">
                             {product.name}
                         </h3>
                     </Link>

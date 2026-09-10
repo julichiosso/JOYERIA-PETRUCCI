@@ -82,7 +82,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       <div className="flex flex-col gap-1 pt-3 text-left">
         <Link
           href={productUrl}
-          className="font-body text-xs sm:text-sm font-normal text-gray-900 hover:text-amber-800 transition-colors line-clamp-2 leading-snug"
+          className="font-body text-xs sm:text-sm font-normal text-gray-900 hover:text-black hover:underline transition-colors line-clamp-2 leading-snug"
         >
           {product.name}
         </Link>
@@ -100,7 +100,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
             )}
           </div>
         ) : (
-          <p className="font-body text-xs text-amber-900 font-medium mt-1">
+          <p className="font-body text-xs text-gray-900 font-medium mt-1">
             Consultar precio por WhatsApp
           </p>
         )}

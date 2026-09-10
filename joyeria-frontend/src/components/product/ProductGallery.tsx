@@ -110,7 +110,7 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
               type="button"
               onClick={() => setSelectedIndex(idx)}
               className={`relative w-16 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${idx === selectedIndex
-                  ? "border-amber-800 ring-2 ring-amber-800/20"
+                  ? "border-black ring-2 ring-black/20"
                   : "border-gray-200 opacity-60 hover:opacity-100"
                 }`}
             >
@@ -136,7 +136,7 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
             <button
               type="button"
               onClick={() => setIsZoomOpen(false)}
-              className="absolute top-4 right-4 text-white text-3xl font-bold p-2 z-10 hover:text-amber-400 cursor-pointer"
+              className="absolute top-4 right-4 text-white text-3xl font-bold p-2 z-10 hover:text-gray-300 cursor-pointer"
             >
               ✕
             </button>

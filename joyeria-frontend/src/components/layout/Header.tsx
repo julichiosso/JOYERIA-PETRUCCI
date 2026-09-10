@@ -19,9 +19,10 @@ import { api } from "@/lib/api";
 import type { Product } from "@/types/product";
 
 const ANNOUNCEMENTS = [
+  "ENVÍOS A TODO EL PAÍS • ATENCIÓN PERSONALIZADA POR WHATSAPP",
+  "GRABADOS PERSONALIZADOS • CONSULTÁ POR WHATSAPP",
+  "ATELIER & BOUTIQUE · SAN JORGE, SANTA FE",
   "ABONANDO MEDIANTE TRANSFERENCIA 15% OFF",
-  "GRABADOS PERSONALIZADOS · CONSULTÁ POR WHATSAPP",
-  "RETIRO EN LOCAL · SAN JORGE, SANTA FE",
 ];
 
 // Estructura completa de columnas del Mega Menú (exacta según pedido del cliente)
@@ -347,7 +348,7 @@ export default function Header() {
                     }}
                     placeholder="¿Qué estás buscando?"
                     aria-label="Buscar productos"
-                    className="w-full h-11 pl-3.5 pr-11 py-2.5 bg-white border border-gray-300 rounded-none font-body text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                    className="w-full h-10 pl-4 pr-11 py-2 bg-white border border-gray-300 rounded-full font-body text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-400 transition-all"
                   />
 
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-auto">
@@ -377,7 +378,7 @@ export default function Header() {
                 </form>
 
                 {dropdownOpen && (
-                  <div className="absolute top-full left-0 mt-1 w-[320px] lg:w-[360px] bg-white border border-gray-200 shadow-2xl z-50 overflow-hidden divide-y divide-gray-100">
+                  <div className="absolute top-full left-0 mt-1 w-[320px] lg:w-[360px] bg-white border border-gray-200 shadow-2xl z-50 overflow-hidden divide-y divide-gray-100 rounded-xl">
                     <div className="max-h-[380px] overflow-y-auto divide-y divide-gray-100">
                       {searchResults.map((product) => {
                         const thumb = product.images?.find((i) => i.order === 0) ?? product.images?.[0];
@@ -414,14 +415,34 @@ export default function Header() {
                 <img
                   src="/logo-petrucci-v2.svg"
                   alt="Petrucci Joyería y Relojería"
-                  className="h-12 md:h-16 lg:h-[68px] max-h-[72px] w-auto object-contain transition-transform duration-200 group-hover:scale-[1.03]"
+                  className="h-12 md:h-16 lg:h-[68px] max-h-[72px] w-auto object-contain transition-transform duration-200"
                 />
               </Link>
             </div>
 
-            <div className="flex items-center justify-end gap-4 md:gap-6 w-1/3">
-              <Link href="/admin/login" className="hidden md:flex items-center gap-1.5 text-[13px] text-gray-800 hover:text-black font-medium"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.3" /><path d="M2 15.5c0-3.038 3.134-5.5 7-5.5s7 2.462 7 5.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg> Ingresá</Link>
-              <Link href="#contacto" className="flex items-center gap-1.5 text-[13px] text-gray-800 hover:text-black font-medium"><svg width="17" height="17" viewBox="0 0 18 18" fill="none"><path d="M3.5 5h11L16 14H2L3.5 5Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" /><path d="M6.5 5V4A2.5 2.5 0 0 1 11.5 4v1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg> <span className="hidden sm:inline">Carrito (0)</span></Link>
+            <div className="flex items-center justify-end gap-3 md:gap-5 w-1/3">
+              <Link
+                href="/nosotros#contacto"
+                className="hidden lg:inline-flex items-center text-[13px] text-gray-700 hover:text-black font-normal transition-colors"
+              >
+                Contacto
+              </Link>
+              <a
+                href="https://wa.me/5493406419736?text=Hola%20Petrucci,%20quisiera%20hacer%20una%20consulta%20personalizada."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/70 hover:bg-emerald-100/80 text-[12px] font-medium tracking-wide transition-all duration-200"
+                aria-label="Atención por WhatsApp"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5 text-emerald-600" aria-hidden="true">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+                  <path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.553 4.112 1.522 5.839L.057 23.776a.5.5 0 0 0 .617.625l6.09-1.595A11.937 11.937 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.927 0-3.74-.518-5.297-1.424l-.38-.224-3.938 1.032 1.05-3.834-.247-.395A9.948 9.948 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+                </svg>
+                <span className="hidden sm:inline">WhatsApp</span>
+              </a>
+              <Link href="/admin/login" className="flex items-center gap-1.5 text-[13px] text-gray-500 hover:text-black font-normal transition-colors" title="Panel de Administración">
+                <svg width="15" height="15" viewBox="0 0 18 18" fill="none"><circle cx="9" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.3" /><path d="M2 15.5c0-3.038 3.134-5.5 7-5.5s7 2.462 7 5.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" /></svg>
+              </Link>
             </div>
           </div>
         </div>
@@ -440,8 +461,9 @@ export default function Header() {
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-gray-400 group-hover:text-black transition-colors"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </button>
             </li>
-            <li><Link href="/marroquineria" className={navItemClass(pathname === "/marroquineria")}>Marroquinería</Link></li>
             <li><Link href="/trabajos-personalizados" className={navItemClass(pathname === "/trabajos-personalizados")}>Personalizados</Link></li>
+            <li><Link href="/marroquineria" className={navItemClass(pathname === "/marroquineria")}>Marroquinería</Link></li>
+
             <li><Link href="/mates" className={navItemClass(pathname === "/mates")}>Mates</Link></li>
             <li><Link href="/nosotros#contacto" className={navItemClass(pathname === "/nosotros#contacto")}>Contacto</Link></li>
             <li><Link href="/nosotros" className={navItemClass(pathname === "/nosotros")}>Quiénes Somos</Link></li>
@@ -450,20 +472,93 @@ export default function Header() {
         </nav>
 
         {/* ── MEGA MENÚ DESPLEGABLE JOYAS ──────────────────────────────────── */}
-        {activeMegaMenu === "joyas" && (
-          <div
-            className="absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-xl z-50 animate-fade-in"
-            onMouseEnter={() => setActiveMegaMenu("joyas")}
-            onMouseLeave={() => setActiveMegaMenu(null)}
-          >
-            <div className="mx-auto max-w-7xl px-8 py-8">
-              <div className="grid grid-cols-6 gap-6">
-                {JOYAS_MEGA_MENU.map((col, idx) => (
-                  <div key={idx} className="flex flex-col gap-6">
-                    <div>
+        <AnimatePresence>
+          {activeMegaMenu === "joyas" && (
+            <motion.div
+              key="mega-menu-joyas"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-xl z-50"
+              onMouseEnter={() => setActiveMegaMenu("joyas")}
+              onMouseLeave={() => setActiveMegaMenu(null)}
+            >
+              <div className="mx-auto max-w-7xl px-8 py-8">
+                <div className="grid grid-cols-6 gap-6">
+                  {JOYAS_MEGA_MENU.map((col, idx) => (
+                    <div key={idx} className="flex flex-col gap-6">
+                      <div>
+                        <Link
+                          href={col.href}
+                          className="font-body font-bold text-xs text-gray-900 tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
+                        >
+                          {col.title}
+                        </Link>
+                        <ul className="flex flex-col gap-1.5">
+                          {col.items.map((item, itemIdx) => (
+                            <li key={itemIdx}>
+                              <Link
+                                href={item.href}
+                                className="font-body text-xs text-gray-600 hover:text-black hover:underline transition-colors block py-0.5"
+                              >
+                                {item.label}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      {col.secondaryTitle && col.secondaryItems && (
+                        <div className="pt-2 border-t border-gray-100">
+                          <Link
+                            href={col.secondaryHref ?? "#"}
+                            className="font-body font-bold text-xs text-gray-900 tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
+                          >
+                            {col.secondaryTitle}
+                          </Link>
+                          <ul className="flex flex-col gap-1.5">
+                            {col.secondaryItems.map((sec, secIdx) => (
+                              <li key={secIdx}>
+                                <Link
+                                  href={sec.href}
+                                  className="font-body text-xs text-gray-600 hover:text-black hover:underline transition-colors block py-0.5"
+                                >
+                                  {sec.label}
+                                </Link>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── MEGA MENÚ DESPLEGABLE RELOJES ────────────────────────────────── */}
+        <AnimatePresence>
+          {activeMegaMenu === "relojes" && (
+            <motion.div
+              key="mega-menu-relojes"
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-xl z-50"
+              onMouseEnter={() => setActiveMegaMenu("relojes")}
+              onMouseLeave={() => setActiveMegaMenu(null)}
+            >
+              <div className="mx-auto max-w-7xl px-8 py-8">
+                <div className="grid grid-cols-4 gap-8">
+                  {RELOJES_MEGA_MENU.map((col, idx) => (
+                    <div key={idx}>
                       <Link
                         href={col.href}
-                        className="font-body font-bold text-xs text-gray-900 tracking-wider uppercase block mb-3 hover:text-amber-800 transition-colors"
+                        className="font-body font-bold text-xs text-gray-900 tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
                       >
                         {col.title}
                       </Link>
@@ -480,71 +575,12 @@ export default function Header() {
                         ))}
                       </ul>
                     </div>
-
-                    {col.secondaryTitle && col.secondaryItems && (
-                      <div className="pt-2 border-t border-gray-100">
-                        <Link
-                          href={col.secondaryHref ?? "#"}
-                          className="font-body font-bold text-xs text-gray-900 tracking-wider uppercase block mb-3 hover:text-amber-800 transition-colors"
-                        >
-                          {col.secondaryTitle}
-                        </Link>
-                        <ul className="flex flex-col gap-1.5">
-                          {col.secondaryItems.map((sec, secIdx) => (
-                            <li key={secIdx}>
-                              <Link
-                                href={sec.href}
-                                className="font-body text-xs text-gray-600 hover:text-black hover:underline transition-colors block py-0.5"
-                              >
-                                {sec.label}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* ── MEGA MENÚ DESPLEGABLE RELOJES ────────────────────────────────── */}
-        {activeMegaMenu === "relojes" && (
-          <div
-            className="absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-xl z-50 animate-fade-in"
-            onMouseEnter={() => setActiveMegaMenu("relojes")}
-            onMouseLeave={() => setActiveMegaMenu(null)}
-          >
-            <div className="mx-auto max-w-7xl px-8 py-8">
-              <div className="grid grid-cols-4 gap-8">
-                {RELOJES_MEGA_MENU.map((col, idx) => (
-                  <div key={idx}>
-                    <Link
-                      href={col.href}
-                      className="font-body font-bold text-xs text-gray-900 tracking-wider uppercase block mb-3 hover:text-amber-800 transition-colors"
-                    >
-                      {col.title}
-                    </Link>
-                    <ul className="flex flex-col gap-1.5">
-                      {col.items.map((item, itemIdx) => (
-                        <li key={itemIdx}>
-                          <Link
-                            href={item.href}
-                            className="font-body text-xs text-gray-600 hover:text-black hover:underline transition-colors block py-0.5"
-                          >
-                            {item.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* ── 4. Mobile Search Bar & Dropdown ─────────────────────────────────── */}
@@ -564,7 +600,7 @@ export default function Header() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="¿Qué estás buscando?"
-                className="w-full pl-3.5 pr-14 py-2.5 bg-gray-50 border border-gray-300 rounded-none font-body text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-black"
+                className="w-full h-10 pl-4 pr-14 py-2 bg-gray-50 border border-gray-300 rounded-full font-body text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-400"
               />
 
               <div className="absolute right-3 flex items-center gap-2">
@@ -596,7 +632,7 @@ export default function Header() {
 
             {/* Resultados en mobile */}
             {dropdownOpen && (
-              <div className="mt-2 bg-white border border-gray-200 shadow-xl overflow-hidden divide-y divide-gray-100">
+              <div className="mt-2 bg-white border border-gray-200 shadow-xl overflow-hidden divide-y divide-gray-100 rounded-xl">
                 {searchResults.length > 0 ? (
                   <>
                     <div className="max-h-[300px] overflow-y-auto divide-y divide-gray-100">
@@ -635,7 +671,7 @@ export default function Header() {
                                   {formattedPrice}
                                 </p>
                               ) : (
-                                <p className="text-[11px] text-amber-800 font-medium mt-0.5">
+                                <p className="text-[11px] text-gray-800 font-medium mt-0.5">
                                   Consultar precio
                                 </p>
                               )}
@@ -681,7 +717,7 @@ export default function Header() {
           <ul className="divide-y divide-gray-100 font-body text-sm font-medium text-gray-800">
             <li className="px-5 py-2.5">
               <span className="font-semibold text-gray-900 block mb-1.5">Joyas</span>
-              <ul className="pl-3 space-y-1.5 border-l-2 border-amber-600 font-normal text-xs text-gray-600">
+              <ul className="pl-3 space-y-1.5 border-l-2 border-gray-900 font-normal text-xs text-gray-600">
                 <li><Link href="/joyeria/anillos-2" onClick={() => setMenuOpen(false)} className="block py-1">Anillos</Link></li>
                 <li><Link href="/joyeria/aros" onClick={() => setMenuOpen(false)} className="block py-1">Aros y Aritos</Link></li>
                 <li><Link href="/joyeria/cadenas" onClick={() => setMenuOpen(false)} className="block py-1">Cadenas</Link></li>

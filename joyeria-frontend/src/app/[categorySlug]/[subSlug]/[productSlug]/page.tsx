@@ -3,7 +3,7 @@
  * Ficha de producto PETRUCCI — Server Component.
  *
  * Ruta canónica: /[categoría]/[subcategoría]/[slug-producto]
- * Usa ProductDetailClient para galería con thumbnails, acordeones, variantes, social share.
+ * Usa ProductDetailClient para galería con thumbnails, acordeones y variantes.
  */
 
 import type { Metadata } from "next";
@@ -12,7 +12,7 @@ import Script from "next/script";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import ProductDetailClient from "@/components/product/ProductDetailClient";
-import ProductCard from "@/components/product/ProductCard";
+import ProductCard from "@/components/catalog/ProductCard";
 import type { Product } from "@/types/product";
 
 interface PageProps {
@@ -25,23 +25,23 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { productSlug } = await params;
   try {
     const product = await api.catalog.getProductBySlug(productSlug);
-    const title = product.metaTitle || `${product.name} — Petrucci Joyería`;
-    const description =
-      product.metaDescription ||
-      product.description ||
-      `Consultá por "${product.name}" en Petrucci Joyería.`;
     return {
-      title,
-      description,
+      title: `${product.name} | Petrucci Joyería`,
+      description:
+        product.description ||
+        `Comprá ${product.name} en Petrucci Joyería. Piezas exclusivas y atención personalizada.`,
       openGraph: {
-        title,
-        description,
-        images: product.images.length > 0 ? [product.images[0].url] : [],
-        type: "website",
+        title: `${product.name} | Petrucci Joyería`,
+        description:
+          product.description ||
+          `Comprá ${product.name} en Petrucci Joyería. Piezas exclusivas.`,
+        images: product.images?.[0]?.url ? [{ url: product.images[0].url }] : [],
       },
     };
   } catch {
-    return {};
+    return {
+      title: "Producto no encontrado | Petrucci Joyería",
+    };
   }
 }
 
@@ -58,38 +58,32 @@ export default async function ProductDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  // 2. Validar que la URL coincide con la categoría real
-  const expectedParentSlug = product.category.parent?.slug;
-  const expectedCategorySlug = product.category.slug;
-  const urlMatchesCategory = expectedParentSlug
-    ? categorySlug === expectedParentSlug && subSlug === expectedCategorySlug
-    : categorySlug === expectedCategorySlug;
+  const categoryName = product.category.name;
+  const parentCategoryName = product.category.parent?.name;
 
-  if (!urlMatchesCategory) notFound();
-
-  // 3. Cargar productos relacionados
+  // 2. Cargar productos relacionados
   let relatedProducts: Product[] = [];
   try {
-    const res = await api.catalog.getProducts({
+    const response = await api.catalog.getProducts({
       categoryId: product.category.id,
+      page: 1,
       limit: 5,
     });
-    relatedProducts = (res.items || []).filter((p) => p.id !== product.id).slice(0, 4);
+    relatedProducts = response.items
+      .filter((p) => p.status === "ACTIVE" && p.id !== product.id)
+      .slice(0, 4);
   } catch {
+    // Si falla la carga de relacionados, no rompemos la página
     relatedProducts = [];
   }
 
-  const categoryName = product.category.name;
-  const parentCategory = product.category.parent;
-
-  // Breadcrumb con URLs de la arquitectura de rutas existente
   const breadcrumbLinks = [
     { label: "Inicio", href: "/" },
-    ...(parentCategory
+    ...(parentCategoryName
       ? [
-        { label: parentCategory.name, href: `/${parentCategory.slug}` },
-        { label: categoryName, href: `/${parentCategory.slug}/${categoryName.toLowerCase()}` },
-      ]
+          { label: parentCategoryName, href: `/${categorySlug}` },
+          { label: categoryName, href: `/${categorySlug}/${subSlug}` },
+        ]
       : [{ label: categoryName, href: `/${categorySlug}` }]),
     { label: product.name, href: null },
   ];
@@ -97,23 +91,23 @@ export default async function ProductDetailPage({ params }: PageProps) {
   return (
     <>
       {/* ── JSON-LD ──────────────────────────────────────────────────── */}
-      {product.jsonLd?.product && (
-        <Script
-          id="json-ld-product"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(product.jsonLd.product) }}
-        />
-      )}
-      {product.jsonLd?.breadcrumb && (
-        <Script
-          id="json-ld-breadcrumb"
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(product.jsonLd.breadcrumb) }}
-        />
-      )}
+      <Script
+        id="json-ld-product"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(product.jsonLd.product),
+        }}
+      />
+      <Script
+        id="json-ld-breadcrumb"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(product.jsonLd.breadcrumb),
+        }}
+      />
 
       <div className="bg-white min-h-screen">
-        <div className="mx-auto max-w-7xl px-5 md:px-10 py-6 md:py-10">
+        <div className="mx-auto max-w-7xl px-4 md:px-8 py-6 md:py-10">
 
           {/* ── 1. BREADCRUMB ──────────────────────────────────────────── */}
           <nav aria-label="Migas de pan" className="mb-7 md:mb-10">
@@ -145,21 +139,18 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
           {/* ── 3. PRODUCTOS RELACIONADOS ─────────────────────────────── */}
           {relatedProducts.length > 0 && (
-            <section className="mt-20 md:mt-28 pt-12 border-t border-gray-100">
+            <section className="mt-16 md:mt-24 pt-10 border-t border-gray-100">
               <div className="flex items-end justify-between mb-8">
                 <div>
-                  <h2 className="font-serif text-2xl md:text-3xl font-normal text-gray-950">
-                    También te puede interesar
+                  <h2 className="text-[13px] font-semibold tracking-[0.18em] uppercase text-[#111111]">
+                    Productos relacionados
                   </h2>
-                  <p className="font-body text-xs text-gray-500 mt-1">
-                    Otras piezas de la colección {categoryName}
-                  </p>
                 </div>
                 <Link
                   href={`/${categorySlug}`}
-                  className="font-body text-[11px] font-bold uppercase tracking-widest text-amber-800 hover:text-amber-950 transition-colors hidden sm:block"
+                  className="text-xs text-gray-600 hover:text-black hover:underline transition-colors hidden sm:block font-medium"
                 >
-                  Ver colección →
+                  Ver más en {categoryName} →
                 </Link>
               </div>
 

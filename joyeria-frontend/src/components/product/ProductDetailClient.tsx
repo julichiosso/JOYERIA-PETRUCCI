@@ -1,409 +1,353 @@
-"use client";
+﻿"use client";
 
 /**
  * components/product/ProductDetailClient.tsx
  *
- * Componente cliente para la ficha de producto de PETRUCCI Joyería.
- * Toda la interactividad (galería, acordeones, selector de variante) vive aquí.
- *
- * Diseño referenciado del Stitch "Artisanal Luxury Editorial":
- *  - Galería con thumbnails verticales a la izquierda (desktop) / horizontales (mobile)
- *  - Acordeones de Medios de Pago, Envío y Local (cerrados por defecto, animación suave)
- *  - Compartir social minimalista
- *  - CTA WhatsApp de alta conversión
+ * Ficha de producto — PETRUCCI Joyeria & Marroquineria.
+ * Directivas UX:
+ *  - Cero carritos / pasarelas: conversion 100% por WhatsApp.
+ *  - Galeria: thumbnails verticales a la IZQUIERDA, imagen principal a la derecha.
+ *  - Tipografia consistente: Serif para nombres/titulos, sans-serif para labels/body.
+ *  - Sin texto de relleno generico ni elementos de estilo "IA".
+ *  - Sin seccion de envios (politica de la tienda).
  */
 
 import React, { useState } from "react";
 import Image from "next/image";
 import type { PublicProductResponse, ProductImage } from "@/types/product";
-import WhatsAppInlineCTA from "@/components/conversion/WhatsAppInlineCTA";
-import PriceOrConsult from "@/components/product/PriceOrConsult";
+import { formatPrice } from "@/lib/utils";
 
-/* ─────────────── SECCIÓN: Acordeón ─────────────────────────────────────── */
+/* ---------- SWATCH HELPERS ------------------------------------------------ */
+
+interface SwatchInfo {
+  hex: string;
+  borderHex?: string;
+}
+
+function getSwatchColor(name: string): SwatchInfo {
+  const lower = name.toLowerCase();
+  if (lower.includes("marron") || lower.includes("suela") || lower.includes("habano") || lower.includes("tan"))
+    return { hex: "#7A4325" };
+  if (lower.includes("borgona") || lower.includes("vino") || lower.includes("rojo") || lower.includes("bordeaux"))
+    return { hex: "#561420" };
+  if (lower.includes("negro") || lower.includes("black"))
+    return { hex: "#171717" };
+  if (lower.includes("oro blanco") || lower.includes("platino"))
+    return { hex: "#E5E4E2", borderHex: "#CCCCCC" };
+  if (lower.includes("oro rosa") || lower.includes("rose"))
+    return { hex: "#E8A399" };
+  if (lower.includes("oro"))
+    return { hex: "#D4AF37" };
+  if (lower.includes("plata y oro") || lower.includes("bicolor"))
+    return { hex: "#C5A880", borderHex: "#C0C0C0" };
+  if (lower.includes("plata"))
+    return { hex: "#C8C8C8" };
+  if (lower.includes("acero"))
+    return { hex: "#8A959E" };
+  if (lower.includes("verde") || lower.includes("esmeralda"))
+    return { hex: "#1B4D3E" };
+  if (lower.includes("azul") || lower.includes("marino"))
+    return { hex: "#1B2A4A" };
+  return { hex: "#A3927C" };
+}
+
+/* ---------- ACORDEON ------------------------------------------------------ */
 
 interface AccordionItem {
-    id: string;
-    icon: React.ReactNode;
-    label: string;
-    content: string;
+  id: string;
+  label: string;
+  content: React.ReactNode;
 }
-
-const ACCORDION_ITEMS: AccordionItem[] = [
-    {
-        id: "pago",
-        icon: (
-            <svg className="w-4 h-4 shrink-0 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <rect x="2" y="5" width="20" height="14" rx="2" strokeWidth="1.5" />
-                <path strokeLinecap="round" d="M2 10h20" strokeWidth="1.5" />
-            </svg>
-        ),
-        label: "MEDIOS DE PAGO",
-        content:
-            "Aceptamos transferencia bancaria y efectivo en nuestro taller con descuento especial. Consulte opciones de cuotas y financiamiento por WhatsApp.",
-    },
-    {
-        id: "envio",
-        icon: (
-            <svg className="w-4 h-4 shrink-0 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M1 3h15v13H1zM16 8h4l3 3v5h-7V8z" />
-                <circle cx="5.5" cy="18.5" r="2.5" strokeWidth="1.5" />
-                <circle cx="18.5" cy="18.5" r="2.5" strokeWidth="1.5" />
-            </svg>
-        ),
-        label: "MEDIOS DE ENVÍO",
-        content:
-            "Envíos asegurados sin cargo a todo el país mediante servicio de mensajería dedicado. Entrega express disponible en San Jorge y zona. Coordinamos el envío directamente con usted.",
-    },
-    {
-        id: "local",
-        icon: (
-            <svg className="w-4 h-4 shrink-0 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 22s-8-5.5-8-12a8 8 0 0116 0c0 6.5-8 12-8 12z" />
-                <circle cx="12" cy="10" r="2.5" strokeWidth="1.5" />
-            </svg>
-        ),
-        label: "NUESTRO LOCAL",
-        content:
-            "Visitanos en nuestro taller artesanal de San Jorge, Santa Fe. Atención personalizada de lunes a viernes de 9 a 13 hs. Coordiná una visita por WhatsApp.",
-    },
-];
 
 function Accordion({ item }: { item: AccordionItem }) {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <div className="border-t border-gray-200">
-            <button
-                type="button"
-                onClick={() => setOpen((v) => !v)}
-                className="w-full flex items-center gap-3 py-4 text-left cursor-pointer group"
-                aria-expanded={open}
-            >
-                {item.icon}
-                <span className="flex-1 font-body text-[11px] font-bold tracking-widest uppercase text-gray-900 group-hover:text-amber-800 transition-colors">
-                    {item.label}
-                </span>
-                <svg
-                    className={`w-4 h-4 text-gray-500 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
-                </svg>
-            </button>
-            <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out ${open ? "max-h-60 opacity-100 pb-4" : "max-h-0 opacity-0"
-                    }`}
-            >
-                <p className="font-body text-sm text-gray-600 leading-relaxed pl-7">{item.content}</p>
-            </div>
-        </div>
-    );
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-t border-[#E5E5E5]">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between py-4 text-left cursor-pointer"
+        aria-expanded={open}
+      >
+        <span className="text-[11px] font-semibold tracking-[0.15em] uppercase text-[#111111]">
+          {item.label}
+        </span>
+        <svg
+          className={`w-3.5 h-3.5 text-gray-400 transition-transform duration-300 ${open ? "rotate-180" : ""}`}
+          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      <div className={`overflow-hidden transition-all duration-300 ease-in-out ${open ? "max-h-96 opacity-100 pb-5" : "max-h-0 opacity-0"}`}>
+        <div className="text-[13px] text-gray-600 leading-relaxed">{item.content}</div>
+      </div>
+    </div>
+  );
 }
 
-/* ─────────────── SECCIÓN: Galería con Thumbnails ────────────────────────── */
+/* ---------- GALERIA ------------------------------------------------------- */
 
 interface GalleryProps {
-    images: ProductImage[];
-    productName: string;
+  images: ProductImage[];
+  productName: string;
 }
 
-function GalleryWithThumbs({ images, productName }: GalleryProps) {
-    const sorted = [...images].sort((a, b) => a.order - b.order);
-    const [selectedIdx, setSelectedIdx] = useState(0);
-    const [isZoomOpen, setIsZoomOpen] = useState(false);
-    const [errors, setErrors] = useState<Record<string, boolean>>({});
+function Gallery({ images, productName }: GalleryProps) {
+  const sorted = [...images].sort((a, b) => a.order - b.order);
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
 
-    const current = sorted[selectedIdx];
-    const hasMultiple = sorted.length > 1;
+  const current = sorted[selectedIdx];
+  const hasMultiple = sorted.length > 1;
 
-    if (!sorted.length || !current) {
-        return (
-            <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
-                <span className="text-gray-400 font-body text-sm">Sin imágenes</span>
-            </div>
-        );
-    }
-
+  if (!sorted.length || !current) {
     return (
-        <div className="flex flex-col md:flex-row-reverse gap-3 w-full">
-            {/* ── Imagen Principal ─────────────────────────────── */}
-            <div className="relative flex-1 aspect-square bg-gray-50 rounded-lg overflow-hidden border border-gray-100 group cursor-zoom-in">
-                {!errors[current.id] ? (
-                    <Image
-                        src={current.url}
-                        alt={current.altText || `${productName} — imagen ${selectedIdx + 1}`}
-                        fill
-                        priority
-                        sizes="(max-width: 768px) 100vw, 55vw"
-                        onError={() => setErrors((p) => ({ ...p, [current.id]: true }))}
-                        onClick={() => setIsZoomOpen(true)}
-                        className="object-cover object-center transition-transform duration-500 group-hover:scale-[1.03]"
-                    />
-                ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400">
-                        <span className="font-body text-xs">Imagen no disponible</span>
-                    </div>
-                )}
-
-                {/* Botón ampliar */}
-                <button
-                    type="button"
-                    onClick={() => setIsZoomOpen(true)}
-                    aria-label="Ver imagen ampliada"
-                    className="absolute top-3 right-3 p-2 bg-white/90 rounded-full shadow-md opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                >
-                    <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
-                    </svg>
-                </button>
-            </div>
-
-            {/* ── Columna de Thumbnails ──────────────────────────
-         Vertical en desktop (izquierda), horizontal en mobile (abajo) */}
-            {hasMultiple && (
-                <div className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-y-auto md:max-h-[520px] md:w-[90px] shrink-0 pb-1 md:pb-0 scrollbar-none">
-                    {sorted.map((img, idx) => (
-                        <button
-                            key={img.id}
-                            type="button"
-                            onClick={() => setSelectedIdx(idx)}
-                            className={`relative w-[72px] h-[72px] md:w-[90px] md:h-[90px] shrink-0 rounded-md overflow-hidden border-2 transition-all cursor-pointer ${idx === selectedIdx
-                                    ? "border-gray-900 ring-1 ring-gray-900/20"
-                                    : "border-gray-200 opacity-60 hover:opacity-100 hover:border-gray-400"
-                                }`}
-                        >
-                            <Image
-                                src={img.thumbnailUrl || img.url}
-                                alt={img.altText || `Miniatura ${idx + 1}`}
-                                fill
-                                sizes="90px"
-                                className="object-cover object-center"
-                            />
-                        </button>
-                    ))}
-                </div>
-            )}
-
-            {/* ── Lightbox Modal ───────────────────────────────── */}
-            {isZoomOpen && (
-                <div
-                    className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4 backdrop-blur-sm"
-                    onClick={() => setIsZoomOpen(false)}
-                >
-                    <button
-                        type="button"
-                        onClick={() => setIsZoomOpen(false)}
-                        className="absolute top-5 right-5 text-white text-2xl font-light p-2 hover:text-amber-400 cursor-pointer z-10"
-                        aria-label="Cerrar zoom"
-                    >
-                        ✕
-                    </button>
-                    <div className="relative max-w-3xl max-h-[90vh] w-full flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
-                        <Image
-                            src={current.url}
-                            alt={current.altText || productName}
-                            width={1200}
-                            height={1200}
-                            className="object-contain max-h-[88vh] w-auto rounded-md"
-                        />
-                    </div>
-                </div>
-            )}
-        </div>
+      <div className="aspect-[3/4] bg-[#F5F5F3] flex items-center justify-center">
+        <span className="text-gray-400 text-xs tracking-widest uppercase">Sin imagen</span>
+      </div>
     );
+  }
+
+  return (
+    <div className="flex flex-row gap-3">
+      {/* Thumbnails a la IZQUIERDA */}
+      {hasMultiple && (
+        <div className="flex flex-col gap-2 w-[72px] md:w-[80px] shrink-0">
+          {sorted.map((img, idx) => (
+            <button
+              key={img.id}
+              type="button"
+              onClick={() => setSelectedIdx(idx)}
+              aria-label={`Ver imagen ${idx + 1}`}
+              className={`relative w-[72px] h-[72px] md:w-[80px] md:h-[80px] shrink-0 overflow-hidden cursor-pointer transition-all duration-150 ${
+                idx === selectedIdx ? "ring-1 ring-[#111111]" : "opacity-55 hover:opacity-80"
+              }`}
+            >
+              <Image
+                src={img.thumbnailUrl || img.url}
+                alt={img.altText || `Vista ${idx + 1}`}
+                fill sizes="80px"
+                className="object-cover object-center"
+              />
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Imagen principal */}
+      <div
+        className="relative flex-1 aspect-[3/4] bg-[#F8F7F5] overflow-hidden cursor-zoom-in group"
+        onClick={() => setLightboxOpen(true)}
+      >
+        {!errors[current.id] ? (
+          <Image
+            src={current.url}
+            alt={current.altText || productName}
+            fill priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+            onError={() => setErrors((p) => ({ ...p, [current.id]: true }))}
+            className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-gray-400">
+            <span className="text-xs">Imagen no disponible</span>
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); setLightboxOpen(true); }}
+          aria-label="Ampliar imagen"
+          className="absolute bottom-4 right-4 p-2 bg-white/90 text-gray-700 border border-gray-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/88 flex items-center justify-center p-4 md:p-10"
+          onClick={() => setLightboxOpen(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(false)}
+            className="absolute top-5 right-6 text-white/70 hover:text-white text-3xl font-light p-2 cursor-pointer z-10"
+            aria-label="Cerrar"
+          >
+            &#x2715;
+          </button>
+          <div
+            className="relative max-w-4xl max-h-[90vh] w-full flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image
+              src={current.url}
+              alt={current.altText || productName}
+              width={1600} height={2000}
+              className="object-contain max-h-[88vh] w-auto"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
-/* ─────────────── SECCIÓN: Íconos Compartir ─────────────────────────────── */
-
-function ShareRow({ productName, slug }: { productName: string; slug: string }) {
-    const pageUrl = typeof window !== "undefined"
-        ? `${window.location.origin}/productos/${slug}`
-        : `https://petrucci.com.ar/productos/${slug}`;
-    const text = encodeURIComponent(`Mirá esta joya de Petrucci: ${productName}`);
-    const encodedUrl = encodeURIComponent(pageUrl);
-
-    return (
-        <div className="flex items-center gap-3 pt-5 border-t border-gray-200">
-            <span className="font-body text-[11px] uppercase tracking-widest text-gray-500 font-semibold shrink-0">
-                Compartir:
-            </span>
-            {/* Facebook */}
-            <a
-                href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Compartir en Facebook"
-                className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-900 text-gray-600 hover:text-gray-900 transition-all cursor-pointer"
-            >
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                </svg>
-            </a>
-            {/* X / Twitter */}
-            <a
-                href={`https://twitter.com/intent/tweet?text=${text}&url=${encodedUrl}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Compartir en X"
-                className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-900 text-gray-600 hover:text-gray-900 transition-all cursor-pointer"
-            >
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-            </a>
-            {/* Pinterest */}
-            <a
-                href={`https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${text}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Compartir en Pinterest"
-                className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-900 text-gray-600 hover:text-gray-900 transition-all cursor-pointer"
-            >
-                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 0C5.373 0 0 5.373 0 12c0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738a.36.36 0 0 1 .083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.262 7.929-7.262 4.163 0 7.398 2.967 7.398 6.931 0 4.136-2.607 7.464-6.227 7.464-1.216 0-2.359-.632-2.75-1.378l-.748 2.853c-.271 1.043-1.002 2.35-1.492 3.146C9.57 23.812 10.763 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z" />
-                </svg>
-            </a>
-        </div>
-    );
-}
-
-/* ─────────────── COMPONENTE PRINCIPAL ──────────────────────────────────── */
+/* ---------- COMPONENTE PRINCIPAL ------------------------------------------ */
 
 interface ProductDetailClientProps {
-    product: PublicProductResponse;
+  product: PublicProductResponse;
 }
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
-    const parentCategory = product.category.parent;
-    const categoryName = product.category.name;
+  const categoryName = product.category.name;
+  const parentName = product.category.parent?.name ?? "";
 
-    // Variantes: si tiene variantLabel como texto libre, lo mostramos como select
-    const variantOptions = product.variantLabel
-        ? product.variantLabel.split(/[,;|]/).map((v) => v.trim()).filter(Boolean)
-        : [];
+  const variants = product.variantLabel
+    ? product.variantLabel.split(/[,;|]/).map((v) => v.trim()).filter(Boolean)
+    : [];
 
-    return (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-start">
-            {/* ───── COLUMNA IZQUIERDA: Galería ───────────────────────── */}
-            <GalleryWithThumbs images={product.images} productName={product.name} />
+  const [selectedVariant, setSelectedVariant] = useState<string>(
+    variants.length > 0 ? variants[0] : ""
+  );
 
-            {/* ───── COLUMNA DERECHA: Info + CTA ─────────────────────── */}
-            <div className="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start">
+  const whatsappUrl = (() => {
+    const baseNumber = "5493406419736";
+    let msg = `Hola, quisiera consultar por "${product.name}"`;
+    if (selectedVariant) msg += ` (${selectedVariant})`;
+    msg += `. Tienen disponibilidad?`;
+    return `https://wa.me/${baseNumber}?text=${encodeURIComponent(msg)}`;
+  })();
 
-                {/* Badges de estado & categoría */}
-                <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-block font-body text-[10px] font-bold tracking-[0.15em] uppercase bg-gray-900 text-white px-3 py-1 rounded-full">
-                        {parentCategory ? parentCategory.name : categoryName}
-                    </span>
-                    {product.status === "OUT_OF_STOCK" && (
-                        <span className="inline-block font-body text-[10px] font-bold tracking-widest uppercase bg-rose-50 text-rose-800 border border-rose-200 px-3 py-1 rounded-full">
-                            Sin Stock
-                        </span>
-                    )}
-                </div>
+  const formattedPrice = formatPrice(product.price);
+  const breadcrumbCategory = [parentName, categoryName].filter(Boolean).join(" / ");
 
-                {/* H1 — Título */}
-                <h1 className="font-serif text-3xl md:text-4xl lg:text-[2.6rem] font-normal text-gray-950 leading-tight tracking-tight">
-                    {product.name}
-                </h1>
-
-                {/* Sub-categoría de metal/material */}
-                {parentCategory && (
-                    <p className="font-body text-xs text-gray-500 tracking-widest uppercase -mt-3">
-                        {categoryName}
-                    </p>
-                )}
-
-                {/* ── Precio o Badge Consultar ─────────────────────────── */}
-                <div className="pt-1 pb-2 border-b border-gray-100">
-                    <PriceOrConsult
-                        price={product.price}
-                        showPrice={product.showPrice}
-                        status={product.status}
-                        whatsappUrl={product.whatsappLink}
-                        productName={product.name}
-                        size="lg"
-                    />
-                    {product.showPrice && product.price && (
-                        <p className="font-body text-xs text-gray-500 mt-1.5">
-                            Precio incluye IVA · Consultá financiamiento por WhatsApp
-                        </p>
-                    )}
-                </div>
-
-                {/* ── Selector de Variante ─────────────────────────────── */}
-                {variantOptions.length > 1 ? (
-                    <div className="flex flex-col gap-1.5">
-                        <label className="font-body text-[11px] font-bold tracking-widest uppercase text-gray-700">
-                            Acabado / Variante
-                        </label>
-                        <div className="relative">
-                            <select className="w-full appearance-none bg-white border border-gray-300 text-gray-900 font-body text-sm py-2.5 px-3 pr-8 focus:outline-none focus:border-gray-900 focus:ring-1 focus:ring-gray-900 transition-colors cursor-pointer rounded-sm">
-                                {variantOptions.map((opt) => (
-                                    <option key={opt} value={opt}>{opt}</option>
-                                ))}
-                            </select>
-                            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </div>
-                    </div>
-                ) : product.variantLabel ? (
-                    <div className="bg-[#FBF8F4] border border-[#C5A880]/50 rounded-sm px-4 py-3">
-                        <span className="font-body text-[10px] font-bold uppercase tracking-widest text-[#8C6D3F] block mb-0.5">
-                            Acabado & Variantes
-                        </span>
-                        <p className="font-body text-sm text-gray-800">{product.variantLabel}</p>
-                    </div>
-                ) : null}
-
-                {/* ── CTA Principal WhatsApp ───────────────────────────── */}
-                <div>
-                    <WhatsAppInlineCTA
-                        whatsappUrl={product.whatsappLink}
-                        productName={product.name}
-                        className="rounded-sm"
-                    />
-                    <p className="flex items-center justify-center gap-1.5 font-body text-[11px] text-gray-500 text-center mt-2.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                        Atención personalizada directa de nuestro taller artesanal
-                    </p>
-                </div>
-
-                {/* ── Acordeones ──────────────────────────────────────── */}
-                <div className="mt-2">
-                    {ACCORDION_ITEMS.map((item) => (
-                        <Accordion key={item.id} item={item} />
-                    ))}
-                    <div className="border-t border-gray-200" />
-                </div>
-
-                {/* ── Descripción del Producto ─────────────────────────── */}
-                {product.description && (
-                    <div className="pt-4 border-t border-gray-100">
-                        <p className="font-body text-sm text-gray-600 leading-relaxed whitespace-pre-line">
-                            {product.description}
-                        </p>
-                    </div>
-                )}
-
-                {/* ── Íconos de Confianza ──────────────────────────────── */}
-                <div className="grid grid-cols-2 gap-2.5 text-xs font-body text-gray-600">
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm">✨</span>
-                        <span>Garantía de autenticidad</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm">🎁</span>
-                        <span>Estuche artesanal incluido</span>
-                    </div>
-                </div>
-
-                {/* ── Social Share ─────────────────────────────────────── */}
-                <ShareRow productName={product.name} slug={product.slug} />
-            </div>
+  const accordionItems: AccordionItem[] = [
+    {
+      id: "descripcion",
+      label: "Descripcion",
+      content: product.description ? (
+        <p className="whitespace-pre-line">{product.description}</p>
+      ) : (
+        <p>Consultanos por WhatsApp para mas detalles sobre esta pieza.</p>
+      ),
+    },
+    {
+      id: "cuidados",
+      label: "Cuidados y Garantia",
+      content: (
+        <div className="space-y-2">
+          <p>Cada pieza Petrucci cuenta con <strong>garantia de autenticidad</strong> sobre sus materiales.</p>
+          <p>Para conservarla en optimas condiciones, evite el contacto con solventes o abrasivos. Ofrecemos servicio de mantenimiento y limpieza en nuestro local.</p>
         </div>
-    );
+      ),
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+
+      {/* Galeria */}
+      <div className="lg:col-span-7">
+        <Gallery images={product.images} productName={product.name} />
+      </div>
+
+      {/* Panel de informacion */}
+      <div className="lg:col-span-5 flex flex-col gap-7 lg:sticky lg:top-24 lg:self-start">
+
+        {/* Breadcrumb */}
+        {breadcrumbCategory && (
+          <p className="text-[10px] tracking-[0.2em] uppercase text-gray-400 font-medium">
+            {breadcrumbCategory}
+          </p>
+        )}
+
+        {/* Nombre */}
+        <div>
+          <h1 className="font-serif text-[2rem] md:text-[2.4rem] leading-[1.15] text-[#111111] font-normal tracking-tight">
+            {product.name}
+          </h1>
+          {product.status === "OUT_OF_STOCK" && (
+            <p className="mt-2 text-[11px] tracking-[0.14em] uppercase text-gray-500">
+              Sin stock momentaneo — consulta reposicion
+            </p>
+          )}
+        </div>
+
+        {/* Precio */}
+        {product.showPrice && formattedPrice && (
+          <div className="border-t border-b border-[#E5E5E5] py-4">
+            <span className="text-2xl md:text-3xl font-semibold text-[#111111]">
+              {formattedPrice}
+            </span>
+          </div>
+        )}
+
+        {/* Variantes */}
+        {variants.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] tracking-[0.15em] uppercase text-gray-600 font-medium">Variante</span>
+              <span className="text-[12px] font-semibold text-[#111111]">{selectedVariant}</span>
+            </div>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              {variants.map((variant) => {
+                const swatch = getSwatchColor(variant);
+                const isSelected = selectedVariant === variant;
+                return (
+                  <button
+                    key={variant}
+                    type="button"
+                    onClick={() => setSelectedVariant(variant)}
+                    title={variant}
+                    className={`flex items-center gap-2 px-3 py-2 text-[12px] border transition-all duration-150 cursor-pointer ${
+                      isSelected
+                        ? "border-[#111111] text-[#111111] shadow-sm"
+                        : "border-[#E0E0E0] text-gray-600 hover:border-[#111111]"
+                    }`}
+                  >
+                    <span
+                      className="w-3 h-3 rounded-full shrink-0 border"
+                      style={{ background: swatch.hex, borderColor: swatch.borderHex ?? "rgba(0,0,0,0.15)" }}
+                    />
+                    {variant}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* CTA WhatsApp */}
+        <div className="flex flex-col gap-3">
+          <a
+            href={whatsappUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-4 px-6 bg-[#111111] text-white text-[12px] tracking-[0.18em] uppercase font-semibold flex items-center justify-center gap-3 hover:bg-[#222] transition-colors duration-200"
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-[#25D366]">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+              <path d="M12 0C5.373 0 0 5.373 0 12c0 2.122.553 4.112 1.522 5.839L.057 23.776a.5.5 0 0 0 .617.625l6.09-1.595A11.937 11.937 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.927 0-3.74-.518-5.297-1.424l-.38-.224-3.938 1.032 1.05-3.834-.247-.395A9.948 9.948 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
+            </svg>
+            Consultar por WhatsApp
+          </a>
+          <p className="text-center text-[11px] text-gray-400">Te respondemos a la brevedad</p>
+        </div>
+
+        {/* Acordeones */}
+        <div className="border-t border-[#E5E5E5] mt-1">
+          {accordionItems.map((item) => (
+            <Accordion key={item.id} item={item} />
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
 }

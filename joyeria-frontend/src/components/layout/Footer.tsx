@@ -54,96 +54,98 @@ export default function Footer() {
       {/* ── Marquesina animada de medios de pago en el tope ──────────────── */}
       <PaymentMarquee />
 
-      {/* ── Grid Principal de 3 Columnas ──────────────────────────────────── */}
-      <div className="mx-auto max-w-6xl px-6 pt-12 pb-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 lg:gap-12">
+      {/* ── Grid Principal de 4 Columnas Editoriales ─────────────────────── */}
+      <div className="mx-auto max-w-7xl px-6 pt-14 pb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
 
-          {/* ── Columna 1: Newsletter + Redes ─────────────────────────────────── */}
+          {/* ── Columna 1: Atelier & Manufactura (Newsletter VIP) ──────────── */}
           <div className="flex flex-col gap-4">
-            <h3 className="text-xs font-semibold text-gray-700 tracking-wider uppercase">
-              SUSCRIBITE A NUESTRO NEWSLETTER
+            <h3 className="text-xs font-bold text-gray-900 tracking-[0.18em] uppercase font-body">
+              ATELIER & MANUFACTURA
             </h3>
+            <p className="text-xs text-gray-600 leading-relaxed font-body">
+              Recibí lanzamientos de partidas limitadas, nuevas creaciones y beneficios exclusivos en tu casilla.
+            </p>
             <NewsletterForm />
+          </div>
 
-            {/* Redes sociales */}
-            <div className="flex items-center gap-4 mt-2">
-              {instagramUrl && (
-                <a
-                  href={instagramUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  className="text-gray-900 hover:opacity-75 transition-opacity"
-                >
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                  </svg>
-                </a>
-              )}
-              {facebookUrl && (
-                <a
-                  href={facebookUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Facebook"
-                  className="text-gray-900 hover:opacity-75 transition-opacity"
-                >
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                  </svg>
-                </a>
-              )}
+          {/* ── Columna 2: Asesoramiento Directo ───────────────────────────── */}
+          <div className="flex flex-col gap-3 lg:pl-4">
+            <h3 className="text-xs font-bold text-gray-900 tracking-[0.18em] uppercase font-body">
+              ASESORAMIENTO DIRECTO
+            </h3>
+            <div className="flex flex-col gap-2.5 text-xs text-gray-600 font-body leading-relaxed">
+              <a
+                href={`https://wa.me/${rawWhatsapp.replace(/\D/g, "")}?text=Hola%20Petrucci,%20quisiera%20hacer%20una%20consulta%20personalizada.`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-emerald-800 font-semibold hover:text-emerald-950 transition-colors"
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                WhatsApp Boutique: +{rawWhatsapp}
+              </a>
+              <p className="text-gray-600">
+                Atención personalizada de lunes a sábado de 9 a 18 hs.
+              </p>
+              <a href="mailto:victorpetrucci84@gmail.com" className="hover:text-black transition-colors block">
+                victorpetrucci84@gmail.com
+              </a>
+              <p className="text-gray-500 pt-1">{address}</p>
             </div>
           </div>
 
-          {/* ── Columna 2: Información ───────────────────────────────────────── */}
-          <div className="flex flex-col gap-3 md:pl-6">
-            <h3 className="text-xs font-semibold text-gray-700 tracking-wider uppercase">
-              INFORMACIÓN
+          {/* ── Columna 3: Compromiso Petrucci ─────────────────────────────── */}
+          <div className="flex flex-col gap-3 lg:pl-4">
+            <h3 className="text-xs font-bold text-gray-900 tracking-[0.18em] uppercase font-body">
+              COMPROMISO PETRUCCI
             </h3>
-            <nav aria-label="Enlaces de información" className="flex flex-col gap-2 text-sm text-gray-700">
-              <Link href="/terminos" className="hover:text-black transition-colors">
-                Terminos y Condiciones
-              </Link>
+            <nav aria-label="Compromiso y manufactura" className="flex flex-col gap-2 text-xs text-gray-600 font-body">
               <Link href="/nosotros" className="hover:text-black transition-colors">
-                Quienes Somos
+                Quiénes Somos & Origen
+              </Link>
+              <Link href="/trabajos-personalizados" className="hover:text-black transition-colors">
+                Piezas y Trabajos a Medida
+              </Link>
+              <Link href="/nosotros#contacto" className="hover:text-black transition-colors">
+                Visita al Atelier & Cita Previa
+              </Link>
+              <Link href="/joyeria" className="hover:text-black transition-colors">
+                Alta Joyería & Metales Nobles
               </Link>
             </nav>
           </div>
 
-          {/* ── Columna 3: Contactanos ───────────────────────────────────────── */}
-          <div className="flex flex-col gap-3">
-            <h3 className="text-xs font-semibold text-gray-700 tracking-wider uppercase">
-              CONTACTÁNOS
+          {/* ── Columna 4: Sanctuary Legal ─────────────────────────────────── */}
+          <div className="flex flex-col gap-3 lg:pl-4">
+            <h3 className="text-xs font-bold text-gray-900 tracking-[0.18em] uppercase font-body">
+              INFORMACIÓN & LEGALES
             </h3>
-            <div className="flex flex-col gap-2 text-sm text-gray-700 leading-relaxed">
-              <a href={`tel:${rawWhatsapp}`} className="hover:text-black transition-colors block">
-                {rawWhatsapp}
+            <nav aria-label="Enlaces legales y términos" className="flex flex-col gap-2 text-xs text-gray-600 font-body">
+              <Link href="/terminos" className="hover:text-black transition-colors">
+                Términos y Condiciones
+              </Link>
+              <Link href="/arrepentimiento" className="hover:text-black transition-colors">
+                Botón de Arrepentimiento
+              </Link>
+              <a
+                href="https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-black transition-colors"
+              >
+                Defensa de las y los Consumidores
               </a>
-              <a href={`https://wa.me/${rawWhatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="hover:text-black transition-colors block">
-                +{rawWhatsapp}
-              </a>
-              <a href="mailto:victorpetrucci84@gmail.com" className="hover:text-black transition-colors block">
-                victorpetrucci84@gmail.com
-              </a>
-              <p className="text-gray-700">{address}</p>
-            </div>
+              <span className="text-gray-500 text-[11px] pt-1">
+                Garantía y trazabilidad en cada pieza
+              </span>
+            </nav>
           </div>
         </div>
 
         {/* ── Legales y Copyright ───────────────────────────────────────────── */}
-        <div className="mt-12 pt-8 border-t border-gray-100 text-center text-xs text-gray-600 leading-relaxed flex flex-col items-center gap-3">
-          <p>
-            Copyright Petrucci Joyería - 2026. Todos los derechos reservados. Defensa de las y los consumidores. Para reclamos{" "}
-            <a href="https://www.argentina.gob.ar/produccion/defensadelconsumidor/formulario" target="_blank" rel="noopener noreferrer" className="font-bold text-gray-950 hover:underline">
-              ingresá acá.
-            </a>{" "}
-            /{" "}
-            <Link href="/arrepentimiento" className="font-bold text-gray-950 hover:underline">
-              Botón de arrepentimiento
-            </Link>
+        <div className="mt-12 pt-8 border-t border-gray-100 text-center text-xs text-gray-500 leading-relaxed flex flex-col items-center gap-3">
+          <p className="font-body">
+            Copyright © 2026 Petrucci Joyería y Marroquinería • Buenos Aires / San Jorge. Todos los derechos reservados.
           </p>
 
           <div className="flex items-center justify-center gap-1 text-[11px] text-gray-500">

@@ -1,9 +1,6 @@
-/**
+﻿/**
  * app/[categorySlug]/[subSlug]/page.tsx
- *
- * Maneja dinámicamente:
- *  1. Subcategoría (ej: /joyeria/anillos-2) -> Muestra listado de productos con filtros y orden
- *  2. Detalle de producto cuando pertenece directamente a categoría raíz (ej: /joyeria/anillo-de-plata-925-con-circonia)
+ * Maneja subcategorias y detalle de producto con seccion de relacionados.
  */
 
 import type { Metadata } from "next";
@@ -12,8 +9,8 @@ import Script from "next/script";
 import Link from "next/link";
 import { api } from "@/lib/api";
 import CategoryCatalogView from "@/components/catalog/CategoryCatalogView";
-import ProductGallery from "@/components/product/ProductGallery";
-import { formatPrice } from "@/lib/utils";
+import ProductDetailClient from "@/components/product/ProductDetailClient";
+import ProductCard from "@/components/catalog/ProductCard";
 import type { Product } from "@/types/product";
 
 interface PageProps {
@@ -31,37 +28,31 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       const target = categorySlug.toLowerCase();
       return s === target || s.includes(target) || target.includes(s);
     });
-
     const sub = parent?.children?.find((c) => {
       if (c.isActive === false) return false;
       const s = c.slug.toLowerCase();
       const target = subSlug.toLowerCase();
       return s === target || s.startsWith(target) || target.startsWith(s);
     });
-
     if (sub) {
       return {
-        title: `${sub.name} — Petrucci Joyería`,
-        description: sub.description ?? `Catálogo de ${sub.name.toLowerCase()} · Consultá por WhatsApp.`,
+        title: `${sub.name} - Petrucci Joyeria`,
+        description: sub.description ?? `Catalogo de ${sub.name.toLowerCase()} - Consulta por WhatsApp.`,
       };
     }
-
-    // Probar si es producto
     const product = await api.catalog.getProductBySlug(subSlug);
     if (product) {
       return {
-        title: product.metaTitle,
-        description: product.metaDescription,
+        title: product.metaTitle || `${product.name} - Petrucci Joyeria`,
+        description: product.metaDescription || `Consulta por "${product.name}" en Petrucci Joyeria.`,
         openGraph: {
-          title: product.metaTitle,
-          description: product.metaDescription,
+          title: product.metaTitle || `${product.name} - Petrucci Joyeria`,
+          description: product.metaDescription || `Consulta por "${product.name}" en Petrucci Joyeria.`,
           images: product.images.length > 0 ? [product.images[0].url] : [],
         },
       };
     }
-  } catch {
-    // fallback
-  }
+  } catch { /* fallback */ }
   return {};
 }
 
@@ -81,7 +72,6 @@ export default async function SubcategoryOrProductPage({ params, searchParams }:
       const target = categorySlug.toLowerCase();
       return s === target || s.includes(target) || target.includes(s);
     }) ?? null;
-
     if (parent) {
       subcategory = parent.children?.find((c) => {
         if (c.isActive === false) return false;
@@ -91,30 +81,18 @@ export default async function SubcategoryOrProductPage({ params, searchParams }:
       }) ?? null;
       isSubcategory = Boolean(subcategory);
     }
-  } catch {
-    // continúa a probar producto
-  }
+  } catch { /* continua */ }
 
-  // ── CASO 1: Es una subcategoría ─────────────────────────────────────────────
+  // CASO 1: Subcategoria
   if (isSubcategory && subcategory && parent) {
     const page = Math.max(1, parseInt(pageParam ?? "1", 10));
-    const LIMIT = 40;
-
     let products: Product[] = [];
     try {
-      const response = await api.catalog.getProducts({
-        categoryId: subcategory.id,
-        page,
-        limit: LIMIT,
-      });
+      const response = await api.catalog.getProducts({ categoryId: subcategory.id, page, limit: 40 });
       products = response.items.filter((p) => p.status === "ACTIVE");
-    } catch {
-      // grilla vacía
-    }
-
+    } catch { /* grilla vacia */ }
     return (
       <>
-        {/* Encabezado subcategoría */}
         <div className="border-b border-petrucci-border bg-white">
           <div className="mx-auto max-w-7xl px-6 md:px-10 py-8 md:py-12">
             <nav aria-label="Migas de pan" className="mb-4">
@@ -126,40 +104,34 @@ export default async function SubcategoryOrProductPage({ params, searchParams }:
                 <li className="text-petrucci-black" aria-current="page">{subcategory.name}</li>
               </ol>
             </nav>
-            <h1 className="font-display text-3xl md:text-5xl text-petrucci-black font-normal">
-              {subcategory.name}
-            </h1>
+            <h1 className="font-display text-3xl md:text-5xl text-petrucci-black font-normal">{subcategory.name}</h1>
             {subcategory.description && (
-              <p className="mt-3 font-body text-sm text-petrucci-gray max-w-xl leading-relaxed">
-                {subcategory.description}
-              </p>
+              <p className="mt-3 font-body text-sm text-petrucci-gray max-w-xl leading-relaxed">{subcategory.description}</p>
             )}
           </div>
         </div>
-
-        {/* Catálogo con Filtros y Orden */}
         <div className="mx-auto max-w-7xl px-6 md:px-10 py-8 md:py-12">
-          <CategoryCatalogView
-            initialProducts={products}
-            categoryName={subcategory.name}
-          />
+          <CategoryCatalogView initialProducts={products} categoryName={subcategory.name} />
         </div>
       </>
     );
   }
 
-  // ── CASO 2: Es un producto de categoría directa ─────────────────────────────
+  // CASO 2: Producto de categoria directa
   let product;
   try {
     product = await api.catalog.getProductBySlug(subSlug);
   } catch {
     notFound();
   }
-
   if (!product) notFound();
 
-  const formattedPrice = formatPrice(product.price);
-  const sortedImages = [...product.images].sort((a, b) => a.order - b.order);
+  // Productos relacionados
+  let relatedProducts: Product[] = [];
+  try {
+    const response = await api.catalog.getProducts({ categoryId: product.category.id, page: 1, limit: 8 });
+    relatedProducts = response.items.filter((p) => p.status === "ACTIVE" && p.id !== product.id).slice(0, 4);
+  } catch { /* sin relacionados */ }
 
   const breadcrumbLinks = [
     { label: "Inicio", href: "/" },
@@ -169,92 +141,40 @@ export default async function SubcategoryOrProductPage({ params, searchParams }:
 
   return (
     <>
-      <Script
-        id="json-ld-product"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(product.jsonLd.product) }}
-      />
-      <Script
-        id="json-ld-breadcrumb"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(product.jsonLd.breadcrumb) }}
-      />
-
-      <div className="mx-auto max-w-7xl px-6 md:px-10 py-8 md:py-14">
-        {/* Breadcrumb */}
-        <nav aria-label="Migas de pan" className="mb-8">
-          <ol className="flex items-center flex-wrap gap-1.5 font-body text-xs text-petrucci-gray">
-            {breadcrumbLinks.map((crumb, index) => (
-              <li key={index} className="flex items-center gap-1.5">
-                {index > 0 && <span aria-hidden="true">›</span>}
-                {crumb.href ? (
-                  <Link href={crumb.href} className="hover:text-petrucci-gold transition-colors">
-                    {crumb.label}
-                  </Link>
-                ) : (
-                  <span className="text-petrucci-black" aria-current="page">{crumb.label}</span>
-                )}
-              </li>
-            ))}
-          </ol>
-        </nav>
-
-        {/* Layout principal */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-14 lg:gap-20">
-          <ProductGallery images={sortedImages} productName={product.name} />
-
-          <div className="flex flex-col gap-5 md:sticky md:top-28 md:self-start">
-            <p className="font-body text-[10px] tracking-[0.2em] uppercase text-petrucci-gray">
-              {product.category.name}
-            </p>
-
-            <h1 className="font-display text-3xl md:text-4xl leading-tight text-petrucci-black font-normal">
-              {product.name}
-            </h1>
-
-            <div className="py-3 border-t border-b border-petrucci-border">
-              {product.showPrice && formattedPrice ? (
-                <p className="font-body text-2xl font-semibold text-petrucci-black">
-                  {formattedPrice}
-                </p>
-              ) : (
-                <p className="font-body text-sm text-petrucci-gray italic">
-                  Consultá el precio por WhatsApp
-                </p>
-              )}
-            </div>
-
-            {product.variantLabel && (
-              <div className="bg-petrucci-cream border border-petrucci-border rounded-sm px-4 py-3">
-                <p className="font-body text-xs tracking-wide text-petrucci-gray uppercase mb-1">
-                  Variantes disponibles
-                </p>
-                <p className="font-body text-sm text-petrucci-black">
-                  {product.variantLabel}
-                </p>
-              </div>
-            )}
-
-            {product.description && (
-              <p className="font-body text-sm text-petrucci-gray leading-relaxed">
-                {product.description}
-              </p>
-            )}
-
-            <a
-              href={product.whatsappLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-3 w-full py-4 bg-petrucci-black text-white font-body text-sm tracking-[0.15em] uppercase hover:bg-[#FFFF] transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-petrucci-[#000000] focus-visible:ring-offset-2 mt-2"
-            >
-             
-              Consultá por WhatsApp
-            </a>
-            <p className="font-body text-xs text-petrucci-gray text-center">
-              Te respondemos a la brevedad · Coordinamos tu compra hoy mismo
-            </p>
-          </div>
+      <Script id="json-ld-product" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(product.jsonLd.product) }} />
+      <Script id="json-ld-breadcrumb" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(product.jsonLd.breadcrumb) }} />
+      <div className="bg-white min-h-screen">
+        <div className="mx-auto max-w-7xl px-5 md:px-10 py-6 md:py-10">
+          <nav aria-label="Migas de pan" className="mb-8 md:mb-10">
+            <ol className="flex items-center flex-wrap gap-1 font-body text-xs text-gray-500">
+              {breadcrumbLinks.map((crumb, index) => (
+                <li key={index} className="flex items-center gap-1">
+                  {index > 0 && <span aria-hidden="true" className="mx-0.5 text-gray-300">›</span>}
+                  {crumb.href ? (
+                    <Link href={crumb.href} className="hover:text-gray-900 transition-colors">{crumb.label}</Link>
+                  ) : (
+                    <span className="font-medium text-gray-900 truncate max-w-[180px]" aria-current="page">{crumb.label}</span>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+          <ProductDetailClient product={product} />
         </div>
+        {relatedProducts.length > 0 && (
+          <div className="border-t border-[#EBEBEB] mt-12 md:mt-16">
+            <div className="mx-auto max-w-7xl px-5 md:px-10 py-10 md:py-14">
+              <h2 className="text-[13px] font-semibold tracking-[0.18em] uppercase text-[#111111] mb-8">
+                Productos relacionados
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+                {relatedProducts.map((rp) => (
+                  <ProductCard key={rp.id} product={rp} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );
