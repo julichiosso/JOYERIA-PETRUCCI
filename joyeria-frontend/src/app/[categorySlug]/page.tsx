@@ -111,8 +111,10 @@ export default async function CategoryRootPage({ params, searchParams }: PagePro
 
   let products: Product[] = [];
   try {
+    const hasChildren = category.children && category.children.some((c) => c.isActive !== false);
     const response = await api.catalog.getProducts({
       categoryId: category.id,
+      includeSubcategories: hasChildren ? true : undefined,
       page,
       limit: LIMIT,
     });

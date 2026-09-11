@@ -125,10 +125,26 @@ export const productService = {
     await productRepository.delete(id);
   },
 
-  async list(params: { categoryId?: string; status?: string; search?: string; page: number; limit: number }) {
+  async list(params: { categoryId?: string; includeSubcategories?: boolean; status?: string; search?: string; page: number; limit: number }) {
     const skip = (params.page - 1) * params.limit;
+
+    // Resolver categoryIds: si se pide incluir subrubros, expandir al padre + todos sus hijos directos.
+    let categoryIds: string[] | undefined;
+    if (params.categoryId) {
+      if (params.includeSubcategories) {
+        const { prisma } = await import('../../infra/prisma.js');
+        const children = await prisma.category.findMany({
+          where: { parentId: params.categoryId, isActive: true },
+          select: { id: true },
+        });
+        categoryIds = [params.categoryId, ...children.map((c: { id: string }) => c.id)];
+      } else {
+        categoryIds = [params.categoryId];
+      }
+    }
+
     const { items, total } = await productRepository.list({
-      categoryId: params.categoryId,
+      categoryIds,
       status: params.status,
       search: params.search,
       skip,

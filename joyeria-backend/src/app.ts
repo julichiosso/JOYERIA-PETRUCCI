@@ -3,6 +3,7 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import cookie from '@fastify/cookie';
+import { env } from './config/env.js';
 import { productAdminRoutes, productCatalogRoutes } from './modules/products/product.routes.js';
 import {
   serializerCompiler,
@@ -27,9 +28,30 @@ export async function buildApp() {
   app.setValidatorCompiler(validatorCompiler);
   app.setSerializerCompiler(serializerCompiler);
 
-  await app.register(helmet);
+  await app.register(helmet, {
+    // CSP deshabilitado para API — el frontend lo maneja con Next.js
+    contentSecurityPolicy: false,
+    // HSTS: fuerza HTTPS en producción
+    strictTransportSecurity: env.NODE_ENV === 'production'
+      ? { maxAge: 31536000, includeSubDomains: true }
+      : false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+  });
+
+  // CORS: solo se admiten los orígenes conocidos
+  const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    'http://localhost:3000',
+    'http://localhost:3001',
+  ].filter(Boolean) as string[];
+
   await app.register(cors, {
-    origin: true,
+    origin: (origin, cb) => {
+      // Requests sin origen (curl, Postman, server-to-server) son aceptados
+      if (!origin) return cb(null, true);
+      if (allowedOrigins.some((o) => origin.startsWith(o))) return cb(null, true);
+      cb(new Error(`Origen no permitido por CORS: ${origin}`), false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept', 'X-Requested-With'],
@@ -38,14 +60,18 @@ export async function buildApp() {
 
   await app.register(multipart, {
     limits: {
-      fileSize: 10 * 1024 * 1024, // 10MB por archivo
-      files: 10, // máximo 10 archivos por request
+      fileSize: 10 * 1024 * 1024, // 10 MB máximo por archivo
+      files: 10,
     },
   });
 
+  // Rate limit global: 200 req/min. Las rutas sensibles tienen su propio override.
   await app.register(rateLimit, {
-    max: 2000,
+    max: 200,
     timeWindow: '1 minute',
+    errorResponseBuilder: (_req, context) => ({
+      error: `Demasiadas solicitudes — intentá de nuevo en ${Math.ceil(context.ttl / 1000)}s`,
+    }),
   });
 
   await app.register(authRoutes, { prefix: '/auth' });

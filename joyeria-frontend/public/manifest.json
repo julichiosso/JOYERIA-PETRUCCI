@@ -1,0 +1,22 @@
+{
+  "name": "Petrucci Joyería",
+  "short_name": "Petrucci",
+  "description": "Joyería y relojería artesanal. Anillos, aros, cadenas, relojes y piezas personalizadas. San Jorge, Santa Fe.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1D1D1F",
+  "orientation": "portrait-primary",
+  "lang": "es-AR",
+  "icons": [
+    {
+      "src": "/logo-petrucci-v2.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["shopping", "lifestyle"],
+  "scope": "/"
+}

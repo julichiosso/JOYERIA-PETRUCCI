@@ -2,11 +2,12 @@
 
 /**
  * components/layout/Header.tsx
- * Header réplica 1:1 de Joyería El Rubí / Tiendanube:
- *  - Fila superior: Barra de anuncios negra con texto rotativo minimalista (se oculta al scrollear hacia abajo)
- *  - Fila principal: Buscador interactivo en vivo con dropdown de sugerencias y fotos, Logo PETRUCCI centrado, Ingresá/Panel y Carrito a la derecha
- *  - Fila de navegación: Tipografía Inter sans-serif limpia
- *  - Mega Menú desplegable a pantalla completa en hover
+ * Header de la tienda pública con:
+ *  - Barra de anuncios superior rotativos
+ *  - Fila principal: buscador en vivo, logo centrado, acceso admin
+ *  - Navegación dinámica: construida desde las categorías activas del backend
+ *  - Megamenú desplegable para categorías con subrubros
+ *  - Búsqueda mobile con dropdown de sugerencias
  */
 
 import Link from "next/link";
@@ -17,6 +18,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cn, formatPrice, getImageUrl } from "@/lib/utils";
 import { api } from "@/lib/api";
 import type { Product } from "@/types/product";
+import type { Category } from "@/types/category";
 import MobileMenuDrawer from "./MobileMenuDrawer";
 
 const ANNOUNCEMENTS = [
@@ -27,120 +29,10 @@ const ANNOUNCEMENTS = [
   "TALLER PROPIO DE JOYERÍA INTEGRADO"
 ];
 
-// Estructura completa de columnas del Mega Menú (exacta según pedido del cliente)
-const JOYAS_MEGA_MENU = [
-  {
-    title: "ANILLOS",
-    href: "/joyeria/anillos-2",
-    items: [
-      { label: "Oro 18K", href: "/joyeria/anillos-2" },
-      { label: "Mujer", href: "/joyeria/anillos-2" },
-      { label: "Cintillos", href: "/joyeria/anillos-2" },
-      { label: "Alianzas", href: "/joyeria/anillos-2" },
-      { label: "Con Piedras", href: "/joyeria/anillos-2" },
-      { label: "Sin Piedras", href: "/joyeria/anillos-2" },
-      { label: "Plata y Oro", href: "/joyeria/anillos-2" },
-      { label: "Plata", href: "/joyeria/anillos-2" }
-    ],
-  },
-  {
-    title: "AROS",
-    href: "/joyeria/aros",
-    items: [
-      { label: "Aros de oro", href: "/joyeria/aros" },
-      { label: "Abridores de acero", href: "/joyeria/aros" },
-      { label: "Abridores de oro", href: "/joyeria/aros" },
-      { label: "Cierre Rosca", href: "/joyeria/aros" },
-      { label: "Argollitas", href: "/joyeria/aros" },
-      { label: "Aros de plata", href: "/joyeria/aros" },
-    ],
-    secondaryTitle: "DIJES Y COLGANTES",
-    secondaryHref: "/joyeria/dijes",
-    secondaryItems: [
-      { label: "Oro", href: "/joyeria/dijes" },
-      { label: "Plata y Oro", href: "/joyeria/dijes" },
-      { label: "Plata", href: "/joyeria/dijes" },
-    ],
-  },
-  {
-    title: "PULSERAS",
-    href: "/joyeria/pulseras",
-    items: [
-      { label: "Oro", href: "/joyeria/pulseras" },
-      { label: "Plata y Oro", href: "/joyeria/pulseras" },
-      { label: "Plata", href: "/joyeria/pulseras" },
-    ],
-    secondaryTitle: "GARGANTILLAS",
-    secondaryHref: "/joyeria/gargantillas",
-    secondaryItems: [
-      { label: "Plata", href: "/joyeria/gargantillas" },
-      { label: "Plata y Oro", href: "/joyeria/gargantillas" },
-    ],
-  },
-  {
-    title: "PULSERAS BEBÉ",
-    href: "/joyeria/pulseras-bebe",
-    items: [
-      { label: "Plata y Oro", href: "/joyeria/pulseras-bebe" },
-      { label: "Plata", href: "/joyeria/pulseras-bebe" }
-    ],
-  },
-  {
-    title: "HOMBRES",
-    href: "/joyeria",
-    items: [
-      { label: "Pulseras (Plata y Oro)", href: "/joyeria/pulseras" },
-      { label: "Anillos (Plata & Plata y Oro)", href: "/joyeria/anillos" }
-    ],
-    secondaryTitle: "PERSONALIZADOS",
-    secondaryHref: "/trabajos-personalizados",
-    secondaryItems: [
-      { label: "Diseños exclusivos", href: "/trabajos-personalizados" }
-    ],
-  },
-  {
-    title: "DESPERTADORES",
-    href: "/despertadores",
-    items: [
-      { label: "Ver disponibles", href: "/despertadores" }
-    ],
-  }
-];
-
-const RELOJES_MEGA_MENU = [
-  {
-    title: "DEPORTIVOS & TÉCNICOS",
-    href: "/relojes",
-    items: [
-      { label: "Casio", href: "/relojes" },
-      { label: "Catterpillar", href: "/relojes" },
-      { label: "Nockout", href: "/relojes" }
-    ]
-  },
-  {
-    title: "CLÁSICOS & JAPÓN",
-    href: "/relojes",
-    items: [
-      { label: "Seiko", href: "/relojes" },
-      { label: "Orient", href: "/relojes" },
-      { label: "Citizen", href: "/relojes" },
-    ],
-  },
-  {
-    title: "MODA & TENDENCIA",
-    href: "/relojes",
-    items: [
-      { label: "Tommy Hilfiger", href: "/relojes" }
-    ],
-  },
-  {
-    title: "ECONÓMICOS & CASUAL",
-    href: "/relojes",
-    items: [
-      { label: "Tressa", href: "/relojes" },
-      { label: "Smarts", href: "/relojes" }
-    ],
-  },
+// Links estáticos que siempre aparecen al final de la nav (no son categorías)
+const STATIC_NAV_LINKS = [
+  { label: "Quiénes Somos", href: "/nosotros" },
+  { label: "Contacto", href: "/nosotros#contacto" },
 ];
 
 function highlightMatch(text: string, query: string) {
@@ -149,13 +41,9 @@ function highlightMatch(text: string, query: string) {
   const parts = text.split(regex);
   return parts.map((part, i) =>
     regex.test(part) ? (
-      <strong key={i} className="font-bold text-gray-950">
-        {part}
-      </strong>
+      <strong key={i} className="font-bold text-gray-950">{part}</strong>
     ) : (
-      <span key={i} className="font-normal text-gray-800">
-        {part}
-      </span>
+      <span key={i} className="font-normal text-gray-800">{part}</span>
     )
   );
 }
@@ -168,13 +56,17 @@ function buildProductUrl(product: Product): string {
   return `/${category?.slug ?? "joyeria"}/${slug}`;
 }
 
-export default function Header() {
+interface HeaderProps {
+  categories: Category[];
+}
+
+export default function Header({ categories }: HeaderProps) {
   const [announcementIndex, setAnnouncementIndex] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeMegaMenu, setActiveMegaMenu] = useState<"joyas" | "relojes" | null>(null);
+  const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
 
-  // Estados del Buscador en Vivo
+  // Estados del buscador en vivo
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -186,6 +78,13 @@ export default function Header() {
   const searchContainerRef = useRef<HTMLDivElement>(null);
   const mobileSearchContainerRef = useRef<HTMLDivElement>(null);
 
+  // Categorías raíz activas (sin padre)
+  const rootCategories = categories.filter(
+    (c) => !c.parent && c.isActive !== false && c.children && c.children.length > 0
+      ? true
+      : !c.parent && c.isActive !== false
+  );
+
   // Rotación del anuncio cada 4.5 segundos
   useEffect(() => {
     const timer = setInterval(() => {
@@ -194,31 +93,21 @@ export default function Header() {
     return () => clearInterval(timer);
   }, []);
 
-  // Detectar scroll para sombra sutil sin alterar altura
+  // Sombra sutil al scrollear
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 15);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 15);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   // Bloquear scroll del body cuando el menú mobile esté abierto
   useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
+    document.body.style.overflow = menuOpen ? "hidden" : "unset";
+    return () => { document.body.style.overflow = "unset"; };
   }, [menuOpen]);
 
   // Cerrar menú mobile al cambiar de ruta
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
+  useEffect(() => { setMenuOpen(false); }, [pathname]);
 
   // Búsqueda en vivo con debounce de 250ms
   useEffect(() => {
@@ -228,7 +117,6 @@ export default function Header() {
       setDropdownOpen(false);
       return;
     }
-
     setIsSearching(true);
     const timeout = setTimeout(async () => {
       try {
@@ -242,7 +130,6 @@ export default function Header() {
         setIsSearching(false);
       }
     }, 250);
-
     return () => clearTimeout(timeout);
   }, [searchQuery]);
 
@@ -298,7 +185,7 @@ export default function Header() {
         className="sticky top-0 z-40 w-full bg-white font-body"
         onMouseLeave={() => setActiveMegaMenu(null)}
       >
-        {/* ── 1. Barra de Anuncios Superior (Altura constante para evitar salto/bug de rebote al scrollear) ── */}
+        {/* ── 1. Barra de Anuncios Superior ── */}
         <div className="bg-black text-white overflow-hidden flex items-center justify-center h-8 px-4">
           <AnimatePresence mode="wait" initial={false}>
             <motion.p
@@ -315,17 +202,12 @@ export default function Header() {
           </AnimatePresence>
         </div>
 
-        {/* ── 2. Fila Principal: Buscador | Logo | Usuario y Carrito ────────── */}
-        <div
-          className={cn(
-            "bg-white transition-shadow duration-200 border-b border-gray-200",
-            scrolled ? "shadow-xs" : ""
-          )}
-        >
+        {/* ── 2. Fila Principal: Buscador | Logo | Admin ── */}
+        <div className={cn("bg-white transition-shadow duration-200 border-b border-gray-200", scrolled ? "shadow-xs" : "")}>
           <div className="mx-auto max-w-7xl px-4 md:px-8">
             <div className="flex items-center justify-between h-16 md:h-20 gap-4">
 
-              {/* Izquierda: Hamburguesa + Buscador (Mobile) / Buscador con Dropdown en Vivo (Desktop) */}
+              {/* Izquierda: Hamburguesa (mobile) + Buscador desktop */}
               <div className="flex items-center gap-3 w-1/3" ref={searchContainerRef}>
                 <button
                   onClick={() => setMenuOpen(true)}
@@ -348,45 +230,29 @@ export default function Header() {
                   </svg>
                 </button>
 
+                {/* Buscador Desktop */}
                 <div className="hidden md:block relative w-full max-w-[290px]">
-                  <form
-                    onSubmit={handleSearchSubmit}
-                    role="search"
-                    className="relative flex items-center w-full"
-                  >
+                  <form onSubmit={handleSearchSubmit} role="search" className="relative flex items-center w-full">
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onFocus={() => {
-                        if (searchQuery.trim().length >= 2 && searchResults.length > 0) {
-                          setDropdownOpen(true);
-                        }
+                        if (searchQuery.trim().length >= 2 && searchResults.length > 0) setDropdownOpen(true);
                       }}
                       placeholder="¿Qué estás buscando?"
                       aria-label="Buscar productos"
                       className="w-full h-10 pl-4 pr-11 py-2 bg-white border border-gray-300 rounded-full font-body text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-400 transition-all"
                     />
-
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-auto">
                       {searchQuery && (
-                        <button
-                          type="button"
-                          onClick={clearSearch}
-                          className="text-gray-400 hover:text-gray-700 p-0.5"
-                          aria-label="Limpiar búsqueda"
-                        >
+                        <button type="button" onClick={clearSearch} className="text-gray-400 hover:text-gray-700 p-0.5" aria-label="Limpiar búsqueda">
                           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                             <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                           </svg>
                         </button>
                       )}
-
-                      <button
-                        type="submit"
-                        aria-label="Buscar"
-                        className="text-gray-500 hover:text-black transition-colors p-0.5 cursor-pointer flex items-center justify-center"
-                      >
+                      <button type="submit" aria-label="Buscar" className="text-gray-500 hover:text-black transition-colors p-0.5 cursor-pointer flex items-center justify-center">
                         {isSearching ? (
                           <div className="w-3.5 h-3.5 border-2 border-gray-900 border-t-transparent rounded-full animate-spin" />
                         ) : (
@@ -422,7 +288,9 @@ export default function Header() {
                           );
                         })}
                       </div>
-                      <Link href={`/buscar?q=${encodeURIComponent(searchQuery.trim())}`} onClick={() => setDropdownOpen(false)} className="block p-2.5 bg-gray-50 hover:bg-gray-100 text-center text-xs font-semibold">Ver todos los resultados →</Link>
+                      <Link href={`/buscar?q=${encodeURIComponent(searchQuery.trim())}`} onClick={() => setDropdownOpen(false)} className="block p-2.5 bg-gray-50 hover:bg-gray-100 text-center text-xs font-semibold">
+                        Ver todos los resultados →
+                      </Link>
                     </div>
                   )}
                 </div>
@@ -430,11 +298,7 @@ export default function Header() {
 
               {/* Centro: Logo */}
               <div className="flex justify-center items-center flex-1 md:w-1/3 py-1">
-                <Link
-                  href="/"
-                  className="flex items-center justify-center group"
-                  aria-label="Petrucci Joyería — Inicio"
-                >
+                <Link href="/" className="flex items-center justify-center group" aria-label="Petrucci Joyería — Inicio">
                   <Image
                     src="/logo-petrucci-v2.svg"
                     alt="Petrucci Joyería y Relojería"
@@ -446,16 +310,11 @@ export default function Header() {
                 </Link>
               </div>
 
-              {/* Derecha: Contacto + WhatsApp (Desktop only) + Admin Login */}
+              {/* Derecha: WhatsApp (desktop) + Admin */}
               <div className="flex items-center justify-end gap-3 md:gap-5 w-1/3">
-                <Link
-                  href="/nosotros#contacto"
-                  className="hidden lg:inline-flex items-center text-[13px] text-gray-700 hover:text-black font-normal transition-colors"
-                >
+                <Link href="/nosotros#contacto" className="hidden lg:inline-flex items-center text-[13px] text-gray-700 hover:text-black font-normal transition-colors">
                   Contacto
                 </Link>
-
-                {/* WhatsApp button visible only on desktop (hidden on mobile to prevent redundancy with floating button) */}
                 <a
                   href="https://wa.me/5493406419736?text=Hola%20Petrucci,%20quisiera%20hacer%20una%20consulta%20personalizada."
                   target="_blank"
@@ -469,7 +328,6 @@ export default function Header() {
                   </svg>
                   <span>WhatsApp</span>
                 </a>
-
                 <Link href="/admin/login" className="flex items-center gap-1.5 text-[13px] text-gray-500 hover:text-black font-normal transition-colors" title="Panel de Administración">
                   <svg width="15" height="15" viewBox="0 0 18 18" fill="none">
                     <circle cx="9" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.3" />
@@ -480,142 +338,108 @@ export default function Header() {
             </div>
           </div>
 
-          {/* Fila de Navegación Desktop */}
-          <nav className="hidden md:flex justify-center border-t border-gray-100 bg-white">
+          {/* ── 3. Fila de Navegación Desktop — DINÁMICA ── */}
+          <nav className="hidden md:flex justify-center border-t border-gray-100 bg-white" aria-label="Categorías principales">
             <ul className="flex items-center gap-7 lg:gap-9 font-body text-[13px] font-normal text-gray-800 tracking-normal">
-              <li className="relative" onMouseEnter={() => setActiveMegaMenu("joyas")}>
-                <button type="button" onClick={() => setActiveMegaMenu(activeMegaMenu === "joyas" ? null : "joyas")} className={navItemClass(activeMegaMenu === "joyas" || pathname.startsWith("/joyeria"))}>
-                  <span>Joyas</span>
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-gray-400 group-hover:text-black transition-colors"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </button>
-              </li>
-              <li className="relative" onMouseEnter={() => setActiveMegaMenu("relojes")}>
-                <button type="button" onClick={() => setActiveMegaMenu(activeMegaMenu === "relojes" ? null : "relojes")} className={navItemClass(activeMegaMenu === "relojes" || pathname.startsWith("/relojes"))}>
-                  <span>Relojes</span>
-                  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-gray-400 group-hover:text-black transition-colors"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                </button>
-              </li>
-              <li><Link href="/trabajos-personalizados" className={navItemClass(pathname === "/trabajos-personalizados")}>Personalizados</Link></li>
-              <li><Link href="/marroquineria" className={navItemClass(pathname === "/marroquineria")}>Marroquinería</Link></li>
-              <li><Link href="/mates" className={navItemClass(pathname === "/mates")}>Mates</Link></li>
-              <li><Link href="/nosotros#contacto" className={navItemClass(pathname === "/nosotros#contacto")}>Contacto</Link></li>
-              <li><Link href="/nosotros" className={navItemClass(pathname === "/nosotros")}>Quiénes Somos</Link></li>
+              {rootCategories.map((cat) => {
+                const activeChildren = cat.children?.filter((c) => c.isActive !== false) ?? [];
+                const hasChildren = activeChildren.length > 0;
+                const isActive = pathname.startsWith(`/${cat.slug}`);
+
+                return (
+                  <li
+                    key={cat.id}
+                    className="relative"
+                    onMouseEnter={() => hasChildren ? setActiveMegaMenu(cat.id) : setActiveMegaMenu(null)}
+                  >
+                    {hasChildren ? (
+                      <button
+                        type="button"
+                        onClick={() => setActiveMegaMenu(activeMegaMenu === cat.id ? null : cat.id)}
+                        className={navItemClass(isActive || activeMegaMenu === cat.id)}
+                      >
+                        <span>{cat.name}</span>
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-gray-400 group-hover:text-black transition-colors">
+                          <path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </button>
+                    ) : (
+                      <Link href={`/${cat.slug}`} className={navItemClass(isActive)}>
+                        {cat.name}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
+
+              {/* Links estáticos al final */}
+              {STATIC_NAV_LINKS.map((link) => (
+                <li key={link.href}>
+                  <Link href={link.href} className={navItemClass(pathname === link.href)}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </nav>
 
-          {/* ── MEGA MENÚ DESPLEGABLE JOYAS (DESKTOP) ────────────────────────── */}
+          {/* ── Megamenús dinámicos por categoría ── */}
           <AnimatePresence>
-            {activeMegaMenu === "joyas" && (
-              <motion.div
-                key="mega-menu-joyas"
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-xl z-50"
-                onMouseEnter={() => setActiveMegaMenu("joyas")}
-                onMouseLeave={() => setActiveMegaMenu(null)}
-              >
-                <div className="mx-auto max-w-7xl px-8 py-8">
-                  <div className="grid grid-cols-6 gap-6">
-                    {JOYAS_MEGA_MENU.map((col, idx) => (
-                      <div key={idx} className="flex flex-col gap-6">
-                        <div>
+            {rootCategories.map((cat) => {
+              const activeChildren = cat.children?.filter((c) => c.isActive !== false) ?? [];
+              if (!activeMegaMenu || activeMegaMenu !== cat.id || activeChildren.length === 0) return null;
+
+              return (
+                <motion.div
+                  key={`mega-${cat.id}`}
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-xl z-50"
+                  onMouseEnter={() => setActiveMegaMenu(cat.id)}
+                  onMouseLeave={() => setActiveMegaMenu(null)}
+                >
+                  <div className="mx-auto max-w-7xl px-8 py-8">
+                    {/* Link "Ver todo" de la categoría raíz */}
+                    <Link
+                      href={`/${cat.slug}`}
+                      className="inline-block mb-5 font-body text-xs font-semibold tracking-[0.14em] uppercase text-gray-900 hover:underline transition-colors"
+                      onClick={() => setActiveMegaMenu(null)}
+                    >
+                      Ver todo en {cat.name} →
+                    </Link>
+
+                    {/* Grid de subcategorías */}
+                    <div
+                      className="grid gap-4"
+                      style={{ gridTemplateColumns: `repeat(${Math.min(activeChildren.length, 6)}, minmax(0, 1fr))` }}
+                    >
+                      {activeChildren.map((sub) => (
+                        <div key={sub.id}>
                           <Link
-                            href={col.href}
-                            className="font-body font-bold text-xs text-gray-900 tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
+                            href={`/${cat.slug}/${sub.slug}`}
+                            className="font-body font-semibold text-xs text-gray-900 tracking-wider uppercase block mb-2 hover:text-black hover:underline transition-colors"
+                            onClick={() => setActiveMegaMenu(null)}
                           >
-                            {col.title}
+                            {sub.name}
                           </Link>
-                          <ul className="flex flex-col gap-1.5">
-                            {col.items.map((item, itemIdx) => (
-                              <li key={itemIdx}>
-                                <Link
-                                  href={item.href}
-                                  className="font-body text-xs text-gray-600 hover:text-black hover:underline transition-colors block py-0.5"
-                                >
-                                  {item.label}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
+                          {sub.description && (
+                            <p className="font-body text-[11px] text-gray-400 leading-relaxed line-clamp-2">
+                              {sub.description}
+                            </p>
+                          )}
                         </div>
-
-                        {col.secondaryTitle && col.secondaryItems && (
-                          <div className="pt-2 border-t border-gray-100">
-                            <Link
-                              href={col.secondaryHref ?? "#"}
-                              className="font-body font-bold text-xs text-gray-900 tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
-                            >
-                              {col.secondaryTitle}
-                            </Link>
-                            <ul className="flex flex-col gap-1.5">
-                              {col.secondaryItems.map((sec, secIdx) => (
-                                <li key={secIdx}>
-                                  <Link
-                                    href={sec.href}
-                                    className="font-body text-xs text-gray-600 hover:text-black hover:underline transition-colors block py-0.5"
-                                  >
-                                    {sec.label}
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* ── MEGA MENÚ DESPLEGABLE RELOJES (DESKTOP) ──────────────────────── */}
-          <AnimatePresence>
-            {activeMegaMenu === "relojes" && (
-              <motion.div
-                key="mega-menu-relojes"
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute top-full left-0 w-full bg-white border-b border-gray-200 shadow-xl z-50"
-                onMouseEnter={() => setActiveMegaMenu("relojes")}
-                onMouseLeave={() => setActiveMegaMenu(null)}
-              >
-                <div className="mx-auto max-w-7xl px-8 py-8">
-                  <div className="grid grid-cols-4 gap-8">
-                    {RELOJES_MEGA_MENU.map((col, idx) => (
-                      <div key={idx}>
-                        <Link
-                          href={col.href}
-                          className="font-body font-bold text-xs text-gray-900 tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
-                        >
-                          {col.title}
-                        </Link>
-                        <ul className="flex flex-col gap-1.5">
-                          {col.items.map((item, itemIdx) => (
-                            <li key={itemIdx}>
-                              <Link
-                                href={item.href}
-                                className="font-body text-xs text-gray-600 hover:text-black hover:underline transition-colors block py-0.5"
-                              >
-                                {item.label}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </motion.div>
-            )}
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </div>
 
-        {/* ── 4. Mobile Search Bar & Dropdown ─────────────────────────────────── */}
+        {/* ── 4. Buscador Mobile ── */}
         <AnimatePresence>
           {mobileSearchOpen && (
             <motion.div
@@ -634,26 +458,15 @@ export default function Header() {
                   placeholder="¿Qué estás buscando?"
                   className="w-full h-10 pl-4 pr-14 py-2 bg-gray-50 border border-gray-300 rounded-full font-body text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-gray-400"
                 />
-
                 <div className="absolute right-3 flex items-center gap-2">
                   {searchQuery && (
-                    <button
-                      type="button"
-                      onClick={clearSearch}
-                      className="text-gray-400 hover:text-gray-700"
-                      aria-label="Limpiar búsqueda"
-                    >
+                    <button type="button" onClick={clearSearch} className="text-gray-400 hover:text-gray-700" aria-label="Limpiar búsqueda">
                       <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
                         <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                       </svg>
                     </button>
                   )}
-
-                  <button
-                    type="submit"
-                    aria-label="Buscar"
-                    className="text-gray-500 hover:text-black"
-                  >
+                  <button type="submit" aria-label="Buscar" className="text-gray-500 hover:text-black">
                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                       <circle cx="6.5" cy="6.5" r="5" stroke="currentColor" strokeWidth="1.3" />
                       <path d="M10 10l3.5 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
@@ -662,7 +475,7 @@ export default function Header() {
                 </div>
               </form>
 
-              {/* Resultados en mobile */}
+              {/* Resultados mobile */}
               {dropdownOpen && (
                 <div className="mt-2 bg-white border border-gray-200 shadow-xl overflow-hidden divide-y divide-gray-100 rounded-xl">
                   {searchResults.length > 0 ? (
@@ -672,7 +485,6 @@ export default function Header() {
                           const thumb = product.images?.find((i) => i.order === 0) ?? product.images?.[0];
                           const productUrl = buildProductUrl(product);
                           const formattedPrice = formatPrice(product.price);
-
                           return (
                             <button
                               key={product.id}
@@ -682,43 +494,26 @@ export default function Header() {
                             >
                               <div className="relative w-11 h-11 shrink-0 bg-white border border-gray-100 flex items-center justify-center p-0.5">
                                 {thumb ? (
-                                  <Image
-                                    src={getImageUrl(thumb.thumbnailUrl ?? thumb.url)}
-                                    alt={thumb.altText ?? product.name}
-                                    fill
-                                    className="object-contain"
-                                    sizes="44px"
-                                  />
+                                  <Image src={getImageUrl(thumb.thumbnailUrl ?? thumb.url)} alt={thumb.altText ?? product.name} fill className="object-contain" sizes="44px" />
                                 ) : (
                                   <div className="text-[9px] text-gray-300">Sin foto</div>
                                 )}
                               </div>
-
                               <div className="flex-1 min-w-0">
-                                <p className="text-xs text-gray-900 line-clamp-1">
-                                  {highlightMatch(product.name, searchQuery)}
-                                </p>
+                                <p className="text-xs text-gray-900 line-clamp-1">{highlightMatch(product.name, searchQuery)}</p>
                                 {product.showPrice && formattedPrice ? (
-                                  <p className="text-xs font-semibold text-gray-900 mt-0.5">
-                                    {formattedPrice}
-                                  </p>
+                                  <p className="text-xs font-semibold text-gray-900 mt-0.5">{formattedPrice}</p>
                                 ) : (
-                                  <p className="text-[11px] text-gray-800 font-medium mt-0.5">
-                                    Consultar precio
-                                  </p>
+                                  <p className="text-[11px] text-gray-800 font-medium mt-0.5">Consultar precio</p>
                                 )}
                               </div>
                             </button>
                           );
                         })}
                       </div>
-
                       <Link
                         href={`/buscar?q=${encodeURIComponent(searchQuery.trim())}`}
-                        onClick={() => {
-                          setDropdownOpen(false);
-                          setMobileSearchOpen(false);
-                        }}
+                        onClick={() => { setDropdownOpen(false); setMobileSearchOpen(false); }}
                         className="block p-2.5 bg-gray-50 hover:bg-gray-100 text-center text-xs font-semibold text-gray-900"
                       >
                         Ver todos los resultados →
@@ -739,7 +534,7 @@ export default function Header() {
       </header>
 
       {/* ── 5. Menú Mobile Lateral Slide-over ── */}
-      <MobileMenuDrawer isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+      <MobileMenuDrawer isOpen={menuOpen} onClose={() => setMenuOpen(false)} categories={categories} />
     </>
   );
 }

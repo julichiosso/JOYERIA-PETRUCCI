@@ -1,102 +1,70 @@
 "use client";
 
+/**
+ * components/layout/MobileMenuDrawer.tsx
+ * Menú lateral móvil con acordeones dinámicos por categoría.
+ * Recibe `categories` del servidor — lo que Víctor cargue aparece al instante.
+ */
+
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import type { Category } from "@/types/category";
 
 interface MobileMenuDrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  categories: Category[];
 }
 
-interface SubMenuItem {
-  label: string;
-  href: string;
-}
-
-interface MenuItemWithSubmenu {
-  id: string;
-  label: string;
-  viewAllHref: string;
-  viewAllLabel: string;
-  items: SubMenuItem[];
-}
-
-const JOYAS_SUBMENU: MenuItemWithSubmenu = {
-  id: "joyas",
-  label: "Joyas",
-  viewAllHref: "/joyeria",
-  viewAllLabel: "Ver todas las Joyas",
-  items: [
-    { label: "Anillos", href: "/joyeria/anillos-2" },
-    { label: "Aros y Aritos", href: "/joyeria/aros" },
-    { label: "Cadenas y Gargantillas", href: "/joyeria/gargantillas" },
-    { label: "Dijes y Colgantes", href: "/joyeria/dijes" },
-    { label: "Pulseras", href: "/joyeria/pulseras" },
-    { label: "Pulseras Bebé", href: "/joyeria/pulseras-bebe" },
-    { label: "Trabajos Personalizados", href: "/trabajos-personalizados" },
-  ],
-};
-
-const RELOJES_SUBMENU: MenuItemWithSubmenu = {
-  id: "relojes",
-  label: "Relojes",
-  viewAllHref: "/relojes",
-  viewAllLabel: "Ver todos los Relojes",
-  items: [
-    { label: "Casio & Catterpillar", href: "/relojes" },
-    { label: "Seiko & Orient", href: "/relojes" },
-    { label: "Tommy Hilfiger", href: "/relojes" },
-    { label: "Tressa & Smarts", href: "/relojes" },
-  ],
-};
-
-const DIRECT_LINKS = [
-  { label: "Personalizados", href: "/trabajos-personalizados" },
-  { label: "Marroquinería", href: "/marroquineria" },
-  { label: "Mates", href: "/mates" },
+// Links estáticos que siempre aparecen al final
+const STATIC_LINKS = [
   { label: "Quiénes Somos", href: "/nosotros" },
   { label: "Contacto", href: "/nosotros#contacto" },
 ];
 
-export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerProps) {
+export default function MobileMenuDrawer({ isOpen, onClose, categories }: MobileMenuDrawerProps) {
   const pathname = usePathname();
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
-  // Auto-expand active section when drawer opens
+  // Categorías raíz activas
+  const rootCategories = categories.filter((c) => !c.parent && c.isActive !== false);
+
+  // Auto-expandir la sección activa al abrir
   useEffect(() => {
     if (isOpen) {
-      if (pathname.startsWith("/joyeria")) {
-        setExpandedSection("joyas");
-      } else if (pathname.startsWith("/relojes")) {
-        setExpandedSection("relojes");
-      }
+      const active = rootCategories.find((cat) => pathname.startsWith(`/${cat.slug}`));
+      if (active) setExpandedSection(active.id);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, pathname]);
 
-  // Lock body scroll when drawer is open
+  // Bloquear scroll del body cuando el drawer está abierto
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
   const toggleSection = (id: string) => {
     setExpandedSection((prev) => (prev === id ? null : id));
   };
 
+  const ChevronIcon = ({ expanded }: { expanded: boolean }) => (
+    <svg
+      width="16" height="16" viewBox="0 0 16 16" fill="none"
+      className={cn("text-gray-400 transition-transform duration-200", expanded ? "rotate-90 text-black" : "")}
+    >
+      <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop oscuro con fade */}
+          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -107,7 +75,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
             aria-hidden="true"
           />
 
-          {/* Panel Lateral Slide-over */}
+          {/* Panel lateral */}
           <motion.aside
             initial={{ x: "-100%" }}
             animate={{ x: 0 }}
@@ -128,166 +96,94 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
                 aria-label="Cerrar menú"
               >
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path
-                    d="M5 5L15 15M15 5L5 15"
-                    stroke="currentColor"
-                    strokeWidth="1.6"
-                    strokeLinecap="round"
-                  />
+                  <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
                 </svg>
               </button>
             </div>
 
-            {/* Lista scrollable de enlaces y acordeones */}
+            {/* Lista de navegación */}
             <div className="flex-1 overflow-y-auto py-2 divide-y divide-gray-100">
               <nav aria-label="Categorías principales">
                 <ul className="text-[14px]">
-                  {/* Acordeón JOYAS */}
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => toggleSection(JOYAS_SUBMENU.id)}
-                      aria-expanded={expandedSection === JOYAS_SUBMENU.id}
-                      className="w-full flex items-center justify-between px-5 py-3.5 font-medium text-left text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer"
-                    >
-                      <span className={cn(
-                        "transition-colors",
-                        expandedSection === JOYAS_SUBMENU.id ? "font-semibold text-black" : "text-gray-900"
-                      )}>
-                        {JOYAS_SUBMENU.label}
-                      </span>
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        className={cn(
-                          "text-gray-400 transition-transform duration-200",
-                          expandedSection === JOYAS_SUBMENU.id ? "rotate-90 text-black" : ""
-                        )}
-                      >
-                        <path
-                          d="M6 3L11 8L6 13"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
+                  {rootCategories.map((cat) => {
+                    const activeChildren = cat.children?.filter((c) => c.isActive !== false) ?? [];
+                    const hasChildren = activeChildren.length > 0;
+                    const isExpanded = expandedSection === cat.id;
 
-                    <AnimatePresence>
-                      {expandedSection === JOYAS_SUBMENU.id && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="bg-gray-50/80 border-y border-gray-100 px-5 py-2.5 overflow-hidden"
-                        >
-                          <ul className="space-y-1 text-[13px] text-gray-600">
-                            {/* Primer link: Ver todas las Joyas */}
-                            <li>
-                              <Link
-                                href={JOYAS_SUBMENU.viewAllHref}
-                                onClick={onClose}
-                                className="flex items-center justify-between py-2 text-black font-semibold tracking-tight hover:underline border-b border-gray-200/60 mb-1"
+                    if (hasChildren) {
+                      return (
+                        <li key={cat.id}>
+                          <button
+                            type="button"
+                            onClick={() => toggleSection(cat.id)}
+                            aria-expanded={isExpanded}
+                            className="w-full flex items-center justify-between px-5 py-3.5 font-medium text-left text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer"
+                          >
+                            <span className={cn("transition-colors", isExpanded ? "font-semibold text-black" : "text-gray-900")}>
+                              {cat.name}
+                            </span>
+                            <ChevronIcon expanded={isExpanded} />
+                          </button>
+
+                          <AnimatePresence>
+                            {isExpanded && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.2 }}
+                                className="bg-gray-50/80 border-y border-gray-100 px-5 py-2.5 overflow-hidden"
                               >
-                                <span>{JOYAS_SUBMENU.viewAllLabel}</span>
-                                <span className="text-gray-400 text-xs">→</span>
-                              </Link>
-                            </li>
-                            {JOYAS_SUBMENU.items.map((item) => (
-                              <li key={item.label}>
-                                <Link
-                                  href={item.href}
-                                  onClick={onClose}
-                                  className="block py-1.5 hover:text-black transition-colors"
-                                >
-                                  {item.label}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </li>
+                                <ul className="space-y-1 text-[13px] text-gray-600">
+                                  {/* Ver todo */}
+                                  <li>
+                                    <Link
+                                      href={`/${cat.slug}`}
+                                      onClick={onClose}
+                                      className="flex items-center justify-between py-2 text-black font-semibold tracking-tight hover:underline border-b border-gray-200/60 mb-1"
+                                    >
+                                      <span>Ver todo en {cat.name}</span>
+                                      <span className="text-gray-400 text-xs">→</span>
+                                    </Link>
+                                  </li>
+                                  {activeChildren.map((sub) => (
+                                    <li key={sub.id}>
+                                      <Link
+                                        href={`/${cat.slug}/${sub.slug}`}
+                                        onClick={onClose}
+                                        className="block py-1.5 hover:text-black transition-colors"
+                                      >
+                                        {sub.name}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </li>
+                      );
+                    }
 
-                  {/* Acordeón RELOJES */}
-                  <li>
-                    <button
-                      type="button"
-                      onClick={() => toggleSection(RELOJES_SUBMENU.id)}
-                      aria-expanded={expandedSection === RELOJES_SUBMENU.id}
-                      className="w-full flex items-center justify-between px-5 py-3.5 font-medium text-left text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer"
-                    >
-                      <span className={cn(
-                        "transition-colors",
-                        expandedSection === RELOJES_SUBMENU.id ? "font-semibold text-black" : "text-gray-900"
-                      )}>
-                        {RELOJES_SUBMENU.label}
-                      </span>
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        className={cn(
-                          "text-gray-400 transition-transform duration-200",
-                          expandedSection === RELOJES_SUBMENU.id ? "rotate-90 text-black" : ""
-                        )}
-                      >
-                        <path
-                          d="M6 3L11 8L6 13"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
-
-                    <AnimatePresence>
-                      {expandedSection === RELOJES_SUBMENU.id && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="bg-gray-50/80 border-y border-gray-100 px-5 py-2.5 overflow-hidden"
+                    // Categoría sin hijos — link directo
+                    return (
+                      <li key={cat.id}>
+                        <Link
+                          href={`/${cat.slug}`}
+                          onClick={onClose}
+                          className={cn(
+                            "block px-5 py-3.5 font-medium hover:bg-gray-50 active:bg-gray-100 transition-colors",
+                            pathname.startsWith(`/${cat.slug}`) ? "text-black font-semibold" : "text-gray-900"
+                          )}
                         >
-                          <ul className="space-y-1 text-[13px] text-gray-600">
-                            {/* Primer link: Ver todos los Relojes */}
-                            <li>
-                              <Link
-                                href={RELOJES_SUBMENU.viewAllHref}
-                                onClick={onClose}
-                                className="flex items-center justify-between py-2 text-black font-semibold tracking-tight hover:underline border-b border-gray-200/60 mb-1"
-                              >
-                                <span>{RELOJES_SUBMENU.viewAllLabel}</span>
-                                <span className="text-gray-400 text-xs">→</span>
-                              </Link>
-                            </li>
-                            {RELOJES_SUBMENU.items.map((item) => (
-                              <li key={item.label}>
-                                <Link
-                                  href={item.href}
-                                  onClick={onClose}
-                                  className="block py-1.5 hover:text-black transition-colors"
-                                >
-                                  {item.label}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </li>
+                          {cat.name}
+                        </Link>
+                      </li>
+                    );
+                  })}
 
-                  {/* Links directos */}
-                  {DIRECT_LINKS.map((link) => (
+                  {/* Links estáticos */}
+                  {STATIC_LINKS.map((link) => (
                     <li key={link.href}>
                       <Link
                         href={link.href}
@@ -305,7 +201,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
               </nav>
             </div>
 
-            {/* Footer del Drawer */}
+            {/* Footer del drawer */}
             <div className="p-4 border-t border-gray-100 bg-gray-50/70 flex flex-col gap-3">
               <a
                 href="https://wa.me/5493406419736?text=Hola%20Petrucci,%20quisiera%20hacer%20una%20consulta."
@@ -327,12 +223,7 @@ export default function MobileMenuDrawer({ isOpen, onClose }: MobileMenuDrawerPr
               >
                 <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
                   <circle cx="9" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.3" />
-                  <path
-                    d="M2 15.5c0-3.038 3.134-5.5 7-5.5s7 2.462 7 5.5"
-                    stroke="currentColor"
-                    strokeWidth="1.3"
-                    strokeLinecap="round"
-                  />
+                  <path d="M2 15.5c0-3.038 3.134-5.5 7-5.5s7 2.462 7 5.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
                 </svg>
                 <span>Panel de Administración</span>
               </Link>

@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import { Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import AppShell from "@/components/layout/AppShell";
+import PWARegister from "@/components/ui/PWARegister";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -163,12 +164,19 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo-petrucci-v2.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/logo-petrucci-v2.svg" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#1D1D1F" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Petrucci" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
       <body>
+        <PWARegister />
         <AppShell>{children}</AppShell>
       </body>
     </html>

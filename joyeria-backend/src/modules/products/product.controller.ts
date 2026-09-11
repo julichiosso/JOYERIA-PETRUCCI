@@ -115,12 +115,15 @@ export const productController = {
     return reply.status(200).send({ ...product, whatsappLink });
   },
 
-  // Catálogo público: solo lista productos disponibles
   async listPublic(
     request: FastifyRequest<{ Querystring: ProductListQuery }>,
     reply: FastifyReply
   ) {
-    const result = await productService.list({ ...request.query, status: 'ACTIVE' });
+    const result = await productService.list({
+      ...request.query,
+      status: 'ACTIVE',
+      includeSubcategories: request.query.includeSubcategories,
+    });
     const visibleItems = {
       ...result,
       items: result.items.map((product: any) => ({
