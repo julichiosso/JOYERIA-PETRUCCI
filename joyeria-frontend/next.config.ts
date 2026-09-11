@@ -2,7 +2,7 @@ import path from "path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: path.join(__dirname, "../"),
+  outputFileTracingRoot: path.resolve(__dirname),
   images: {
     // Dominios remotos de donde vienen las imágenes del catálogo.
     // El backend sube a Supabase Storage — hay que agregar el dominio de Supabase.
