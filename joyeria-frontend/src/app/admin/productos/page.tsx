@@ -299,7 +299,7 @@ export default function AdminProductsPage() {
       </div>
 
       {/* ── Resumen Ejecutivo (Tira de métricas sobria Apple) ────────────────────── */}
-      <div className="bg-white border border-gray-200/80 rounded-3xl p-5 shadow-xs">
+     {/*  <div className="bg-white border border-gray-200/80 rounded-3xl p-5 shadow-xs">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-gray-200/80">
           <div className="pt-2 md:pt-0 md:px-4 first:pl-0">
             <p className="font-sans text-xs uppercase tracking-wider text-gray-400 font-semibold">Total en Catálogo</p>
@@ -318,7 +318,7 @@ export default function AdminProductsPage() {
             <p className="font-sans text-3xl font-bold text-gray-400 mt-1">{stats.outOfStock}</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* ── 1. Selector de Secciones Principales (Tabs Sobrios Apple) ────────────── */}
       <div className="border-b border-gray-200/80">
