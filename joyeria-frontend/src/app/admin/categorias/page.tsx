@@ -2,29 +2,51 @@
 
 /**
  * app/admin/categorias/page.tsx
- * Panel de Categorías y Subcategorías diseñado especialmente para uso fácil, claro y directo.
+ * Panel de Categorías y Subcategorías — Petrucci Joyería.
  *
- * Características de accesibilidad y UX:
- *  - Textos grandes, claros y en español simple.
- *  - Botones de gran tamaño táctil (mínimo 36px/44px) para pulsar fácil sin errores en móvil.
- *  - Notificaciones toast integradas y modals con trampa de foco.
- *  - Aclaraciones visuales explícitas ("Los clientes no la ven en la tienda").
+ * Guardrails implementados:
+ *  1. Bloqueo de borrado si hay joyas activas → modal informativo con link a esas joyas.
+ *  2. Slug preview automático y visible bajo el campo nombre (minúsculas, sin tildes).
+ *  3. Aviso inline al renombrar categoría existente (redirect SEO automático).
+ *  4. Empty-state amigable con botón grande "+ Agregar primera subcategoría".
+ *  5. Detección de nombre duplicado mientras el usuario escribe.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { adminFetch } from "@/lib/auth";
 import type { Category } from "@/types/category";
 import CategoryMenuPreview from "@/components/admin/CategoryMenuPreview";
 import { useToast } from "@/hooks/useToast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
+// ─── slug helper (client-side, sin dependencias extra) ─────────────────────
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 interface ModalState {
   isOpen: boolean;
   mode: "create_root" | "create_sub" | "edit";
   parentId?: string;
   parentName?: string;
-  category?: Category | { id: string; name: string; description?: string | null; sortOrder?: number; isActive?: boolean };
+  category?: Category | { id: string; name: string; description?: string | null; sortOrder?: number; isActive?: boolean; slug?: string };
+}
+
+// Modal secundario para borrado bloqueado (categoría con joyas)
+interface BlockedDeleteState {
+  isOpen: boolean;
+  categoryName: string;
+  categoryId: string;
+  productCount: number;
 }
 
 export default function AdminCategoriasPage() {
@@ -43,9 +65,20 @@ export default function AdminCategoriasPage() {
   const [saving, setSaving] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
 
-  // Modal de Eliminación (ConfirmModal)
+  // Nombre original (para detectar renombre en modo edit)
+  const [originalName, setOriginalName] = useState("");
+
+  // Modal de Eliminación (ConfirmModal estándar)
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Modal bloqueante: categoría con joyas activas
+  const [blockedDelete, setBlockedDelete] = useState<BlockedDeleteState>({
+    isOpen: false,
+    categoryName: "",
+    categoryId: "",
+    productCount: 0,
+  });
 
   const loadCategories = useCallback(async () => {
     try {
@@ -74,7 +107,28 @@ export default function AdminCategoriasPage() {
     loadCategories();
   }, [loadCategories]);
 
-  // Toggle Activo con feedback Toast
+  // ── Nombres planos para detección de duplicados ─────────────────────────────
+  const allNames = useMemo(() => {
+    const names: string[] = [];
+    categories.forEach((c) => {
+      names.push(c.name.toLowerCase().trim());
+      c.children?.forEach((sub) => names.push(sub.name.toLowerCase().trim()));
+    });
+    return names;
+  }, [categories]);
+
+  const duplicateWarning = useMemo(() => {
+    const typed = formName.toLowerCase().trim();
+    if (!typed) return null;
+    const isEditing = modal.mode === "edit";
+    const match = allNames.find((n) => n === typed);
+    if (!match) return null;
+    // En modo edición, no avisar si el nombre es el mismo que el original
+    if (isEditing && typed === originalName.toLowerCase().trim()) return null;
+    return formName.trim();
+  }, [formName, allNames, modal.mode, originalName]);
+
+  // Toggle Activo
   const toggleActive = async (cat: Category) => {
     try {
       const nextActive = !cat.isActive;
@@ -90,7 +144,7 @@ export default function AdminCategoriasPage() {
     }
   };
 
-  // Mover orden con feedback Toast en errores
+  // Mover orden
   const moveOrder = async (cat: Category, direction: "up" | "down", siblings: (Category | Category["children"][0])[]) => {
     const currentIndex = siblings.findIndex((s) => s.id === cat.id);
     if (currentIndex === -1) return;
@@ -123,6 +177,7 @@ export default function AdminCategoriasPage() {
     setFormDesc("");
     setFormOrder(categories.length);
     setFormActive(true);
+    setOriginalName("");
     setModalError(null);
     setModal({ isOpen: true, mode: "create_root" });
   };
@@ -132,6 +187,7 @@ export default function AdminCategoriasPage() {
     setFormDesc("");
     setFormOrder(parent.children?.length ?? 0);
     setFormActive(true);
+    setOriginalName("");
     setModalError(null);
     setModal({
       isOpen: true,
@@ -146,6 +202,7 @@ export default function AdminCategoriasPage() {
     setFormDesc(cat.description ?? "");
     setFormOrder(cat.sortOrder);
     setFormActive(cat.isActive);
+    setOriginalName(cat.name);
     setModalError(null);
     setModal({
       isOpen: true,
@@ -159,7 +216,7 @@ export default function AdminCategoriasPage() {
     setModal({ isOpen: false, mode: "create_root" });
   };
 
-  // Guardar desde modal con Toast
+  // Guardar desde modal
   const handleSaveModal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName.trim()) {
@@ -217,7 +274,7 @@ export default function AdminCategoriasPage() {
     }
   };
 
-  // Eliminar con ConfirmModal y Toast
+  // Eliminar con manejo específico para "HAS_PRODUCTS"
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     setDeleting(true);
@@ -230,17 +287,41 @@ export default function AdminCategoriasPage() {
       setDeleteTarget(null);
       loadCategories();
     } catch (err: unknown) {
-      const e = err as { message?: string };
-      const msg = e.message ?? "No se pudo eliminar la categoría. Si contiene productos o subcategorías, primero debés reasignarlos o borrar sus productos.";
-      toast.error(msg);
+      const e = err as { message?: string; data?: { reason?: string; count?: number } };
+
+      // Guardrail 1: categoría con joyas → modal bloqueante específico
+      if (e.data?.reason === "HAS_PRODUCTS") {
+        setDeleteTarget(null);
+        setBlockedDelete({
+          isOpen: true,
+          categoryName: deleteTarget.name,
+          categoryId: deleteTarget.id,
+          productCount: e.data.count ?? 0,
+        });
+      } else {
+        // Subcategorías u otro error
+        const msg = e.message ?? "No se pudo eliminar la categoría.";
+        toast.error(msg);
+        setDeleteTarget(null);
+      }
     } finally {
       setDeleting(false);
     }
   };
 
+  // ── Slug preview (Guardrail 2) ──────────────────────────────────────────────
+  const slugPreview = formName.trim() ? `/${slugify(formName.trim())}` : "";
+
+  // ── Rename warning en modo edit (Guardrail 3) ───────────────────────────────
+  const showRenameWarning =
+    modal.mode === "edit" &&
+    formName.trim() !== "" &&
+    formName.trim() !== originalName &&
+    Boolean(originalName);
+
   return (
     <div className="flex flex-col gap-4 max-w-4xl mx-auto font-body text-gray-900 pb-16">
-      {/* ── Encabezado Principal y Explicación ──────────────────────────────── */}
+      {/* ── Encabezado Principal ─────────────────────────────────────────────── */}
       <div className="bg-white p-5 md:p-6 rounded-xl border border-gray-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-gray-950">
@@ -263,14 +344,12 @@ export default function AdminCategoriasPage() {
 
       {!loading && !error && <CategoryMenuPreview categories={categories} />}
 
-      {/* Mensaje de error general */}
       {error && (
         <div className="p-3.5 bg-red-50 border border-red-300 rounded-xl text-red-900 font-medium text-sm">
           ⚠️ {error}
         </div>
       )}
 
-      {/* Cargando */}
       {loading && (
         <div className="flex flex-col items-center justify-center py-12 gap-3">
           <div className="w-8 h-8 border-3 border-gray-900 border-t-transparent rounded-full animate-spin" />
@@ -278,7 +357,7 @@ export default function AdminCategoriasPage() {
         </div>
       )}
 
-      {/* ── Listado de Secciones ───────────────────────────────────────────── */}
+      {/* ── Listado de Secciones ─────────────────────────────────────────────── */}
       {!loading && !error && (
         <div className="flex flex-col gap-3.5">
           {categories.length === 0 ? (
@@ -303,7 +382,6 @@ export default function AdminCategoriasPage() {
                 {/* ── Cabecera de Categoría Principal ── */}
                 <div className="p-3.5 md:p-4 bg-gray-50/70 border-b border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    {/* Botones de orden agrandados para touch (mínimo 36px x 36px) */}
                     <div className="flex items-center gap-1.5 shrink-0">
                       <button
                         type="button"
@@ -352,7 +430,7 @@ export default function AdminCategoriasPage() {
                     </div>
                   </div>
 
-                  {/* Acciones principales con buen target táctil */}
+                  {/* Acciones */}
                   <div className="flex items-center gap-2 flex-wrap self-end md:self-auto">
                     <button
                       type="button"
@@ -400,7 +478,7 @@ export default function AdminCategoriasPage() {
                   </div>
                 </div>
 
-                {/* ── Subcategorías ── */}
+                {/* ── Subcategorías (Guardrail 4: empty-state amigable) ── */}
                 <div className="p-3 md:p-4 bg-white">
                   {cat.children && cat.children.length > 0 ? (
                     <div className="flex flex-col gap-2 pl-3 border-l-2 border-amber-300">
@@ -410,7 +488,6 @@ export default function AdminCategoriasPage() {
                           className="flex items-center justify-between p-2.5 bg-gray-50/80 border border-gray-200 rounded-lg hover:bg-gray-100/70 transition-colors gap-2"
                         >
                           <div className="flex items-center gap-2.5">
-                            {/* Orden subcategoría agrandado (mínimo 32px x 32px) */}
                             <div className="flex items-center gap-1">
                               <button
                                 type="button"
@@ -457,9 +534,20 @@ export default function AdminCategoriasPage() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-400 italic py-1 pl-1">
-                      Sin subcategorías (los productos se asocian directo a {cat.name}).
-                    </p>
+                    /* Guardrail 4: Empty state amigable (no tabla vacía pelada) */
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-2 pl-3 border-l-2 border-gray-200">
+                      <p className="text-xs text-gray-500">
+                        Esta sección no tiene sub-rubros todavía. Los productos se pueden asociar directo a <strong>{cat.name}</strong>.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => openCreateSub(cat)}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-900 hover:text-amber-950 py-2 px-4 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg transition-colors min-h-[36px] cursor-pointer whitespace-nowrap shrink-0"
+                      >
+                        <span className="text-sm font-bold">+</span>
+                        Agregar la primera subcategoría
+                      </button>
+                    </div>
                   )}
                 </div>
               </div>
@@ -468,17 +556,17 @@ export default function AdminCategoriasPage() {
         </div>
       )}
 
-      {/* ── MODAL DE CREACIÓN / EDICIÓN ────────────────────────────────────── */}
+      {/* ── MODAL DE CREACIÓN / EDICIÓN ──────────────────────────────────────── */}
       {modal.isOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8 shadow-2xl flex flex-col gap-6">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8 shadow-2xl flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-200 pb-4">
               <h2 className="text-xl md:text-2xl font-bold text-gray-950">
                 {modal.mode === "create_root"
                   ? "Crear Sección Principal"
                   : modal.mode === "create_sub"
                     ? `Agregar adentro de ${modal.parentName}`
-                    : `Modificar: ${formName}`}
+                    : `Modificar: ${originalName}`}
               </h2>
               <button
                 type="button"
@@ -510,7 +598,35 @@ export default function AdminCategoriasPage() {
                   required
                   autoFocus
                 />
+
+                {/* Guardrail 2: Slug preview */}
+                {slugPreview && (
+                  <p className="text-[11px] text-gray-400 mt-1.5 font-mono">
+                    URL en tienda: <span className="text-gray-600">petrucci.com{slugPreview}</span>
+                  </p>
+                )}
+
+                {/* Guardrail 5: Advertencia de duplicado */}
+                {duplicateWarning && (
+                  <div className="mt-2 p-3 bg-amber-50 border border-amber-300 rounded-lg text-sm text-amber-900 flex items-start gap-2">
+                    <span className="shrink-0 mt-0.5">⚠️</span>
+                    <p>
+                      Ya existe una sección llamada <strong>«{duplicateWarning}»</strong>.
+                      ¿Querés modificar la existente en vez de crear una nueva?
+                    </p>
+                  </div>
+                )}
               </div>
+
+              {/* Guardrail 3: Aviso de renombre SEO */}
+              {showRenameWarning && (
+                <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900 flex items-start gap-2.5">
+                  <span className="shrink-0 mt-0.5 text-base">🔗</span>
+                  <p>
+                    Si cambiás el nombre, la tienda va a <strong>redirigir automáticamente</strong> la URL anterior para no perder visitas de Google. No necesitás hacer nada extra.
+                  </p>
+                </div>
+              )}
 
               {/* Descripción */}
               <div>
@@ -564,11 +680,11 @@ export default function AdminCategoriasPage() {
         </div>
       )}
 
-      {/* ── MODAL DE CONFIRMACIÓN DE ELIMINACIÓN CON CONFIRM MODAL ───────── */}
+      {/* ── MODAL ESTÁNDAR DE CONFIRMACIÓN DE ELIMINACIÓN ────────────────────── */}
       <ConfirmModal
         isOpen={!!deleteTarget}
         title={`¿Eliminar "${deleteTarget?.name}"?`}
-        message="¿Estás seguro de que querés borrar esta categoría? Si contiene joyas asociadas o subcategorías, el sistema evitará la eliminación para no desarmar tu catálogo."
+        message="¿Estás seguro de que querés borrar esta categoría? Si contiene joyas o subcategorías, el sistema evitará la eliminación."
         confirmLabel="Sí, borrar"
         cancelLabel="Cancelar"
         variant="danger"
@@ -576,6 +692,53 @@ export default function AdminCategoriasPage() {
         onConfirm={confirmDelete}
         onCancel={() => setDeleteTarget(null)}
       />
+
+      {/* ── GUARDRAIL 1: MODAL BLOQUEANTE — CATEGORÍA CON JOYAS ─────────────── */}
+      {blockedDelete.isOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+            onClick={() => setBlockedDelete((s) => ({ ...s, isOpen: false }))}
+          />
+          <div className="relative w-full max-w-md bg-white rounded-xl shadow-2xl border border-gray-100 p-6 z-10 font-body">
+            <div className="flex items-start gap-4">
+              <div className="p-3 rounded-full shrink-0 bg-amber-100 text-amber-700">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 4l9 16H3L12 4z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+                  <path d="M12 10v4m0 4h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                </svg>
+              </div>
+
+              <div className="flex-1 pt-0.5">
+                <h3 className="text-lg font-semibold text-gray-900 leading-snug">
+                  No podés eliminar «{blockedDelete.categoryName}»
+                </h3>
+                <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                  Esta sección tiene <strong>{blockedDelete.productCount} joya{blockedDelete.productCount !== 1 ? "s" : ""} cargada{blockedDelete.productCount !== 1 ? "s" : ""}</strong>.
+                  Primero movélas a otra categoría, o contactá a soporte si necesitás ayuda.
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => setBlockedDelete((s) => ({ ...s, isOpen: false }))}
+                className="w-full sm:w-auto px-5 py-2.5 min-h-[44px] text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Entendido
+              </button>
+              <Link
+                href={`/admin/productos?category=${blockedDelete.categoryId}`}
+                onClick={() => setBlockedDelete((s) => ({ ...s, isOpen: false }))}
+                className="w-full sm:w-auto px-5 py-2.5 min-h-[44px] text-sm font-medium text-white bg-amber-700 hover:bg-amber-800 rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                Ver esas joyas →
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

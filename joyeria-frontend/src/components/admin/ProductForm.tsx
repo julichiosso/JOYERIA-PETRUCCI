@@ -378,17 +378,26 @@ export default function ProductForm({ initialData }: ProductFormProps) {
           </p>
         </div>
 
-        {/* Botón de Asistente Automático */}
-        <button
-          type="button"
-          onClick={handleAutoSuggest}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300/80 rounded-lg text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-700">
-            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-          </svg>
-          <span>✨ Autocompletar sugerencias y SEO</span>
-        </button>
+        {/* Botón de Asistente Automático — deshabilitado hasta que haya nombre */}
+        <div className="relative group">
+          <button
+            type="button"
+            onClick={handleAutoSuggest}
+            disabled={!formData.name.trim()}
+            title={!formData.name.trim() ? "Escribí el nombre del producto primero, después tocá acá" : "Completar categoría, descripción y SEO automáticamente"}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300/80 rounded-lg text-xs font-semibold shadow-2xs transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-700">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+            </svg>
+            <span>✨ Autocompletar sugerencias y SEO</span>
+          </button>
+          {!formData.name.trim() && (
+            <p className="text-[11px] text-gray-500 mt-1 text-center">
+              Escribí el nombre primero
+            </p>
+          )}
+        </div>
       </div>
 
       {appliedSuggestion && (
@@ -613,7 +622,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         {seoOpen && (
           <div className="border-t border-gray-200 p-5 sm:p-6 flex flex-col gap-4 bg-gray-50/50">
             <div>
-              <FieldLabel htmlFor="meta-title">Título para Google (Meta Title)</FieldLabel>
+              <FieldLabel htmlFor="meta-title">Título que aparece en Google</FieldLabel>
               <input
                 id="meta-title"
                 type="text"
@@ -627,7 +636,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
             </div>
 
             <div>
-              <FieldLabel htmlFor="meta-desc">Descripción en Resultados de Búsqueda (Meta Description)</FieldLabel>
+              <FieldLabel htmlFor="meta-desc">Resumen que aparece en Google</FieldLabel>
               <textarea
                 id="meta-desc"
                 value={formData.metaDescription}
@@ -639,6 +648,32 @@ export default function ProductForm({ initialData }: ProductFormProps) {
               />
               <p className="text-[11px] text-gray-500 mt-1">{formData.metaDescription.length} / 160 caracteres recomendados</p>
             </div>
+
+            {/* Preview visual de búsqueda en Google */}
+            {(formData.metaTitle || formData.metaDescription) && (
+              <div>
+                <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Así se verá en Google:</p>
+                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <div className="w-5 h-5 rounded-full bg-amber-800 flex items-center justify-center text-white text-[9px] font-bold shrink-0">P</div>
+                    <div>
+                      <p className="text-[11px] text-gray-700 leading-none">Petrucci Joyería</p>
+                      <p className="text-[11px] text-green-700 leading-none mt-0.5 font-mono">
+                        petrucci.com.ar › {formData.name ? formData.name.toLowerCase().replace(/\s+/g, '-').slice(0, 30) : 'producto'}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-blue-700 font-medium text-sm leading-tight hover:underline cursor-pointer">
+                    {formData.metaTitle || formData.name || '(sin título)'}
+                  </p>
+                  {formData.metaDescription && (
+                    <p className="text-xs text-gray-600 mt-1 leading-relaxed line-clamp-2">
+                      {formData.metaDescription}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </section>

@@ -486,8 +486,11 @@ export default function AdminProductsPage() {
                           sizes="72px"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-[10px] text-gray-400">
-                          Sin foto
+                        <div className="w-full h-full flex items-center justify-center">
+                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300" aria-hidden="true">
+                            <path d="M12 2L2 9l10 13L22 9 12 2z" />
+                            <path d="M2 9h20" />
+                          </svg>
                         </div>
                       )}
                     </div>
@@ -511,23 +514,23 @@ export default function AdminProductsPage() {
                     </div>
                   </div>
 
-                  {/* Acciones móviles directas */}
-                  <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-1">
+                  {/* Acciones móviles: selector de estado + Editar + Eliminar (con separación clara) */}
+                  <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-1 gap-3">
                     {/* Selector rápido de estado */}
                     <select
                       value={product.status}
                       onChange={(e) => handleQuickStatusChange(product, e.target.value as ProductStatus)}
-                      className="text-xs bg-gray-50 border border-gray-300 rounded-md px-2 py-1 text-gray-700 focus:outline-none"
+                      className="text-xs bg-gray-50 border border-gray-300 rounded-md px-2 py-1.5 text-gray-700 focus:outline-none min-h-[36px]"
                     >
                       <option value="ACTIVE">Activo</option>
                       <option value="DRAFT">Borrador</option>
                       <option value="OUT_OF_STOCK">Sin stock</option>
                     </select>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-0 shrink-0">
                       <Link
                         href={`/admin/productos/${product.id}`}
-                        className="text-xs font-semibold text-amber-800 hover:text-amber-950 px-2 py-1 rounded bg-amber-50"
+                        className="text-xs font-semibold text-amber-800 hover:text-amber-950 px-3 py-2 rounded-l-lg bg-amber-50 border border-amber-200 min-h-[36px] flex items-center"
                       >
                         Editar
                       </Link>
@@ -535,7 +538,7 @@ export default function AdminProductsPage() {
                         type="button"
                         onClick={() => handleDeleteClick(product)}
                         disabled={deletingId === product.id}
-                        className="text-xs text-red-600 hover:text-red-800 px-2 py-1 rounded hover:bg-red-50 disabled:opacity-40"
+                        className="text-xs text-red-600 hover:text-red-800 px-3 py-2 rounded-r-lg border border-l-0 border-red-200 hover:bg-red-50 disabled:opacity-40 min-h-[36px] flex items-center"
                       >
                         {deletingId === product.id ? "Borrando..." : "Eliminar"}
                       </button>
@@ -578,8 +581,11 @@ export default function AdminProductsPage() {
                                 sizes="48px"
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-[9px] text-gray-400">
-                                Sin foto
+                              <div className="w-full h-full flex items-center justify-center">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300" aria-hidden="true">
+                                  <path d="M12 2L2 9l10 13L22 9 12 2z" />
+                                  <path d="M2 9h20" />
+                                </svg>
                               </div>
                             )}
                           </div>
