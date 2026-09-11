@@ -45,14 +45,14 @@ const STATUS_OPTIONS: { value: ProductStatus; label: string; desc: string }[] = 
 
 function FieldLabel({ htmlFor, children, required }: { htmlFor: string; children: React.ReactNode; required?: boolean }) {
   return (
-    <label htmlFor={htmlFor} className="block text-xs font-semibold text-gray-800 uppercase tracking-wider mb-1.5">
-      {children} {required && <span className="text-red-500">*</span>}
+    <label htmlFor={htmlFor} className="block text-sm font-extrabold text-black uppercase tracking-wide mb-1.5 font-sans">
+      {children} {required && <span className="text-red-600 font-bold">*</span>}
     </label>
   );
 }
 
 function inputClass(error?: boolean) {
-  return `w-full px-3.5 py-2.5 bg-gray-50 border ${error ? "border-red-400 bg-red-50/20" : "border-gray-300"} rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition-colors`;
+  return `w-full px-4 py-3 bg-white border-2 ${error ? "border-red-600 bg-red-50/50" : "border-gray-400"} rounded-xl text-base sm:text-lg font-bold text-black placeholder:text-gray-400 placeholder:font-normal focus:bg-white focus:outline-none focus:border-black focus:ring-2 focus:ring-black transition-colors font-sans`;
 }
 
 // Función helper para formatear miles visualmente
@@ -343,365 +343,212 @@ export default function ProductForm({ initialData }: ProductFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6 max-w-4xl mx-auto font-body text-gray-900 pb-16">
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6 max-w-2xl mx-auto font-sans text-gray-900 pb-24">
 
-      {/* ── Indicador de Pasos Visuales (Progress Steps) ───────────────────── */}
-      <div className="bg-white border border-gray-200 rounded-xl p-3.5 shadow-2xs">
-        <div className="flex items-center justify-between gap-2 overflow-x-auto text-xs py-1 scrollbar-hide">
-          {[
-            { step: 1, title: "1. Datos Básicos", isDone: Boolean(formData.name.trim() && formData.categoryId) },
-            { step: 2, title: "2. Precio & Variantes", isDone: Boolean(formData.price || formData.variantLabel) },
-            { step: 3, title: "3. Fotos", isDone: images.length > 0 },
-            { step: 4, title: "4. Posicionamiento SEO", isDone: Boolean(formData.metaTitle || formData.metaDescription) },
-          ].map((s) => (
-            <div key={s.step} className="flex items-center gap-2 shrink-0">
-              <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${s.isDone ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-500"}`}>
-                {s.isDone ? "✓" : s.step}
-              </span>
-              <span className={`font-medium whitespace-nowrap ${s.isDone ? "text-gray-900" : "text-gray-500"}`}>
-                {s.title}
-              </span>
-              {s.step < 4 && <span className="text-gray-300 hidden sm:inline ml-1">›</span>}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── Encabezado de la página ────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8E4DE] pb-4">
-        <div>
-          <h1 className="font-serif text-3xl sm:text-4xl text-gray-950 font-normal tracking-wide">
-            {isEditing ? "Editar Joya / Pieza" : "Cargar Nueva Joya o Pieza"}
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">
-            Completá los datos del producto. Podés usar las sugerencias automáticas para agilizar la carga.
-          </p>
-        </div>
-
-        {/* Botón de Asistente Automático — deshabilitado hasta que haya nombre */}
-        <div className="relative group">
-          <button
-            type="button"
-            onClick={handleAutoSuggest}
-            disabled={!formData.name.trim()}
-            title={!formData.name.trim() ? "Escribí el nombre del producto primero, después tocá acá" : "Completar categoría, descripción y SEO automáticamente"}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FAF8F5] hover:bg-amber-50 text-[#A8875A] border border-[#A8875A]/40 rounded-md text-xs font-semibold uppercase tracking-wider shadow-2xs transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#A8875A]">
-              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-            </svg>
-            <span>✨ Autocompletar sugerencias y SEO</span>
-          </button>
-          {!formData.name.trim() && (
-            <p className="text-[11px] text-gray-500 mt-1 text-center">
-              Escribí el nombre primero
-            </p>
-          )}
-        </div>
+      {/* ── Encabezado Principal ────────────────────────────────────────── */}
+      <div className="border-b border-gray-300 pb-4">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">
+          {isEditing ? "Editar Joya" : "Publicar Nueva Joya"}
+        </h1>
+        <p className="text-sm font-medium text-gray-700 mt-1">
+          Paso 1: Sacá o elegí la foto. Paso 2: Ponéle nombre y precio. ¡Listo!
+        </p>
       </div>
 
       {appliedSuggestion && (
-        <div className="p-3 bg-[#FAF8F5] border border-[#A8875A]/40 rounded-lg text-xs text-[#A8875A] flex items-center gap-2">
-          <span>✓ Sugerencias de descripción, variantes y SEO aplicadas con éxito. Podés editarlas libremente.</span>
+        <div className="p-4 bg-emerald-50 border-2 border-emerald-500 rounded-xl text-sm font-bold text-emerald-950 flex items-center gap-2">
+          <span>✓ Sugerencias de descripción y SEO aplicadas.</span>
         </div>
       )}
 
-      {/* ── 1. Información Principal ───────────────────────────────────────── */}
-      <section className="bg-white border border-[#E8E4DE] rounded-lg p-5 sm:p-6 flex flex-col gap-4 shadow-2xs">
-        <h2 className="font-serif text-xl font-normal text-gray-950 tracking-wide border-b border-[#E8E4DE] pb-2">
-          1. Información de la Pieza
+      {/* ── 1. FOTO DE LA JOYA (TIPO INSTAGRAM — ARRIBA DE TODO) ────────── */}
+      <section className="bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 shadow-md">
+        <div className="flex items-center justify-between border-b-2 border-gray-200 pb-3">
+          <h2 className="text-lg font-extrabold text-black uppercase tracking-wide flex items-center gap-2 font-sans">
+            <span>📷</span> 1. Foto de la Joya (Obligatoria)
+          </h2>
+          {images.length > 0 && (
+            <span className="text-xs font-bold bg-black text-white px-2.5 py-1 rounded-full uppercase">
+              ✓ Foto Lista
+            </span>
+          )}
+        </div>
+
+        {/* Uploader de Foto */}
+        <ImageUploader
+          images={images}
+          onImagesChange={setImages}
+          disabled={submitting}
+        />
+      </section>
+
+      {/* ── 2. DATOS DE LA JOYA (JUSTO DEBAJO DE LA FOTO) ───────────────── */}
+      <section className="bg-white border-2 border-gray-300 rounded-2xl p-5 flex flex-col gap-5 shadow-xs">
+        <h2 className="text-lg font-extrabold text-black uppercase tracking-wide border-b-2 border-gray-200 pb-3 font-sans">
+          📝 2. Datos Básicos
         </h2>
 
-        {/* Nombre */}
+        {/* Nombre de la Joya */}
         <div>
           <FieldLabel htmlFor="prod-name" required>
-            Nombre del Producto
+            Nombre de la Joya
           </FieldLabel>
           <input
             id="prod-name"
             type="text"
             value={formData.name}
             onChange={set("name")}
-            placeholder="Ej: Anillo Solitario Oro Blanco 18k con Circonia Cúbica"
+            placeholder="Ej: Anillo Alianza Oro 18k, Cadena Grumet, Reloj Seiko"
             className={inputClass(Boolean(fieldErrors.name))}
             required
           />
           {fieldErrors.name && (
-            <p className="mt-1 text-xs text-red-600 font-medium">{fieldErrors.name}</p>
+            <p className="mt-1.5 text-sm text-red-600 font-extrabold">{fieldErrors.name}</p>
           )}
         </div>
 
-        {/* Categoría y Estado en 2 columnas */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* Categoría */}
-          <div>
-            <FieldLabel htmlFor="prod-category" required>
-              Categoría / Departamento
-            </FieldLabel>
-            <select
-              id="prod-category"
-              value={formData.categoryId}
-              onChange={set("categoryId")}
-              className={inputClass(Boolean(fieldErrors.categoryId))}
-              required
-            >
-              <option value="">— Seleccioná la categoría —</option>
-              {categories.map((cat) => (
-                <optgroup key={cat.id} label={cat.name}>
-                  {cat.children && cat.children.length > 0 ? (
-                    cat.children.map((sub) => (
-                      <option key={sub.id} value={sub.id}>
-                        {cat.name} › {sub.name}
-                      </option>
-                    ))
-                  ) : (
-                    <option value={cat.id}>{cat.name}</option>
-                  )}
-                </optgroup>
-              ))}
-            </select>
-            {fieldErrors.categoryId && (
-              <p className="mt-1 text-xs text-red-600 font-medium">{fieldErrors.categoryId}</p>
-            )}
-          </div>
-
-          {/* Estado de Publicación */}
-          <div>
-            <FieldLabel htmlFor="prod-status">
-              Estado en Tienda
-            </FieldLabel>
-            <select
-              id="prod-status"
-              value={formData.status}
-              onChange={set("status")}
-              className={inputClass()}
-            >
-              {STATUS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label} ({opt.desc})
-                </option>
-              ))}
-            </select>
-          </div>
+        {/* Categoría */}
+        <div>
+          <FieldLabel htmlFor="prod-category" required>
+            Categoría (¿Qué tipo de joya es?)
+          </FieldLabel>
+          <select
+            id="prod-category"
+            value={formData.categoryId}
+            onChange={set("categoryId")}
+            className={inputClass(Boolean(fieldErrors.categoryId))}
+            required
+          >
+            <option value="">— Tocá acá para elegir categoría —</option>
+            {categories.map((cat) => (
+              <optgroup key={cat.id} label={cat.name}>
+                {cat.children && cat.children.length > 0 ? (
+                  cat.children.map((sub) => (
+                    <option key={sub.id} value={sub.id}>
+                      {cat.name} › {sub.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value={cat.id}>{cat.name}</option>
+                )}
+              </optgroup>
+            ))}
+          </select>
+          {fieldErrors.categoryId && (
+            <p className="mt-1.5 text-sm text-red-600 font-extrabold">{fieldErrors.categoryId}</p>
+          )}
         </div>
 
-        {/* Descripción */}
+        {/* Precio en ARS */}
+        <div>
+          <FieldLabel htmlFor="prod-price">
+            Precio en Pesos ($ ARS)
+          </FieldLabel>
+          <div className="relative">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-extrabold text-black">$</span>
+            <input
+              id="prod-price"
+              type="text"
+              inputMode="numeric"
+              value={formatPriceDisplay(formData.price)}
+              onChange={handlePriceChange}
+              placeholder="1.850.000"
+              className={`${inputClass(Boolean(fieldErrors.price))} pl-9 text-xl font-extrabold text-black`}
+            />
+          </div>
+          {fieldErrors.price && (
+            <p className="mt-1.5 text-sm text-red-600 font-extrabold">{fieldErrors.price}</p>
+          )}
+        </div>
+
+        {/* Toggle Mostrar Precio */}
+        <div className="p-3 bg-gray-50 border border-gray-300 rounded-xl">
+          <label className="flex items-center gap-3 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={formData.showPrice}
+              onChange={(e) => setFormData((p) => ({ ...p, showPrice: e.target.checked }))}
+              className="w-6 h-6 text-black rounded border-gray-400 focus:ring-black"
+            />
+            <div>
+              <p className="text-base font-extrabold text-black leading-tight">
+                Mostrar precio visible en la tienda
+              </p>
+              <p className="text-xs text-gray-600 mt-0.5">
+                Si está desactivado, el cliente verá &quot;Consultar precio por WhatsApp&quot;.
+              </p>
+            </div>
+          </label>
+        </div>
+
+        {/* Estado en Tienda */}
+        <div>
+          <FieldLabel htmlFor="prod-status">
+            Estado de Publicación
+          </FieldLabel>
+          <select
+            id="prod-status"
+            value={formData.status}
+            onChange={set("status")}
+            className={inputClass()}
+          >
+            {STATUS_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label} — {opt.desc}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Descripción (Opcional) */}
         <div>
           <FieldLabel htmlFor="prod-desc">
-            Descripción Detallada
+            Descripción o Detalles (Opcional)
           </FieldLabel>
           <textarea
             id="prod-desc"
             value={formData.description}
             onChange={set("description")}
-            rows={4}
-            placeholder="Detalles de la joya: pureza del metal (18k / 925), medidas, gemas, tipo de cierre, garantía de orfebrería..."
-            className={`${inputClass()} resize-y`}
+            rows={3}
+            placeholder="Detalles sobre el metal, grabado, estuche o garantía..."
+            className={`${inputClass()} resize-y text-base font-normal`}
           />
         </div>
       </section>
-
-      {/* ── 2. Precios y Variantes ─────────────────────────────────────────── */}
-      <section className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 flex flex-col gap-4 shadow-2xs">
-        <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wide border-b border-gray-100 pb-2">
-          2. Precio y Variantes
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
-          {/* Precio en ARS formateado en vivo sin salto de cursor */}
-          <div>
-            <FieldLabel htmlFor="prod-price">Precio en Pesos (ARS)</FieldLabel>
-            <div className="relative">
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-gray-400">$</span>
-              <input
-                id="prod-price"
-                type="text"
-                inputMode="numeric"
-                value={formatPriceDisplay(formData.price)}
-                onChange={handlePriceChange}
-                placeholder="1.850.000"
-                className={`${inputClass(Boolean(fieldErrors.price))} pl-8 font-semibold tracking-wide`}
-              />
-            </div>
-            {fieldErrors.price && (
-              <p className="mt-1 text-xs text-red-600 font-medium">{fieldErrors.price}</p>
-            )}
-          </div>
-
-          {/* Toggle Mostrar Precio */}
-          <div className="pt-4">
-            <label className="flex items-start gap-3 cursor-pointer select-none">
-              <div className="relative mt-0.5 shrink-0">
-                <input
-                  type="checkbox"
-                  checked={formData.showPrice}
-                  onChange={(e) => setFormData((p) => ({ ...p, showPrice: e.target.checked }))}
-                  className="sr-only peer"
-                  id="show-price-toggle"
-                />
-                <div className="w-11 h-6 bg-gray-300 peer-checked:bg-amber-700 rounded-full transition-colors" />
-                <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-gray-900 leading-tight">
-                  Mostrar precio públicamente
-                </p>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  Si se desactiva, los clientes verán &quot;Consultar precio por WhatsApp&quot;.
-                </p>
-              </div>
-            </label>
-          </div>
-        </div>
-
-        {/* Variantes disponibles */}
-        <div>
-          <FieldLabel htmlFor="prod-variant">Variantes / Talles / Medidas (Opcional)</FieldLabel>
-          <input
-            id="prod-variant"
-            type="text"
-            value={formData.variantLabel}
-            onChange={set("variantLabel")}
-            placeholder='Ej: "Disponible en oro amarillo, blanco y rosé · Talles 14 al 22"'
-            className={inputClass()}
-          />
-        </div>
-      </section>
-
-      {/* ── 3. Fotos del Producto ──────────────────────────────────────────── */}
-      <section className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 flex flex-col gap-4 shadow-2xs">
-        <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wide border-b border-gray-100 pb-2">
-          3. Fotos de la Pieza (Cámara o Galería)
-        </h2>
-        <ImageUploader
-          images={images}
-          onImagesChange={setImages}
-          disabled={submitting}
-        />
-
-        {/* Nota aclaratoria sobre texto alternativo (Alt) */}
-        <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-lg text-xs text-amber-900 flex items-start gap-2.5 mt-1">
-          <span className="text-sm shrink-0">ℹ️</span>
-          <p>
-            <strong>Texto alternativo (Alt):</strong> Ayuda a posicionar tus fotos en las búsquedas de Google. Si lo dejás vacío, la tienda usará automáticamente el nombre de la joya como descripción.
-          </p>
-        </div>
-      </section>
-
-      {/* ── 4. Posicionamiento SEO para Google (Colapsable) ────────────────── */}
-      <section className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-2xs">
-        <button
-          type="button"
-          onClick={() => setSeoOpen(!seoOpen)}
-          className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50/80 transition-colors cursor-pointer"
-          aria-expanded={seoOpen}
-        >
-          <div>
-            <p className="text-sm font-bold text-gray-900 uppercase tracking-wide">
-              4. Posicionamiento SEO en Google (Opcional)
-            </p>
-            <p className="text-xs text-gray-500 mt-0.5">
-              Mejora cómo aparece esta joya en las búsquedas de Google y redes sociales.
-            </p>
-          </div>
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className={`text-gray-400 transition-transform ${seoOpen ? "rotate-180" : ""}`}
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </button>
-
-        {seoOpen && (
-          <div className="border-t border-gray-200 p-5 sm:p-6 flex flex-col gap-4 bg-gray-50/50">
-            <div>
-              <FieldLabel htmlFor="meta-title">Título que aparece en Google</FieldLabel>
-              <input
-                id="meta-title"
-                type="text"
-                value={formData.metaTitle}
-                onChange={set("metaTitle")}
-                placeholder="Ej: Anillo Solitario Oro Blanco 18k | Joyería Petrucci"
-                maxLength={70}
-                className={inputClass()}
-              />
-              <p className="text-[11px] text-gray-500 mt-1">{formData.metaTitle.length} / 70 caracteres recomendados</p>
-            </div>
-
-            <div>
-              <FieldLabel htmlFor="meta-desc">Resumen que aparece en Google</FieldLabel>
-              <textarea
-                id="meta-desc"
-                value={formData.metaDescription}
-                onChange={set("metaDescription")}
-                rows={3}
-                placeholder="Descripción concisa que aparecerá en los resultados de Google..."
-                maxLength={160}
-                className={`${inputClass()} resize-none`}
-              />
-              <p className="text-[11px] text-gray-500 mt-1">{formData.metaDescription.length} / 160 caracteres recomendados</p>
-            </div>
-
-            {/* Preview visual de búsqueda en Google */}
-            {(formData.metaTitle || formData.metaDescription) && (
-              <div>
-                <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">Así se verá en Google:</p>
-                <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
-                  <div className="flex items-center gap-2 mb-1.5">
-                    <div className="w-5 h-5 rounded-full bg-amber-800 flex items-center justify-center text-white text-[9px] font-bold shrink-0">P</div>
-                    <div>
-                      <p className="text-[11px] text-gray-700 leading-none">Petrucci Joyería</p>
-                      <p className="text-[11px] text-green-700 leading-none mt-0.5 font-mono">
-                        petrucci.com.ar › {formData.name ? formData.name.toLowerCase().replace(/\s+/g, '-').slice(0, 30) : 'producto'}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="text-blue-700 font-medium text-sm leading-tight hover:underline cursor-pointer">
-                    {formData.metaTitle || formData.name || '(sin título)'}
-                  </p>
-                  {formData.metaDescription && (
-                    <p className="text-xs text-gray-600 mt-1 leading-relaxed line-clamp-2">
-                      {formData.metaDescription}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </section>
-
       {/* ── Error Global ───────────────────────────────────────────────────── */}
       {submitError && (
-        <div role="alert" className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+        <div role="alert" className="p-4 bg-red-100 border-2 border-red-600 rounded-xl text-base font-extrabold text-red-950">
           ⚠️ {submitError}
         </div>
       )}
 
-      {/* ── Botones de Guardar Adaptativos ─────────────────────────────────── */}
-      <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-2">
+      {/* ── Botón Gigante de Publicar (Alto Contraste Blanco/Negro) ───────── */}
+      <div className="flex flex-col gap-3 pt-4">
+        <button
+          type="submit"
+          disabled={submitting}
+          className="w-full py-5 px-6 bg-black hover:bg-gray-900 active:scale-[0.98] text-white text-xl font-extrabold uppercase tracking-wider rounded-2xl shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-3 cursor-pointer border-2 border-black min-h-[64px]"
+        >
+          {submitting ? (
+            <>
+              <span className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin shrink-0" />
+              <span>Publicando Joya en la Tienda...</span>
+            </>
+          ) : (
+            <>
+              <span className="text-2xl">✨</span>
+              <span>PUBLICAR JOYA EN LA TIENDA</span>
+            </>
+          )}
+        </button>
+
         <button
           type="button"
           onClick={() => router.back()}
           disabled={submitting}
-          className="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 min-h-[44px]"
+          className="w-full py-3 text-center text-sm font-extrabold text-gray-700 hover:text-black uppercase tracking-wide transition-colors"
         >
-          Cancelar
-        </button>
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className={`w-full sm:w-auto px-8 py-3 text-sm font-semibold rounded-lg shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer min-h-[44px] ${getCtaBg()}`}
-        >
-          {getCtaButton()}
+          Cancelar y Volver
         </button>
       </div>
     </form>

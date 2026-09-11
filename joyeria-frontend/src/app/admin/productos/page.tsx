@@ -290,31 +290,31 @@ export default function AdminProductsPage() {
 
         <Link
           href="/admin/productos/nuevo"
-          className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-black hover:bg-gray-900 text-white text-base sm:text-lg font-extrabold uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer min-h-[52px]"
+          className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-black hover:bg-gray-900 !text-white text-base sm:text-lg font-extrabold uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer min-h-[52px]"
         >
-          <span className="text-2xl font-black leading-none">+</span>
-          <span>CARGAR NUEVA JOYA</span>
+          <span className="text-2xl font-black leading-none !text-white">+</span>
+          <span className="!text-white">CARGAR NUEVA JOYA</span>
         </Link>
       </div>
 
-      {/* ── Resumen Ejecutivo (Strip de métricas lujo) ────────────────────── */}
-      <div className="bg-white border border-[#E8E4DE] rounded-lg p-5 shadow-2xs">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-[#E8E4DE]">
+      {/* ── Resumen Ejecutivo (Tira de métricas clara) ────────────────────── */}
+      <div className="bg-white border border-gray-300 rounded-xl p-5 shadow-2xs">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-gray-200">
           <div className="pt-2 md:pt-0 md:px-4 first:pl-0">
-            <p className="font-serif text-xs uppercase tracking-widest text-gray-400 font-semibold">Total en Catálogo</p>
-            <p className="font-serif text-3xl font-normal text-gray-950 mt-1">{stats.total}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-gray-600 font-bold">Total en Catálogo</p>
+            <p className="font-sans text-3xl font-extrabold text-black mt-1">{stats.total}</p>
           </div>
           <div className="pt-2 md:pt-0 md:px-4">
-            <p className="font-serif text-xs uppercase tracking-widest text-emerald-800/80 font-semibold">Publicados en Tienda</p>
-            <p className="font-serif text-3xl font-normal text-emerald-950 mt-1">{stats.active}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-emerald-800 font-bold">Publicados en Tienda</p>
+            <p className="font-sans text-3xl font-extrabold text-emerald-900 mt-1">{stats.active}</p>
           </div>
           <div className="pt-2 md:pt-0 md:px-4">
-            <p className="font-serif text-xs uppercase tracking-widest text-amber-800/80 font-semibold">Borradores Ocultos</p>
-            <p className="font-serif text-3xl font-normal text-amber-950 mt-1">{stats.draft}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-amber-800 font-bold">Borradores Ocultos</p>
+            <p className="font-sans text-3xl font-extrabold text-amber-900 mt-1">{stats.draft}</p>
           </div>
           <div className="pt-2 md:pt-0 md:px-4">
-            <p className="font-serif text-xs uppercase tracking-widest text-rose-800/80 font-semibold">Sin Stock</p>
-            <p className="font-serif text-3xl font-normal text-rose-950 mt-1">{stats.outOfStock}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-rose-800 font-bold">Sin Stock</p>
+            <p className="font-sans text-3xl font-extrabold text-rose-900 mt-1">{stats.outOfStock}</p>
           </div>
         </div>
       </div>
@@ -712,10 +712,10 @@ export default function AdminProductsPage() {
       <div className="md:hidden fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-gray-300 z-40 shadow-lg">
         <Link
           href="/admin/productos/nuevo"
-          className="w-full flex items-center justify-center gap-2 py-3.5 px-5 bg-black active:bg-gray-900 text-white rounded-xl font-extrabold text-base uppercase tracking-wide shadow-md active:scale-[0.98] transition-all min-h-[52px]"
+          className="w-full flex items-center justify-center gap-2 py-3.5 px-5 bg-black active:bg-gray-900 !text-white rounded-xl font-extrabold text-base uppercase tracking-wide shadow-md active:scale-[0.98] transition-all min-h-[52px]"
         >
-          <span className="text-xl leading-none">➕</span>
-          <span>CARGAR NUEVA JOYA</span>
+          <span className="text-xl leading-none !text-white">➕</span>
+          <span className="!text-white">CARGAR NUEVA JOYA</span>
         </Link>
       </div>
 

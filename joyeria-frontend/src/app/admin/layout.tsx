@@ -81,9 +81,9 @@ function TopBar({ user }: { user: AdminUser | null }) {
         {/* Acceso directo mobile: Cargar Joya */}
         <Link
           href="/admin/productos/nuevo"
-          className="md:hidden inline-flex items-center gap-1.5 px-3 py-1.5 bg-black text-white text-xs font-extrabold uppercase rounded-lg shadow-sm active:scale-95 cursor-pointer"
+          className="md:hidden inline-flex items-center gap-1.5 px-3 py-1.5 bg-black !text-white text-xs font-extrabold uppercase rounded-lg shadow-sm active:scale-95 cursor-pointer"
         >
-          <span>➕ CARGAR JOYA</span>
+          <span className="!text-white">➕ CARGAR JOYA</span>
         </Link>
 
         {user && (
