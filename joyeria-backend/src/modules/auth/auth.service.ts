@@ -65,6 +65,18 @@ export const authService = {
       expiresAt,
     });
 
+    // Auditoría
+    const { auditService } = await import('../audit/audit.service.js');
+    await auditService.log({
+      userId: user.id,
+      userName: user.name,
+      userEmail: user.email,
+      action: 'AUTH_LOGIN',
+      entityType: 'Auth',
+      entityId: user.id,
+      description: `Inició sesión en el panel de administración`,
+    });
+
     return {
       tokens: { accessToken, refreshToken: refreshTokenValue },
       user: { id: user.id, email: user.email, name: user.name, role: user.role },

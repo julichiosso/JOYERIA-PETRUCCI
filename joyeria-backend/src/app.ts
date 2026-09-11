@@ -17,6 +17,7 @@ import multipart from '@fastify/multipart';
 import { mediaRoutes } from './modules/media/media.routes.js';
 import { storeConfigAdminRoutes, storeConfigCatalogRoutes } from './modules/store-config/store-config.routes.js';
 import { inquiryAdminRoutes, inquiryCatalogRoutes } from './modules/inquiries/inquiry.routes.js';
+import { auditAdminRoutes } from './modules/audit/audit.routes.js';
 
 export async function buildApp() {
   const app = Fastify({
@@ -58,6 +59,7 @@ export async function buildApp() {
   await app.register(storeConfigCatalogRoutes, { prefix: '/catalog/store-config' });
   await app.register(inquiryAdminRoutes, { prefix: '/admin/inquiries' });
   await app.register(inquiryCatalogRoutes, { prefix: '/catalog/inquiries' });
+  await app.register(auditAdminRoutes, { prefix: '/admin/audit-logs' });
 
   app.get('/health', async () => {
     return { status: 'ok' };

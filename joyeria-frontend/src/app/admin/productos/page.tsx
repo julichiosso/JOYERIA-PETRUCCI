@@ -57,11 +57,136 @@ const SECTIONS = [
   { id: "PERSONALIZADOS", name: "Trabajos Personalizados", matchKeywords: ["personalizado", "grabado", "a pedido", "tallado"] },
 ];
 
-const STATUS_CONFIG: Record<ProductStatus, { label: string; badgeClass: string }> = {
-  ACTIVE: { label: "Activo", badgeClass: "bg-[#F5F5F7] text-[#1D1D1F] border border-gray-300 font-semibold" },
-  DRAFT: { label: "Borrador", badgeClass: "bg-[#F5F5F7] text-gray-500 border border-gray-200 font-medium" },
-  OUT_OF_STOCK: { label: "Sin stock", badgeClass: "bg-[#F5F5F7] text-gray-400 border border-gray-200 font-medium" },
+const STATUS_CONFIG: Record<
+  ProductStatus,
+  { label: string; dotClass: string; containerClass: string; textClass: string }
+> = {
+  ACTIVE: {
+    label: "Publicado",
+    dotClass: "bg-green-500",
+    containerClass: "bg-green-50 border border-green-200",
+    textClass: "text-green-700",
+  },
+  DRAFT: {
+    label: "Borrador",
+    dotClass: "bg-gray-400",
+    containerClass: "bg-gray-100 border border-gray-200",
+    textClass: "text-gray-500",
+  },
+  OUT_OF_STOCK: {
+    label: "Sin stock",
+    dotClass: "bg-amber-500",
+    containerClass: "bg-amber-50 border border-amber-200",
+    textClass: "text-amber-700",
+  },
 };
+
+/**
+ * StatusChanger
+ * Badge interactivo que abre un popup para cambiar el estado del producto.
+ * Reemplaza al <select> nativo para mantener coherencia con el design system.
+ */
+function StatusChanger({
+  product,
+  onStatusChange,
+  popupId,
+  setPopupId,
+}: {
+  product: AdminProduct;
+  onStatusChange: (product: AdminProduct, status: ProductStatus) => void;
+  popupId: string | null;
+  setPopupId: (id: string | null) => void;
+}) {
+  const config = STATUS_CONFIG[product.status];
+  const isOpen = popupId === product.id;
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setPopupId(isOpen ? null : product.id)}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] font-semibold cursor-pointer transition-colors min-h-[36px] font-sans ${config.containerClass} ${config.textClass}`}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        aria-label={`Estado actual: ${config.label}. Tocá para cambiar.`}
+      >
+        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${config.dotClass}`} aria-hidden="true" />
+        {config.label}
+        <svg
+          width="10"
+          height="10"
+          viewBox="0 0 10 10"
+          fill="none"
+          aria-hidden="true"
+          className={`ml-0.5 transition-transform ${isOpen ? "rotate-180" : ""}`}
+        >
+          <path
+            d="M2 3.5l3 3 3-3"
+            stroke="currentColor"
+            strokeWidth="1.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <>
+          {/* Backdrop para cerrar al tocar fuera */}
+          <div className="fixed inset-0 z-40" onClick={() => setPopupId(null)} />
+          <div
+            role="listbox"
+            aria-label="Cambiar estado"
+            className="absolute left-0 top-full mt-1.5 w-44 bg-white border border-gray-200/80 shadow-xl rounded-2xl py-1.5 z-50 font-sans"
+          >
+            {(["ACTIVE", "DRAFT", "OUT_OF_STOCK"] as ProductStatus[]).map((s) => {
+              const c = STATUS_CONFIG[s];
+              const isSelected = product.status === s;
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  onClick={() => {
+                    onStatusChange(product, s);
+                    setPopupId(null);
+                  }}
+                  className={`w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold transition-colors cursor-pointer ${
+                    isSelected
+                      ? "bg-[#007AFF]/10 text-[#007AFF]"
+                      : "text-gray-700 hover:bg-[#F5F5F7]"
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${c.dotClass}`} aria-hidden="true" />
+                  {c.label}
+                  {isSelected && (
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      aria-hidden="true"
+                      className="ml-auto text-[#007AFF]"
+                    >
+                      <path
+                        d="M2 6l3 3 5-5"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function AdminProductsPage() {
   const router = useRouter();
@@ -72,6 +197,8 @@ export default function AdminProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  // Estado del popup de cambio rápido de estado (id del producto con popup abierto)
+  const [statusPopupId, setStatusPopupId] = useState<string | null>(null);
   const [deleteModalProduct, setDeleteModalProduct] = useState<AdminProduct | null>(null);
 
   // Filtros
@@ -289,9 +416,10 @@ export default function AdminProductsPage() {
           </p>
         </div>
 
+        {/* En mobile solo existe el botón fijo del bottom — un único CTA primario por pantalla */}
         <Link
           href="/admin/productos/nuevo"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#1D1D1F] hover:bg-black !text-white text-sm font-semibold uppercase tracking-wider rounded-2xl shadow-xs transition-all active:scale-[0.98] cursor-pointer min-h-[44px]"
+          className="hidden md:inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#1D1D1F] hover:bg-black !text-white text-sm font-semibold uppercase tracking-wider rounded-2xl shadow-xs transition-all active:scale-[0.98] cursor-pointer min-h-[44px]"
         >
           <span className="!text-white font-bold text-lg leading-none">+</span>
           <span className="!text-white">CARGAR JOYA</span>
@@ -543,7 +671,10 @@ export default function AdminProductsPage() {
                         {product.category?.name || "Sin categoría"}
                       </p>
                       <div className="flex items-center gap-2 mt-2 font-sans">
-                        <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${status.badgeClass}`}>
+                        <span
+                          className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${status.containerClass} ${status.textClass}`}
+                        >
+                          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${status.dotClass}`} aria-hidden="true" />
                           {status.label}
                         </span>
                         <span className="font-sans text-sm font-bold text-[#1D1D1F]">
@@ -555,15 +686,12 @@ export default function AdminProductsPage() {
 
                   {/* Acciones móviles */}
                   <div className="flex items-center justify-between border-t border-gray-200/80 pt-3 mt-1 gap-3">
-                    <select
-                      value={product.status}
-                      onChange={(e) => handleQuickStatusChange(product, e.target.value as ProductStatus)}
-                      className="text-xs bg-[#F5F5F7] border border-gray-200/80 rounded-xl px-2 py-1.5 font-semibold text-gray-700 focus:outline-none min-h-[36px]"
-                    >
-                      <option value="ACTIVE">Activo</option>
-                      <option value="DRAFT">Borrador</option>
-                      <option value="OUT_OF_STOCK">Sin stock</option>
-                    </select>
+                    <StatusChanger
+                      product={product}
+                      onStatusChange={handleQuickStatusChange}
+                      popupId={statusPopupId}
+                      setPopupId={setStatusPopupId}
+                    />
 
                     <div className="flex items-center gap-1 shrink-0">
                       <Link
@@ -650,17 +778,14 @@ export default function AdminProductsPage() {
                         )}
                       </td>
 
-                      {/* Estado con selector rápido */}
+                      {/* Estado con StatusChanger — popup consistente con el design system */}
                       <td className="px-5 py-3.5">
-                        <select
-                          value={product.status}
-                          onChange={(e) => handleQuickStatusChange(product, e.target.value as ProductStatus)}
-                          className={`text-[11px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full cursor-pointer focus:outline-none bg-white ${status.badgeClass}`}
-                        >
-                          <option value="ACTIVE">Activo</option>
-                          <option value="DRAFT">Borrador</option>
-                          <option value="OUT_OF_STOCK">Sin stock</option>
-                        </select>
+                        <StatusChanger
+                          product={product}
+                          onStatusChange={handleQuickStatusChange}
+                          popupId={statusPopupId}
+                          setPopupId={setStatusPopupId}
+                        />
                       </td>
 
                       {/* Acciones */}

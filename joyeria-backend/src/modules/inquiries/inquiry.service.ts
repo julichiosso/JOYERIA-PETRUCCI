@@ -1,4 +1,4 @@
-﻿// src/modules/inquiries/inquiry.service.ts
+// src/modules/inquiries/inquiry.service.ts
 import { inquiryRepository } from './inquiry.repository.js';
 import { productRepository } from '../products/product.repository.js';
 import { storeConfigService } from '../store-config/store-config.service.js';
@@ -64,6 +64,16 @@ export const inquiryService = {
       productName: product.name,
       variantName: selectedVariant?.name ?? null,
       priceSnapshot: priceSnapshot !== null ? priceSnapshot : null,
+    });
+
+    // Auditoría
+    const { auditService } = await import('../audit/audit.service.js');
+    await auditService.log({
+      userName: 'Cliente (WhatsApp)',
+      action: 'INQUIRY_CREATED',
+      entityType: 'Inquiry',
+      entityId: inquiry.id,
+      description: `Cliente consultó por "${displayName}"${formattedPrice ? ` ($${formattedPrice})` : ''}`,
     });
 
     return {

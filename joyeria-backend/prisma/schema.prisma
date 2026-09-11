@@ -167,3 +167,24 @@ model Inquiry {
   @@index([createdAt])
   @@map("inquiries")
 }
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  tenantId    String   @default("default")
+  userId      String?
+  userName    String   @default("Sistema")
+  userEmail   String?
+  action      String
+  entityType  String
+  entityId    String?
+  description String
+  metadata    Json?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@index([action])
+  @@index([entityType])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

@@ -1,6 +1,7 @@
 // src/modules/categories/category.controller.ts
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { categoryService } from './category.service.js';
+import { auditService } from '../audit/audit.service.js';
 import type {
   CreateCategoryInput,
   UpdateCategoryInput,
@@ -13,6 +14,18 @@ export const categoryController = {
     reply: FastifyReply
   ) {
     const category = await categoryService.create(request.body);
+
+    const user = (request as any).user;
+    await auditService.log({
+      userId: user?.userId,
+      userEmail: user?.email,
+      userName: user?.name ?? (user?.email === 'webya@joyeriapetrucci.com' ? 'WebYa (Admin Dev)' : 'Víctor'),
+      action: 'CATEGORY_CREATE',
+      entityType: 'Category',
+      entityId: category.id,
+      description: `Creó la categoría "${category.name}" (Slug: ${category.slug})`,
+    });
+
     return reply.status(201).send(category);
   },
 
@@ -44,6 +57,18 @@ export const categoryController = {
     reply: FastifyReply
   ) {
     const category = await categoryService.update(request.params.id, request.body);
+
+    const user = (request as any).user;
+    await auditService.log({
+      userId: user?.userId,
+      userEmail: user?.email,
+      userName: user?.name ?? (user?.email === 'webya@joyeriapetrucci.com' ? 'WebYa (Admin Dev)' : 'Víctor'),
+      action: 'CATEGORY_UPDATE',
+      entityType: 'Category',
+      entityId: category.id,
+      description: `Modificó la categoría "${category.name}" (Campos: ${Object.keys(request.body).join(', ')})`,
+    });
+
     return reply.send(category);
   },
 
@@ -51,7 +76,19 @@ export const categoryController = {
     request: FastifyRequest<{ Params: CategoryParams }>,
     reply: FastifyReply
   ) {
+    const user = (request as any).user;
     await categoryService.delete(request.params.id);
+
+    await auditService.log({
+      userId: user?.userId,
+      userEmail: user?.email,
+      userName: user?.name ?? (user?.email === 'webya@joyeriapetrucci.com' ? 'WebYa (Admin Dev)' : 'Víctor'),
+      action: 'CATEGORY_DELETE',
+      entityType: 'Category',
+      entityId: request.params.id,
+      description: `Eliminó la categoría ID: ${request.params.id}`,
+    });
+
     return reply.status(204).send();
   },
 };

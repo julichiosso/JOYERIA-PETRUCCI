@@ -1,6 +1,7 @@
 import type { FastifyRequest, FastifyReply } from 'fastify';
 import { productService, ProductNotFoundError } from './product.service.js';
 import { storeConfigService } from '../store-config/store-config.service.js';
+import { auditService } from '../audit/audit.service.js';
 import type {
   CreateProductSchema,
   UpdateProductSchema,
@@ -15,6 +16,18 @@ export const productController = {
     reply: FastifyReply
   ) {
     const product = await productService.create(request.body);
+
+    const user = (request as any).user;
+    await auditService.log({
+      userId: user?.userId,
+      userEmail: user?.email,
+      userName: user?.name ?? (user?.email === 'webya@joyeriapetrucci.com' ? 'WebYa (Admin Dev)' : 'Víctor'),
+      action: 'PRODUCT_CREATE',
+      entityType: 'Product',
+      entityId: product.id,
+      description: `Creó la joya "${product.name}" (${product.status}${product.price ? `, $${product.price}` : ''})`,
+    });
+
     return reply.status(201).send(product);
   },
 
@@ -23,6 +36,19 @@ export const productController = {
     reply: FastifyReply
   ) {
     const product = await productService.update(request.params.id, request.body);
+
+    const user = (request as any).user;
+    const changedKeys = Object.keys(request.body).join(', ');
+    await auditService.log({
+      userId: user?.userId,
+      userEmail: user?.email,
+      userName: user?.name ?? (user?.email === 'webya@joyeriapetrucci.com' ? 'WebYa (Admin Dev)' : 'Víctor'),
+      action: 'PRODUCT_UPDATE',
+      entityType: 'Product',
+      entityId: product.id,
+      description: `Modificó la joya "${product.name}" [Campos: ${changedKeys}]`,
+    });
+
     return reply.status(200).send(product);
   },
 
@@ -38,7 +64,19 @@ export const productController = {
     request: FastifyRequest<{ Params: ProductIdParam }>,
     reply: FastifyReply
   ) {
+    const user = (request as any).user;
     await productService.delete(request.params.id);
+
+    await auditService.log({
+      userId: user?.userId,
+      userEmail: user?.email,
+      userName: user?.name ?? (user?.email === 'webya@joyeriapetrucci.com' ? 'WebYa (Admin Dev)' : 'Víctor'),
+      action: 'PRODUCT_DELETE',
+      entityType: 'Product',
+      entityId: request.params.id,
+      description: `Eliminó el producto ID: ${request.params.id}`,
+    });
+
     return reply.status(204).send();
   },
 
@@ -79,14 +117,16 @@ export const productController = {
 
   // Catálogo público: solo lista productos disponibles
   async listPublic(
-    request: FastifyRequest<{ Querystring: Omit<ProductListQuery, 'status'> }>,
+    request: FastifyRequest<{ Querystring: ProductListQuery }>,
     reply: FastifyReply
   ) {
-    const { categoryId, page, limit } = request.query;
-    const activeItems = await productService.list({ categoryId, page, limit });
+    const result = await productService.list({ ...request.query, status: 'ACTIVE' });
     const visibleItems = {
-      ...activeItems,
-      items: activeItems.items.filter((p) => p.status !== 'DRAFT'),
+      ...result,
+      items: result.items.map((product: any) => ({
+        ...product,
+        price: product.showPrice ? product.price : null,
+      })),
     };
     return reply.status(200).send(visibleItems);
   },
@@ -97,6 +137,18 @@ export const productController = {
     reply: FastifyReply
   ) {
     const variant = await productService.addVariant(request.params.id, request.body);
+
+    const user = (request as any).user;
+    await auditService.log({
+      userId: user?.userId,
+      userEmail: user?.email,
+      userName: user?.name ?? (user?.email === 'webya@joyeriapetrucci.com' ? 'WebYa (Admin Dev)' : 'Víctor'),
+      action: 'VARIANT_CREATE',
+      entityType: 'Variant',
+      entityId: variant.id,
+      description: `Agregó la variante "${variant.name}" (Stock: ${variant.stock}) al producto ID: ${request.params.id}`,
+    });
+
     return reply.status(201).send(variant);
   },
 
@@ -108,6 +160,18 @@ export const productController = {
     reply: FastifyReply
   ) {
     const variant = await productService.updateVariant(request.params.variantId, request.body);
+
+    const user = (request as any).user;
+    await auditService.log({
+      userId: user?.userId,
+      userEmail: user?.email,
+      userName: user?.name ?? (user?.email === 'webya@joyeriapetrucci.com' ? 'WebYa (Admin Dev)' : 'Víctor'),
+      action: 'VARIANT_UPDATE',
+      entityType: 'Variant',
+      entityId: variant.id,
+      description: `Actualizó la variante "${variant.name}" (Stock: ${variant.stock}, Disp: ${variant.isAvailable ? 'Sí' : 'No'})`,
+    });
+
     return reply.status(200).send(variant);
   },
 
@@ -115,7 +179,19 @@ export const productController = {
     request: FastifyRequest<{ Params: import('./product.schema.js').VariantIdParam }>,
     reply: FastifyReply
   ) {
+    const user = (request as any).user;
     await productService.deleteVariant(request.params.variantId);
+
+    await auditService.log({
+      userId: user?.userId,
+      userEmail: user?.email,
+      userName: user?.name ?? (user?.email === 'webya@joyeriapetrucci.com' ? 'WebYa (Admin Dev)' : 'Víctor'),
+      action: 'VARIANT_DELETE',
+      entityType: 'Variant',
+      entityId: request.params.variantId,
+      description: `Eliminó la variante ID: ${request.params.variantId}`,
+    });
+
     return reply.status(204).send();
   },
 
@@ -126,7 +202,19 @@ export const productController = {
     }>,
     reply: FastifyReply
   ) {
+    const user = (request as any).user;
     await productService.reorderVariants(request.params.id, request.body.variantIds);
+
+    await auditService.log({
+      userId: user?.userId,
+      userEmail: user?.email,
+      userName: user?.name ?? (user?.email === 'webya@joyeriapetrucci.com' ? 'WebYa (Admin Dev)' : 'Víctor'),
+      action: 'VARIANT_REORDER',
+      entityType: 'Variant',
+      entityId: request.params.id,
+      description: `Reordenó las variantes del producto ID: ${request.params.id}`,
+    });
+
     return reply.status(200).send({ message: 'Orden de variantes actualizado' });
   },
 };

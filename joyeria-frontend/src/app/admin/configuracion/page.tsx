@@ -210,8 +210,27 @@ export default function AdminConfiguracionPage() {
         <h2 className="font-sans text-base font-bold text-[#1D1D1F]">Información para clientes</h2>
 
         <div>
+          <FieldLabel htmlFor="shipping-info">Información de envíos</FieldLabel>
+          <textarea
+            id="shipping-info"
+            value={form.shippingInfo ?? ""}
+            onChange={set("shippingInfo")}
+            rows={3}
+            placeholder="Envíos a todo el país por Correo Argentino / Andreani. Retiro sin cargo en nuestro local…"
+            className={`${inputClass} resize-none`}
+          />
+        </div>
+
+        <div>
           <FieldLabel htmlFor="returns">Política de devoluciones</FieldLabel>
-          <textarea id="returns" value={form.returnPolicy ?? ""} onChange={set("returnPolicy")} rows={3} placeholder="Para cambios o devoluciones comunicarse dentro de los 7 días…" className={`${inputClass} resize-none`} />
+          <textarea
+            id="returns"
+            value={form.returnPolicy ?? ""}
+            onChange={set("returnPolicy")}
+            rows={3}
+            placeholder="Para cambios o devoluciones comunicarse dentro de los 7 días…"
+            className={`${inputClass} resize-none`}
+          />
         </div>
       </section>
 

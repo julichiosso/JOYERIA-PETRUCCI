@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { adminFetch, adminFetchMultipart } from "@/lib/auth";
 import type { AdminApiError } from "@/lib/auth";
 import ImageUploader, { type LocalProductImage } from "./ImageUploader";
+import VariantManager from "./VariantManager";
 import type { Category } from "@/types/category";
 import { useToast } from "@/hooks/useToast";
 
@@ -376,6 +377,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
           images={images}
           onImagesChange={setImages}
           disabled={submitting}
+          productId={initialData?.id}
         />
       </section>
 
@@ -512,6 +514,116 @@ export default function ProductForm({ initialData }: ProductFormProps) {
           />
         </div>
       </section>
+
+      {/* ── 3. VARIANTES Y PRESENTACIÓN ───────────────────────────────── */}
+      <section className="bg-white border border-gray-200/80 rounded-3xl p-6 flex flex-col gap-5 shadow-xs">
+        <h2 className="text-base font-semibold text-[#1D1D1F] uppercase tracking-wide border-b border-gray-100 pb-3 font-sans">
+          3. Variantes y Presentación
+        </h2>
+
+        {/* Texto de presentación de variantes */}
+        <div>
+          <FieldLabel htmlFor="variant-label">
+            Texto de presentación de variantes
+          </FieldLabel>
+          <input
+            id="variant-label"
+            type="text"
+            value={formData.variantLabel}
+            onChange={set("variantLabel")}
+            placeholder="Ej: Disponible en talles del 12 al 24 · Oro 18k o Plata 925"
+            className={inputClass()}
+          />
+          <p className="mt-1.5 text-xs text-gray-400">
+            Texto informativo que se muestra a los clientes en la ficha pública del producto.
+          </p>
+        </div>
+
+        {/* Gestor de Variantes Reales */}
+        <div className="pt-2 border-t border-gray-100">
+          {isEditing && initialData?.id ? (
+            <VariantManager productId={initialData.id} basePrice={formData.price} />
+          ) : (
+            <div className="p-4 bg-blue-50/60 border border-blue-200/70 rounded-2xl flex items-start gap-3">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#007AFF" strokeWidth="2" className="shrink-0 mt-0.5">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <div>
+                <p className="text-xs font-bold text-[#1D1D1F]">
+                  Gestión de talles y stock individual
+                </p>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Guardá o publicá primero esta joya para poder cargar variantes individuales con su stock y SKU específico.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ── 4. SUGERENCIAS INTELIGENTES Y SEO ─────────────────────────── */}
+      <section className="bg-white border border-gray-200/80 rounded-3xl p-6 flex flex-col gap-4 shadow-xs">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-[#1D1D1F] uppercase tracking-wide font-sans">
+              4. Asistente y SEO (Opcional)
+            </h2>
+            <p className="text-xs text-gray-400 mt-0.5">
+              Generador automático y optimización para Google.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleAutoSuggest}
+            className="px-3.5 py-2 bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-900 text-xs font-bold rounded-xl transition-all shadow-2xs flex items-center gap-1.5 cursor-pointer"
+          >
+            <span>✨</span>
+            <span>Autocompletar</span>
+          </button>
+        </div>
+
+        <div className="pt-2 border-t border-gray-100 flex flex-col gap-4">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <FieldLabel htmlFor="meta-title">Título SEO (Google)</FieldLabel>
+              <span className="text-[11px] text-gray-400 font-mono">
+                {formData.metaTitle.length}/70
+              </span>
+            </div>
+            <input
+              id="meta-title"
+              type="text"
+              maxLength={70}
+              value={formData.metaTitle}
+              onChange={set("metaTitle")}
+              placeholder="Ej: Anillo Solitario Oro 18k | Joyería Petrucci"
+              className={inputClass()}
+            />
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <FieldLabel htmlFor="meta-desc">Descripción SEO (Google)</FieldLabel>
+              <span className="text-[11px] text-gray-400 font-mono">
+                {formData.metaDescription.length}/160
+              </span>
+            </div>
+            <textarea
+              id="meta-desc"
+              rows={2}
+              maxLength={160}
+              value={formData.metaDescription}
+              onChange={set("metaDescription")}
+              placeholder="Ej: Anillo de compromiso en oro 18 kilates. Envío a todo el país o retiro en tienda..."
+              className={`${inputClass()} resize-none`}
+            />
+          </div>
+        </div>
+      </section>
+
       {/* ── Error Global ───────────────────────────────────────────────────── */}
       {submitError && (
         <div role="alert" className="p-4 bg-red-50 border border-red-200 rounded-2xl text-sm font-semibold text-red-800">
@@ -524,23 +636,16 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-black active:scale-[0.98] text-white text-base font-semibold uppercase tracking-wider rounded-2xl shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-3 cursor-pointer min-h-[56px]"
+          className={`w-full py-4 px-6 ${getCtaBg()} active:scale-[0.98] text-base font-semibold uppercase tracking-wider rounded-2xl shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-3 cursor-pointer min-h-[56px]`}
         >
-          {submitting ? (
-            <>
-              <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
-              <span>Publicando...</span>
-            </>
-          ) : (
-            <span>PUBLICAR JOYA EN LA TIENDA</span>
-          )}
+          {getCtaButton()}
         </button>
 
         <button
           type="button"
           onClick={() => router.back()}
           disabled={submitting}
-          className="w-full py-3 text-center text-xs font-semibold text-gray-500 hover:text-black uppercase tracking-wider transition-colors"
+          className="w-full py-3 text-center text-xs font-semibold text-gray-500 hover:text-black uppercase tracking-wider transition-colors cursor-pointer"
         >
           Cancelar y Volver
         </button>
