@@ -275,62 +275,61 @@ export default function AdminProductsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto font-body text-gray-900 pb-16">
+    <div className="flex flex-col gap-8 max-w-7xl mx-auto font-sans text-gray-900 pb-16">
 
-      {/* ── Encabezado Principal & KPI Cards ──────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
+      {/* ── Encabezado Principal ─────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-300 pb-6">
         <div>
-          <h1 className="font-body text-2xl sm:text-3xl text-gray-950 font-bold tracking-tight">
-            Monitoreo de Joyas y Catálogo
+          <h1 className="text-3xl sm:text-4xl text-black font-extrabold tracking-tight">
+            Joyas en Tienda
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">
-            Gestioná todas las piezas organizadas por departamento, stock y disponibilidad en tienda.
+          <p className="text-sm sm:text-base text-gray-700 mt-1 font-medium">
+            Tocá el botón negro para cargar una joya nueva.
           </p>
         </div>
 
         <Link
           href="/admin/productos/nuevo"
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-medium rounded-lg shadow-sm transition-all active:scale-[0.98]"
+          className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-black hover:bg-gray-900 text-white text-base sm:text-lg font-extrabold uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer min-h-[52px]"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          <span>Nueva Joya o Pieza</span>
+          <span className="text-2xl font-black leading-none">+</span>
+          <span>CARGAR NUEVA JOYA</span>
         </Link>
       </div>
 
-      {/* ── Métricas rápidas (KPIs) ────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-white border border-gray-200/80 rounded-xl p-3.5 shadow-2xs">
-          <p className="text-xs text-gray-500 font-medium">Total en Catálogo</p>
-          <p className="text-xl font-bold text-gray-900 mt-1">{stats.total}</p>
-        </div>
-        <div className="bg-white border border-emerald-100 rounded-xl p-3.5 shadow-2xs">
-          <p className="text-xs text-emerald-700 font-medium">Activos en Tienda</p>
-          <p className="text-xl font-bold text-emerald-800 mt-1">{stats.active}</p>
-        </div>
-        <div className="bg-white border border-amber-100 rounded-xl p-3.5 shadow-2xs">
-          <p className="text-xs text-amber-700 font-medium">Borradores Ocultos</p>
-          <p className="text-xl font-bold text-amber-800 mt-1">{stats.draft}</p>
-        </div>
-        <div className="bg-white border border-rose-100 rounded-xl p-3.5 shadow-2xs">
-          <p className="text-xs text-rose-700 font-medium">Sin Stock</p>
-          <p className="text-xl font-bold text-rose-800 mt-1">{stats.outOfStock}</p>
+      {/* ── Resumen Ejecutivo (Strip de métricas lujo) ────────────────────── */}
+      <div className="bg-white border border-[#E8E4DE] rounded-lg p-5 shadow-2xs">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-[#E8E4DE]">
+          <div className="pt-2 md:pt-0 md:px-4 first:pl-0">
+            <p className="font-serif text-xs uppercase tracking-widest text-gray-400 font-semibold">Total en Catálogo</p>
+            <p className="font-serif text-3xl font-normal text-gray-950 mt-1">{stats.total}</p>
+          </div>
+          <div className="pt-2 md:pt-0 md:px-4">
+            <p className="font-serif text-xs uppercase tracking-widest text-emerald-800/80 font-semibold">Publicados en Tienda</p>
+            <p className="font-serif text-3xl font-normal text-emerald-950 mt-1">{stats.active}</p>
+          </div>
+          <div className="pt-2 md:pt-0 md:px-4">
+            <p className="font-serif text-xs uppercase tracking-widest text-amber-800/80 font-semibold">Borradores Ocultos</p>
+            <p className="font-serif text-3xl font-normal text-amber-950 mt-1">{stats.draft}</p>
+          </div>
+          <div className="pt-2 md:pt-0 md:px-4">
+            <p className="font-serif text-xs uppercase tracking-widest text-rose-800/80 font-semibold">Sin Stock</p>
+            <p className="font-serif text-3xl font-normal text-rose-950 mt-1">{stats.outOfStock}</p>
+          </div>
         </div>
       </div>
 
-      {/* ── 1. Selector de Secciones Principales (Tabs) ───────────────────── */}
-      <div className="bg-white border border-gray-200 rounded-xl p-2 shadow-2xs">
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide py-1 px-1">
+      {/* ── 1. Selector de Secciones Principales (Tabs Sobrios) ────────────── */}
+      <div className="border-b border-[#E8E4DE]">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide -mb-px">
           {SECTIONS.map((sec) => (
             <button
               key={sec.id}
               type="button"
               onClick={() => handleSectionChange(sec.id)}
-              className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${activeSection === sec.id
-                ? "bg-gray-900 text-white shadow-xs"
-                : "bg-transparent text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              className={`px-4 py-3 text-xs uppercase tracking-widest transition-all cursor-pointer font-sans whitespace-nowrap border-b-2 ${activeSection === sec.id
+                ? "border-amber-800 text-amber-950 font-bold"
+                : "border-transparent text-gray-400 hover:text-gray-900 hover:border-gray-300 font-medium"
                 }`}
             >
               {sec.name}
@@ -340,16 +339,16 @@ export default function AdminProductsPage() {
       </div>
 
       {/* ── 2. Barra de Búsqueda y Filtros de Estado ──────────────────────── */}
-      <div className="bg-white border border-gray-200 rounded-xl p-4 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-white border border-[#E8E4DE] rounded-lg p-4 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Buscador de texto */}
         <div className="relative flex-1">
           <svg
-            width="18"
-            height="18"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"
             className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
@@ -365,7 +364,7 @@ export default function AdminProductsPage() {
               setCurrentPage(1);
             }}
             placeholder="Buscar por nombre, material o modelo..."
-            className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#FAF8F5] border border-[#E8E4DE] rounded-md text-xs text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-amber-800 focus:ring-1 focus:ring-amber-800 transition-colors"
           />
         </div>
 
@@ -378,7 +377,7 @@ export default function AdminProductsPage() {
                 setSelectedCategoryId(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-sm text-gray-900 focus:bg-white focus:outline-none focus:border-amber-600"
+              className="w-full px-3 py-2.5 bg-[#FAF8F5] border border-[#E8E4DE] rounded-md text-xs text-gray-900 focus:bg-white focus:outline-none focus:border-amber-800"
             >
               <option value="">Todas las subcategorías</option>
               {sectionSubcategories.map((c) => (
@@ -391,7 +390,7 @@ export default function AdminProductsPage() {
         )}
 
         {/* Filtros de Estado */}
-        <div className="flex gap-1.5 overflow-x-auto pb-0.5">
+        <div className="flex gap-1 overflow-x-auto pb-0.5">
           {[
             { value: "" as const, label: "Todos" },
             { value: "ACTIVE" as const, label: "Activos" },
@@ -405,9 +404,9 @@ export default function AdminProductsPage() {
                 setStatusFilter(opt.value);
                 setCurrentPage(1);
               }}
-              className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${statusFilter === opt.value
-                ? "bg-amber-800 text-white shadow-xs"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              className={`px-3 py-1.5 rounded text-[11px] uppercase tracking-wider font-semibold whitespace-nowrap transition-colors cursor-pointer ${statusFilter === opt.value
+                ? "bg-[#1A1A1A] text-white"
+                : "bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
                 }`}
             >
               {opt.label}
@@ -418,14 +417,14 @@ export default function AdminProductsPage() {
 
       {/* ── Estado de Carga / Error ───────────────────────────────────────── */}
       {loading && (
-        <div className="flex flex-col items-center justify-center py-20 bg-white border border-gray-200 rounded-xl">
-          <div className="w-9 h-9 border-3 border-amber-600 border-t-transparent rounded-full animate-spin mb-3" />
-          <p className="text-sm text-gray-500 font-medium">Cargando catálogo...</p>
+        <div className="flex flex-col items-center justify-center py-20 bg-white border border-[#E8E4DE] rounded-lg">
+          <div className="w-8 h-8 border-2 border-amber-800 border-t-transparent rounded-full animate-spin mb-3" />
+          <p className="font-serif text-sm text-gray-500 font-normal">Cargando catálogo de joyas...</p>
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700">
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 font-medium">
           ⚠️ {error}
         </div>
       )}
@@ -463,7 +462,7 @@ export default function AdminProductsPage() {
       {/* ── Contenido de Productos (Mobile Cards + Desktop Table) ──────────── */}
       {!loading && !error && filteredProducts.length > 0 && (
         <>
-          {/* 📱 Mobile: Tarjetas táctiles limpias */}
+          {/* 📱 Mobile: Tarjetas táctiles limpias de lujo */}
           <div className="flex flex-col gap-3 md:hidden">
             {paginatedProducts.map((product) => {
               const thumb = product.images.find((i) => i.order === 0) ?? product.images[0];
@@ -472,22 +471,22 @@ export default function AdminProductsPage() {
               return (
                 <div
                   key={product.id}
-                  className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col gap-3 shadow-2xs"
+                  className="bg-white border border-[#E8E4DE] rounded-lg p-4 flex flex-col gap-3 shadow-2xs"
                 >
                   <div className="flex items-start gap-3">
                     {/* Thumbnail */}
-                    <div className="relative w-18 h-18 shrink-0 rounded-lg overflow-hidden bg-gray-50 border border-gray-100">
+                    <div className="relative w-16 h-16 shrink-0 rounded overflow-hidden bg-[#FAF8F5] border border-[#E8E4DE]">
                       {thumb ? (
                         <Image
                           src={thumb.thumbnailUrl ?? thumb.url}
                           alt={thumb.altText ?? product.name}
                           fill
                           className="object-contain p-1"
-                          sizes="72px"
+                          sizes="64px"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300" aria-hidden="true">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300" aria-hidden="true">
                             <path d="M12 2L2 9l10 13L22 9 12 2z" />
                             <path d="M2 9h20" />
                           </svg>
@@ -497,30 +496,29 @@ export default function AdminProductsPage() {
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-950 truncate leading-tight">
+                      <p className="font-serif text-base font-medium text-gray-950 truncate leading-tight">
                         {product.name}
                       </p>
-                      <p className="text-xs text-gray-500 mt-0.5 truncate">
+                      <p className="text-xs text-gray-400 mt-0.5 truncate font-sans">
                         {product.category?.name || "Sin categoría"}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${status.badgeClass}`}>
+                        <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${status.badgeClass}`}>
                           {status.label}
                         </span>
-                        <span className="text-xs font-bold text-gray-900">
+                        <span className="font-serif text-sm font-bold text-gray-950">
                           {product.showPrice && product.price ? formatPrice(product.price) : "A consultar"}
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Acciones móviles: selector de estado + Editar + Eliminar (con separación clara) */}
-                  <div className="flex items-center justify-between border-t border-gray-100 pt-3 mt-1 gap-3">
-                    {/* Selector rápido de estado */}
+                  {/* Acciones móviles */}
+                  <div className="flex items-center justify-between border-t border-[#E8E4DE] pt-3 mt-1 gap-3">
                     <select
                       value={product.status}
                       onChange={(e) => handleQuickStatusChange(product, e.target.value as ProductStatus)}
-                      className="text-xs bg-gray-50 border border-gray-300 rounded-md px-2 py-1.5 text-gray-700 focus:outline-none min-h-[36px]"
+                      className="text-xs bg-[#FAF8F5] border border-[#E8E4DE] rounded-md px-2 py-1.5 text-gray-700 focus:outline-none min-h-[36px]"
                     >
                       <option value="ACTIVE">Activo</option>
                       <option value="DRAFT">Borrador</option>
@@ -530,7 +528,7 @@ export default function AdminProductsPage() {
                     <div className="flex items-center gap-0 shrink-0">
                       <Link
                         href={`/admin/productos/${product.id}`}
-                        className="text-xs font-semibold text-amber-800 hover:text-amber-950 px-3 py-2 rounded-l-lg bg-amber-50 border border-amber-200 min-h-[36px] flex items-center"
+                        className="text-xs font-medium text-gray-900 hover:text-amber-800 px-3 py-2 rounded-l-md bg-gray-50 border border-[#E8E4DE] min-h-[36px] flex items-center"
                       >
                         Editar
                       </Link>
@@ -538,7 +536,7 @@ export default function AdminProductsPage() {
                         type="button"
                         onClick={() => handleDeleteClick(product)}
                         disabled={deletingId === product.id}
-                        className="text-xs text-red-600 hover:text-red-800 px-3 py-2 rounded-r-lg border border-l-0 border-red-200 hover:bg-red-50 disabled:opacity-40 min-h-[36px] flex items-center"
+                        className="text-xs text-red-700 hover:text-red-900 px-3 py-2 rounded-r-md border border-l-0 border-red-200 bg-red-50/50 hover:bg-red-50 disabled:opacity-40 min-h-[36px] flex items-center cursor-pointer"
                       >
                         {deletingId === product.id ? "Borrando..." : "Eliminar"}
                       </button>
@@ -549,29 +547,29 @@ export default function AdminProductsPage() {
             })}
           </div>
 
-          {/* 💻 Desktop: Tabla Premium */}
-          <div className="hidden md:block bg-white border border-gray-200 rounded-xl overflow-hidden shadow-2xs">
-            <table className="w-full text-left text-sm">
+          {/* 💻 Desktop: Tabla Lujo Minimalista */}
+          <div className="hidden md:block bg-white border border-[#E8E4DE] rounded-lg overflow-hidden shadow-2xs">
+            <table className="w-full text-left text-xs">
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50/80">
-                  <th className="px-4 py-3.5 text-xs font-semibold text-gray-600 uppercase tracking-wider">Joya / Pieza</th>
-                  <th className="px-4 py-3.5 text-xs font-semibold text-gray-600 uppercase tracking-wider">Categoría</th>
-                  <th className="px-4 py-3.5 text-xs font-semibold text-gray-600 uppercase tracking-wider">Precio</th>
-                  <th className="px-4 py-3.5 text-xs font-semibold text-gray-600 uppercase tracking-wider">Estado</th>
-                  <th className="px-4 py-3.5 text-xs font-semibold text-gray-600 uppercase tracking-wider text-right">Acciones</th>
+                <tr className="border-b border-[#E8E4DE] bg-[#FAF8F5]">
+                  <th className="px-5 py-4 font-serif text-xs font-normal text-gray-500 uppercase tracking-widest">Joya / Pieza</th>
+                  <th className="px-5 py-4 font-serif text-xs font-normal text-gray-500 uppercase tracking-widest">Categoría</th>
+                  <th className="px-5 py-4 font-serif text-xs font-normal text-gray-500 uppercase tracking-widest">Precio</th>
+                  <th className="px-5 py-4 font-serif text-xs font-normal text-gray-500 uppercase tracking-widest">Estado</th>
+                  <th className="px-5 py-4 font-serif text-xs font-normal text-gray-500 uppercase tracking-widest text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-[#E8E4DE]">
                 {paginatedProducts.map((product) => {
                   const thumb = product.images.find((i) => i.order === 0) ?? product.images[0];
                   const status = STATUS_CONFIG[product.status];
 
                   return (
-                    <tr key={product.id} className="hover:bg-gray-50/75 transition-colors group">
+                    <tr key={product.id} className="hover:bg-[#FAF8F5]/60 transition-colors group">
                       {/* Producto */}
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3.5">
-                          <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-gray-50 border border-gray-100">
+                      <td className="px-5 py-3.5">
+                        <div className="flex items-center gap-4">
+                          <div className="relative w-12 h-12 shrink-0 rounded overflow-hidden bg-[#FAF8F5] border border-[#E8E4DE]">
                             {thumb ? (
                               <Image
                                 src={thumb.thumbnailUrl ?? thumb.url}
@@ -582,7 +580,7 @@ export default function AdminProductsPage() {
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300" aria-hidden="true">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300" aria-hidden="true">
                                   <path d="M12 2L2 9l10 13L22 9 12 2z" />
                                   <path d="M2 9h20" />
                                 </svg>
@@ -590,34 +588,34 @@ export default function AdminProductsPage() {
                             )}
                           </div>
                           <div>
-                            <p className="font-semibold text-gray-950 text-sm">{product.name}</p>
-                            <p className="text-xs text-gray-400 mt-0.5">/{product.slug}</p>
+                            <p className="font-serif text-base font-normal text-gray-950 tracking-wide">{product.name}</p>
+                            <p className="text-[11px] text-gray-400 font-sans mt-0.5">/{product.slug}</p>
                           </div>
                         </div>
                       </td>
 
                       {/* Categoría */}
-                      <td className="px-4 py-3 text-gray-700 text-xs">
-                        <span className="bg-gray-100 px-2 py-1 rounded-md font-medium">
+                      <td className="px-5 py-3.5 text-gray-700 font-sans text-xs">
+                        <span className="bg-[#FAF8F5] border border-[#E8E4DE] px-2.5 py-1 rounded text-gray-600 font-medium">
                           {product.category?.name || "Sin asignar"}
                         </span>
                       </td>
 
                       {/* Precio */}
-                      <td className="px-4 py-3 text-sm">
+                      <td className="px-5 py-3.5">
                         {product.showPrice && product.price ? (
-                          <span className="font-bold text-gray-900">{formatPrice(product.price)}</span>
+                          <span className="font-serif text-base font-normal text-gray-950">{formatPrice(product.price)}</span>
                         ) : (
-                          <span className="text-xs text-amber-800 italic font-medium">A consultar</span>
+                          <span className="font-serif text-xs text-amber-800 italic">A consultar</span>
                         )}
                       </td>
 
                       {/* Estado con selector rápido */}
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-3.5">
                         <select
                           value={product.status}
                           onChange={(e) => handleQuickStatusChange(product, e.target.value as ProductStatus)}
-                          className={`text-xs font-semibold px-2.5 py-1 rounded-full cursor-pointer focus:outline-none ${status.badgeClass}`}
+                          className={`text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded cursor-pointer focus:outline-none bg-white ${status.badgeClass}`}
                         >
                           <option value="ACTIVE">Activo</option>
                           <option value="DRAFT">Borrador</option>
@@ -626,14 +624,14 @@ export default function AdminProductsPage() {
                       </td>
 
                       {/* Acciones */}
-                      <td className="px-4 py-3 text-right">
+                      <td className="px-5 py-3.5 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <Link
                             href={`/admin/productos/${product.id}`}
-                            className="p-1.5 text-gray-600 hover:text-amber-800 hover:bg-amber-50 rounded-md transition-colors"
+                            className="p-1.5 text-gray-500 hover:text-amber-800 hover:bg-amber-50 rounded transition-colors"
                             title="Editar producto"
                           >
-                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                               <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                               <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                             </svg>
@@ -643,13 +641,13 @@ export default function AdminProductsPage() {
                             type="button"
                             onClick={() => handleDeleteClick(product)}
                             disabled={deletingId === product.id}
-                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-40"
+                            className="p-1.5 text-gray-400 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-40 cursor-pointer"
                             title="Eliminar producto"
                           >
                             {deletingId === product.id ? (
                               <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
                             ) : (
-                              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                                 <polyline points="3 6 5 6 21 6" />
                                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                               </svg>
@@ -710,17 +708,16 @@ export default function AdminProductsPage() {
         </div>
       </div>
 
-      {/* ── Botón flotante Mobile (+) ─────────────────────────────────────── */}
-      <Link
-        href="/admin/productos/nuevo"
-        className="md:hidden fixed bottom-6 right-5 z-40 w-14 h-14 bg-gray-900 text-white rounded-full shadow-xl flex items-center justify-center hover:bg-gray-800 transition-transform active:scale-95"
-        aria-label="Agregar producto"
-      >
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <line x1="12" y1="5" x2="12" y2="19" />
-          <line x1="5" y1="12" x2="19" y2="12" />
-        </svg>
-      </Link>
+      {/* ── Botón Fijo Mobile: "+ CARGAR NUEVA JOYA" (Súper fácil de ver y tocar) ────────────────── */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-gray-300 z-40 shadow-lg">
+        <Link
+          href="/admin/productos/nuevo"
+          className="w-full flex items-center justify-center gap-2 py-3.5 px-5 bg-black active:bg-gray-900 text-white rounded-xl font-extrabold text-base uppercase tracking-wide shadow-md active:scale-[0.98] transition-all min-h-[52px]"
+        >
+          <span className="text-xl leading-none">➕</span>
+          <span>CARGAR NUEVA JOYA</span>
+        </Link>
+      </div>
 
       {/* ── Modal de Confirmación de Eliminación ──────────────────────────── */}
       <ConfirmModal

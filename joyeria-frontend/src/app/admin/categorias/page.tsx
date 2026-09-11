@@ -320,14 +320,14 @@ export default function AdminCategoriasPage() {
     Boolean(originalName);
 
   return (
-    <div className="flex flex-col gap-4 max-w-4xl mx-auto font-body text-gray-900 pb-16">
+    <div className="flex flex-col gap-6 max-w-4xl mx-auto font-sans text-gray-900 pb-16">
       {/* ── Encabezado Principal ─────────────────────────────────────────────── */}
-      <div className="bg-white p-5 md:p-6 rounded-xl border border-gray-200 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-lg border border-[#E8E4DE] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-gray-950">
+          <h1 className="font-serif text-3xl font-normal text-gray-950 tracking-wide">
             Secciones y Rubros del Menú
           </h1>
-          <p className="text-xs md:text-sm text-gray-600 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1 font-normal">
             Organizá las secciones del menú principal y sus subcategorías de joyas o marcas.
           </p>
         </div>
@@ -335,9 +335,9 @@ export default function AdminCategoriasPage() {
         <button
           type="button"
           onClick={openCreateRoot}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-900 hover:bg-black text-white font-medium text-sm rounded-lg shadow-sm transition-all active:scale-[0.98] shrink-0 min-h-[44px] cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1A1A1A] hover:bg-[#A8875A] text-white font-semibold text-xs uppercase tracking-widest rounded-md shadow-xs transition-all active:scale-[0.98] shrink-0 min-h-[44px] cursor-pointer"
         >
-          <span className="text-lg leading-none font-bold">+</span>
+          <span className="text-base leading-none font-light">+</span>
           <span>Nueva Sección Principal</span>
         </button>
       </div>
@@ -405,19 +405,19 @@ export default function AdminCategoriasPage() {
 
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[11px] font-bold uppercase tracking-wider bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-sans font-semibold uppercase tracking-wider bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
                           #{rootIndex + 1}
                         </span>
-                        <h2 className="text-base md:text-lg font-bold text-gray-950">
+                        <h2 className="font-serif text-lg font-normal text-gray-950 tracking-wide">
                           {cat.name}
                         </h2>
                         {cat.isProtected && (
-                          <span className="bg-amber-50 text-amber-900 text-[11px] font-medium px-2 py-0.5 rounded border border-amber-200">
+                          <span className="bg-amber-50 text-amber-900 text-[10px] font-sans font-semibold uppercase tracking-wider px-2 py-0.5 rounded border border-amber-200">
                             Básica
                           </span>
                         )}
                         {!cat.isActive && (
-                          <span className="bg-gray-200 text-gray-700 text-[11px] font-semibold px-2 py-0.5 rounded">
+                          <span className="bg-gray-200 text-gray-700 text-[10px] font-sans font-semibold uppercase tracking-wider px-2 py-0.5 rounded">
                             Oculta
                           </span>
                         )}

@@ -62,30 +62,44 @@ function TopBar({ user }: { user: AdminUser | null }) {
   };
 
   return (
-    <div className="h-14 bg-white border-b border-gray-200 flex items-center justify-between px-4 md:px-6 shrink-0">
+    <div className="h-16 bg-white border-b border-[#E8E4DE] flex items-center justify-between px-4 md:px-8 shrink-0">
       <Link
         href="/"
         target="_blank"
-        className="font-body text-base font-bold tracking-[0.3em] text-gray-900 hover:text-gray-600 transition-colors"
+        className="flex items-center gap-3 group"
         aria-label="Ver tienda pública"
       >
-        PETRUCCI
+        <span className="font-serif text-xl font-medium tracking-[0.25em] text-gray-950 group-hover:text-amber-800 transition-colors uppercase">
+          Petrucci
+        </span>
+        <span className="text-[10px] font-sans font-semibold uppercase tracking-widest text-amber-800/80 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60">
+          Admin
+        </span>
       </Link>
+
       <div className="flex items-center gap-3">
+        {/* Acceso directo mobile: Cargar Joya */}
+        <Link
+          href="/admin/productos/nuevo"
+          className="md:hidden inline-flex items-center gap-1.5 px-3 py-1.5 bg-black text-white text-xs font-extrabold uppercase rounded-lg shadow-sm active:scale-95 cursor-pointer"
+        >
+          <span>➕ CARGAR JOYA</span>
+        </Link>
+
         {user && (
-          <span className="hidden md:block font-body text-xs text-gray-500">
-            Administrador { ' ' + user.name}
+          <span className="hidden md:block font-sans text-xs text-gray-500 tracking-wide">
+            Administrador <strong className="text-gray-900 font-semibold">{user.name}</strong>
           </span>
         )}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-1.5 font-body text-xs text-gray-500 hover:text-red-600 transition-colors px-2 py-1"
+          className="flex items-center gap-1.5 font-sans text-xs text-gray-500 hover:text-red-700 transition-colors px-2 py-1 rounded cursor-pointer"
           aria-label="Cerrar sesión"
         >
           <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
             <path d="M6 2H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h4M10 10l3-3-3-3M14 7.5H5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          <span className="hidden md:inline">Salir</span>
+          <span className="hidden md:inline font-medium">Salir</span>
         </button>
       </div>
     </div>
@@ -94,10 +108,10 @@ function TopBar({ user }: { user: AdminUser | null }) {
 
 function SidebarDesktop({ pathname }: { pathname: string }) {
   return (
-    <aside className="hidden md:flex flex-col w-56 bg-white border-r border-gray-200 shrink-0">
-      <nav className="flex-1 py-6 px-3" aria-label="Admin navigation">
-        <p className="font-body text-[9px] tracking-[0.2em] uppercase text-gray-400 px-3 mb-3">
-          Menú
+    <aside className="hidden md:flex flex-col w-56 bg-white border-r border-[#E8E4DE] shrink-0">
+      <nav className="flex-1 py-8 px-3" aria-label="Navegación Admin">
+        <p className="font-serif text-[11px] tracking-[0.2em] uppercase text-gray-400 px-3 mb-4 font-semibold">
+          Menú Principal
         </p>
         <ul className="flex flex-col gap-1">
           {NAV_ITEMS.map((item) => {
@@ -107,14 +121,16 @@ function SidebarDesktop({ pathname }: { pathname: string }) {
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-md font-body text-sm transition-colors",
+                    "flex items-center gap-3 px-3 py-2.5 rounded-md font-sans text-xs tracking-wide transition-all",
                     active
-                      ? "bg-amber-50 text-amber-800 font-medium"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "border-l-2 border-amber-800 bg-amber-50/50 text-amber-950 font-semibold pl-2.5"
+                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-950 font-medium"
                   )}
                   aria-current={active ? "page" : undefined}
                 >
-                  {item.icon}
+                  <span className={active ? "text-amber-800" : "text-gray-400"}>
+                    {item.icon}
+                  </span>
                   {item.label}
                 </Link>
               </li>
@@ -124,16 +140,16 @@ function SidebarDesktop({ pathname }: { pathname: string }) {
       </nav>
 
       {/* Link a la tienda */}
-      <div className="p-3 border-t border-gray-200">
+      <div className="p-4 border-t border-[#E8E4DE]">
         <Link
           href="/"
           target="_blank"
-          className="flex items-center gap-2 px-3 py-2 font-body text-xs text-gray-400 hover:text-gray-600 transition-colors"
+          className="flex items-center gap-2 px-3 py-2 font-sans text-xs text-gray-500 hover:text-amber-800 transition-colors"
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path d="M6 2H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8M9 1h4v4M13 1l-6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          Ver tienda
+          Ver tienda pública ↗
         </Link>
       </div>
     </aside>

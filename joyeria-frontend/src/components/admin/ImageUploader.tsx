@@ -201,40 +201,33 @@ export default function ImageUploader({
 
   return (
     <div className="flex flex-col gap-5">
-      {/* Botones de acción */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {/* Cámara */}
+      {/* Botones de acción — Grandes y de Alto Contraste en Blanco y Negro */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Cámara — Botón Principal Gigante */}
         <button
           type="button"
           onClick={() => cameraInputRef.current?.click()}
           disabled={disabled || compressing}
-          className="flex items-center justify-center gap-3.5 p-5 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-xl transition-all active:scale-[0.99] disabled:opacity-50 text-gray-900 text-base font-semibold shadow-xs"
+          className="flex items-center justify-center gap-4 p-5 bg-black hover:bg-gray-900 active:scale-[0.98] text-white border-2 border-black rounded-2xl transition-all disabled:opacity-50 cursor-pointer shadow-md min-h-[64px]"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-gray-700 shrink-0">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-            <circle cx="12" cy="13" r="4" />
-          </svg>
+          <span className="text-3xl shrink-0">📷</span>
           <div className="text-left">
-            <p className="leading-tight">Tomar una foto</p>
-            <p className="text-sm font-normal text-gray-500">Se comprime automáticamente</p>
+            <p className="text-lg sm:text-xl font-extrabold uppercase tracking-wide leading-tight">Sacar foto con el celular</p>
+            <p className="text-xs font-semibold text-gray-300">Abre la cámara directo</p>
           </div>
         </button>
 
-        {/* Galería */}
+        {/* Galería — Botón Secundario */}
         <button
           type="button"
           onClick={() => galleryInputRef.current?.click()}
           disabled={disabled || compressing}
-          className="flex items-center justify-center gap-3.5 p-5 bg-gray-50 hover:bg-gray-100 border border-gray-300 rounded-xl transition-all active:scale-[0.99] disabled:opacity-50 text-gray-900 text-base font-semibold shadow-xs"
+          className="flex items-center justify-center gap-4 p-5 bg-white hover:bg-gray-100 active:scale-[0.98] text-black border-2 border-black rounded-2xl transition-all disabled:opacity-50 cursor-pointer shadow-xs min-h-[64px]"
         >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="text-gray-700 shrink-0">
-            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-            <circle cx="8.5" cy="8.5" r="1.5" />
-            <polyline points="21 15 16 10 5 21" />
-          </svg>
+          <span className="text-3xl shrink-0">🖼️</span>
           <div className="text-left">
-            <p className="leading-tight">Elegir de la galería</p>
-            <p className="text-sm font-normal text-gray-500">Una o varias fotos a la vez</p>
+            <p className="text-lg sm:text-xl font-extrabold uppercase tracking-wide leading-tight">Elegir foto guardada</p>
+            <p className="text-xs font-semibold text-gray-600">De la galería de fotos</p>
           </div>
         </button>
 

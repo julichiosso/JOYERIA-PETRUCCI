@@ -368,12 +368,12 @@ export default function ProductForm({ initialData }: ProductFormProps) {
       </div>
 
       {/* ── Encabezado de la página ────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E8E4DE] pb-4">
         <div>
-          <h1 className="font-body text-2xl sm:text-3xl text-gray-950 font-bold tracking-tight">
+          <h1 className="font-serif text-3xl sm:text-4xl text-gray-950 font-normal tracking-wide">
             {isEditing ? "Editar Joya / Pieza" : "Cargar Nueva Joya o Pieza"}
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
             Completá los datos del producto. Podés usar las sugerencias automáticas para agilizar la carga.
           </p>
         </div>
@@ -385,9 +385,9 @@ export default function ProductForm({ initialData }: ProductFormProps) {
             onClick={handleAutoSuggest}
             disabled={!formData.name.trim()}
             title={!formData.name.trim() ? "Escribí el nombre del producto primero, después tocá acá" : "Completar categoría, descripción y SEO automáticamente"}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300/80 rounded-lg text-xs font-semibold shadow-2xs transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#FAF8F5] hover:bg-amber-50 text-[#A8875A] border border-[#A8875A]/40 rounded-md text-xs font-semibold uppercase tracking-wider shadow-2xs transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-700">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#A8875A]">
               <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
             </svg>
             <span>✨ Autocompletar sugerencias y SEO</span>
@@ -401,14 +401,14 @@ export default function ProductForm({ initialData }: ProductFormProps) {
       </div>
 
       {appliedSuggestion && (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs text-emerald-800 flex items-center gap-2">
+        <div className="p-3 bg-[#FAF8F5] border border-[#A8875A]/40 rounded-lg text-xs text-[#A8875A] flex items-center gap-2">
           <span>✓ Sugerencias de descripción, variantes y SEO aplicadas con éxito. Podés editarlas libremente.</span>
         </div>
       )}
 
       {/* ── 1. Información Principal ───────────────────────────────────────── */}
-      <section className="bg-white border border-gray-200 rounded-xl p-5 sm:p-6 flex flex-col gap-4 shadow-2xs">
-        <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wide border-b border-gray-100 pb-2">
+      <section className="bg-white border border-[#E8E4DE] rounded-lg p-5 sm:p-6 flex flex-col gap-4 shadow-2xs">
+        <h2 className="font-serif text-xl font-normal text-gray-950 tracking-wide border-b border-[#E8E4DE] pb-2">
           1. Información de la Pieza
         </h2>
 
