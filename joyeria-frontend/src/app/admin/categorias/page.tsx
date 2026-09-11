@@ -320,33 +320,32 @@ export default function AdminCategoriasPage() {
     Boolean(originalName);
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl mx-auto font-sans text-gray-900 pb-16">
+    <div className="flex flex-col gap-6 max-w-4xl mx-auto font-sans text-[#1D1D1F] pb-16">
       {/* ── Encabezado Principal ─────────────────────────────────────────────── */}
-      <div className="bg-white p-6 rounded-lg border border-[#E8E4DE] shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-3xl font-normal text-gray-950 tracking-wide">
-            Secciones y Rubros del Menú
+          <h1 className="text-2xl font-bold text-[#1D1D1F] tracking-tight">
+            Categorías del Menú
           </h1>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1 font-normal">
-            Organizá las secciones del menú principal y sus subcategorías de joyas o marcas.
+          <p className="text-sm text-gray-500 mt-1 font-normal">
+            Organización de secciones principales y subrubros de la joyería.
           </p>
         </div>
 
         <button
           type="button"
           onClick={openCreateRoot}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1A1A1A] hover:bg-[#A8875A] text-white font-semibold text-xs uppercase tracking-widest rounded-md shadow-xs transition-all active:scale-[0.98] shrink-0 min-h-[44px] cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#1D1D1F] hover:bg-black text-white font-semibold text-xs uppercase tracking-wider rounded-2xl shadow-xs transition-all active:scale-[0.98] shrink-0 min-h-[44px] cursor-pointer"
         >
-          <span className="text-base leading-none font-light">+</span>
-          <span>Nueva Sección Principal</span>
+          <span>+ Nueva Sección Principal</span>
         </button>
       </div>
 
       {!loading && !error && <CategoryMenuPreview categories={categories} />}
 
       {error && (
-        <div className="p-3.5 bg-red-50 border border-red-300 rounded-xl text-red-900 font-medium text-sm">
-          ⚠️ {error}
+        <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-800 font-semibold text-sm">
+          {error}
         </div>
       )}
 
@@ -361,72 +360,67 @@ export default function AdminCategoriasPage() {
       {!loading && !error && (
         <div className="flex flex-col gap-3.5">
           {categories.length === 0 ? (
-            <div className="text-center py-12 bg-white border border-gray-200 rounded-xl p-6">
-              <p className="text-base text-gray-700 mb-3">
-                Todavía no tenés secciones creadas.
+            <div className="text-center py-12 bg-white border border-gray-200/80 rounded-3xl p-6">
+              <p className="text-base text-gray-600 mb-3">
+                No hay categorías creadas.
               </p>
               <button
                 type="button"
                 onClick={openCreateRoot}
-                className="px-5 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-semibold min-h-[44px]"
+                className="px-5 py-2.5 bg-[#1D1D1F] hover:bg-black text-white rounded-2xl text-sm font-semibold min-h-[44px]"
               >
-                Crear la primera sección
+                Crear primera sección
               </button>
             </div>
           ) : (
             categories.map((cat, rootIndex) => (
               <div
                 key={cat.id}
-                className="bg-white border border-gray-200 rounded-xl shadow-2xs overflow-hidden transition-all hover:border-gray-300"
+                className="bg-white border border-gray-200/80 rounded-3xl shadow-xs overflow-hidden transition-all"
               >
                 {/* ── Cabecera de Categoría Principal ── */}
-                <div className="p-3.5 md:p-4 bg-gray-50/70 border-b border-gray-200 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                <div className="p-4 bg-[#F5F5F7] border-b border-gray-200/60 flex flex-col md:flex-row md:items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center gap-1 shrink-0">
                       <button
                         type="button"
                         onClick={() => moveOrder(cat, "up", categories)}
                         disabled={rootIndex === 0}
-                        title="Subir posición en el menú"
-                        className="w-9 h-9 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded-lg text-sm text-gray-900 disabled:opacity-25 font-bold shadow-2xs active:scale-95 transition-all cursor-pointer"
+                        title="Subir"
+                        className="w-8 h-8 flex items-center justify-center bg-white border border-gray-200/80 hover:bg-gray-100 rounded-xl text-xs text-gray-900 disabled:opacity-20 font-bold active:scale-95 transition-all cursor-pointer"
                       >
-                        ▲
+                        Subir
                       </button>
                       <button
                         type="button"
                         onClick={() => moveOrder(cat, "down", categories)}
                         disabled={rootIndex === categories.length - 1}
-                        title="Bajar posición en el menú"
-                        className="w-9 h-9 flex items-center justify-center bg-white border border-gray-300 hover:bg-gray-100 rounded-lg text-sm text-gray-900 disabled:opacity-25 font-bold shadow-2xs active:scale-95 transition-all cursor-pointer"
+                        title="Bajar"
+                        className="w-8 h-8 flex items-center justify-center bg-white border border-gray-200/80 hover:bg-gray-100 rounded-xl text-xs text-gray-900 disabled:opacity-20 font-bold active:scale-95 transition-all cursor-pointer"
                       >
-                        ▼
+                        Bajar
                       </button>
                     </div>
 
                     <div className="flex flex-col">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[10px] font-sans font-semibold uppercase tracking-wider bg-gray-200 text-gray-700 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-sans font-semibold uppercase tracking-wider bg-gray-200/70 text-gray-700 px-2 py-0.5 rounded-full">
                           #{rootIndex + 1}
                         </span>
-                        <h2 className="font-serif text-lg font-normal text-gray-950 tracking-wide">
+                        <h2 className="text-base font-bold text-[#1D1D1F] tracking-tight">
                           {cat.name}
                         </h2>
                         {cat.isProtected && (
-                          <span className="bg-amber-50 text-amber-900 text-[10px] font-sans font-semibold uppercase tracking-wider px-2 py-0.5 rounded border border-amber-200">
+                          <span className="bg-amber-100/70 text-amber-900 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full">
                             Básica
                           </span>
                         )}
                         {!cat.isActive && (
-                          <span className="bg-gray-200 text-gray-700 text-[10px] font-sans font-semibold uppercase tracking-wider px-2 py-0.5 rounded">
+                          <span className="bg-gray-200 text-gray-700 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full">
                             Oculta
                           </span>
                         )}
                       </div>
-                      {!cat.isActive && (
-                        <span className="text-[11px] text-amber-800 font-normal block mt-0.5">
-                          🔒 Los clientes no la ven en la tienda
-                        </span>
-                      )}
                     </div>
                   </div>
 
@@ -435,42 +429,35 @@ export default function AdminCategoriasPage() {
                     <button
                       type="button"
                       onClick={() => openCreateSub(cat)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-amber-900 hover:text-amber-950 py-2 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg transition-colors min-h-[36px] cursor-pointer"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-[#1D1D1F] py-2 px-3 bg-white hover:bg-gray-100 border border-gray-200/80 rounded-xl transition-colors min-h-[36px] cursor-pointer"
                     >
-                      <span>+ Sub-rubro</span>
+                      <span>+ Subrubro</span>
                     </button>
 
                     <button
                       type="button"
                       onClick={() => toggleActive(cat)}
-                      className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-colors min-h-[36px] cursor-pointer ${cat.isActive
-                        ? "bg-emerald-50 border-emerald-300 text-emerald-800 hover:bg-emerald-100"
-                        : "bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200"
+                      className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-colors min-h-[36px] cursor-pointer ${cat.isActive
+                        ? "bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100"
+                        : "bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200"
                         }`}
                     >
-                      {cat.isActive ? "✓ Visible" : "○ Oculta"}
+                      {cat.isActive ? "Visible" : "Oculta"}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => openEdit(cat)}
-                      className="px-3 py-2 bg-white border border-gray-300 text-gray-800 hover:bg-gray-100 text-xs font-semibold rounded-lg transition-colors min-h-[36px] cursor-pointer"
+                      className="px-3 py-2 bg-white border border-gray-200/80 text-gray-800 hover:bg-gray-100 text-xs font-semibold rounded-xl transition-colors min-h-[36px] cursor-pointer"
                     >
-                      Modificar
+                      Editar
                     </button>
 
-                    {cat.isProtected ? (
-                      <span
-                        className="px-2.5 py-2 text-[11px] text-gray-400 bg-gray-100 rounded-lg border border-gray-200 cursor-not-allowed min-h-[36px] flex items-center"
-                        title="Esta sección es fija y no puede borrarse"
-                      >
-                        Fija
-                      </span>
-                    ) : (
+                    {!cat.isProtected && (
                       <button
                         type="button"
                         onClick={() => setDeleteTarget(cat)}
-                        className="px-3 py-2 bg-white border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold rounded-lg transition-colors min-h-[36px] cursor-pointer"
+                        className="px-3 py-2 bg-white border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold rounded-xl transition-colors min-h-[36px] cursor-pointer"
                       >
                         Borrar
                       </button>
@@ -558,20 +545,20 @@ export default function AdminCategoriasPage() {
 
       {/* ── MODAL DE CREACIÓN / EDICIÓN ──────────────────────────────────────── */}
       {modal.isOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-xs">
-          <div className="bg-white rounded-2xl max-w-lg w-full p-6 md:p-8 shadow-2xl flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-gray-200 pb-4">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-950">
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 md:p-8 shadow-2xl border border-gray-100 flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+              <h2 className="text-xl font-bold text-[#1D1D1F]">
                 {modal.mode === "create_root"
                   ? "Crear Sección Principal"
                   : modal.mode === "create_sub"
                     ? `Agregar adentro de ${modal.parentName}`
-                    : `Modificar: ${originalName}`}
+                    : `Editar: ${originalName}`}
               </h2>
               <button
                 type="button"
                 onClick={closeModal}
-                className="text-gray-400 hover:text-gray-900 text-2xl p-1 leading-none font-bold cursor-pointer"
+                className="text-gray-400 hover:text-black text-xl p-1 leading-none font-semibold cursor-pointer"
               >
                 ✕
               </button>
@@ -579,22 +566,22 @@ export default function AdminCategoriasPage() {
 
             <form onSubmit={handleSaveModal} className="flex flex-col gap-5">
               {modalError && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm font-medium">
-                  ⚠️ {modalError}
+                <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-800 text-sm font-semibold">
+                  {modalError}
                 </div>
               )}
 
               {/* Nombre */}
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-2">
-                  Nombre <span className="text-red-600">*</span>
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-sans">
+                  Nombre <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
                   value={formName}
                   onChange={(e) => setFormName(e.target.value)}
                   placeholder={modal.mode === "create_sub" ? "Ej: Anillos, Cadenas, Seiko..." : "Ej: Joyería, Relojes, Mates..."}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base text-gray-950 focus:outline-none focus:border-gray-900"
+                  className="w-full px-4 py-3.5 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl text-base font-semibold text-[#1D1D1F] focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 transition-all font-sans"
                   required
                   autoFocus
                 />
@@ -608,11 +595,9 @@ export default function AdminCategoriasPage() {
 
                 {/* Guardrail 5: Advertencia de duplicado */}
                 {duplicateWarning && (
-                  <div className="mt-2 p-3 bg-amber-50 border border-amber-300 rounded-lg text-sm text-amber-900 flex items-start gap-2">
-                    <span className="shrink-0 mt-0.5">⚠️</span>
+                  <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-2xl text-sm text-amber-900 flex items-start gap-2">
                     <p>
                       Ya existe una sección llamada <strong>«{duplicateWarning}»</strong>.
-                      ¿Querés modificar la existente en vez de crear una nueva?
                     </p>
                   </div>
                 )}
@@ -620,17 +605,16 @@ export default function AdminCategoriasPage() {
 
               {/* Guardrail 3: Aviso de renombre SEO */}
               {showRenameWarning && (
-                <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900 flex items-start gap-2.5">
-                  <span className="shrink-0 mt-0.5 text-base">🔗</span>
+                <div className="p-3.5 bg-blue-50 border border-blue-200 rounded-2xl text-sm text-blue-900">
                   <p>
-                    Si cambiás el nombre, la tienda va a <strong>redirigir automáticamente</strong> la URL anterior para no perder visitas de Google. No necesitás hacer nada extra.
+                    Si cambiás el nombre, la tienda va a redirigir automáticamente la URL anterior.
                   </p>
                 </div>
               )}
 
               {/* Descripción */}
               <div>
-                <label className="block text-sm font-bold text-gray-800 mb-2">
+                <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-sans">
                   Descripción (Opcional)
                 </label>
                 <textarea
@@ -638,39 +622,39 @@ export default function AdminCategoriasPage() {
                   onChange={(e) => setFormDesc(e.target.value)}
                   rows={3}
                   placeholder="Detalle breve para explicar qué productos hay en esta sección..."
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-sm text-gray-950 focus:outline-none focus:border-gray-900 resize-none"
+                  className="w-full px-4 py-3 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl text-sm font-medium text-[#1D1D1F] focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 transition-all font-sans resize-none"
                 />
               </div>
 
               {/* Visibilidad en modo edición */}
               {modal.mode === "edit" && (
-                <label className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg cursor-pointer border border-gray-300">
+                <label className="flex items-center gap-3 p-4 bg-[#F5F5F7] rounded-2xl cursor-pointer border border-gray-200/80">
                   <input
                     type="checkbox"
                     checked={formActive}
                     onChange={(e) => setFormActive(e.target.checked)}
-                    className="w-5 h-5 text-gray-900 rounded border-gray-300"
+                    className="w-5 h-5 text-black rounded-lg border-gray-300 focus:ring-0"
                   />
-                  <span className="text-base font-semibold text-gray-900">
+                  <span className="text-sm font-semibold text-[#1D1D1F]">
                     Mostrar esta sección en la tienda para los clientes
                   </span>
                 </label>
               )}
 
               {/* Botones */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
                 <button
                   type="button"
                   onClick={closeModal}
                   disabled={saving}
-                  className="px-6 py-3 border border-gray-300 text-gray-800 rounded-lg text-base font-medium hover:bg-gray-100 min-h-[44px] cursor-pointer"
+                  className="px-5 py-3 border border-gray-200 text-gray-700 rounded-2xl text-sm font-semibold hover:bg-gray-100 min-h-[44px] cursor-pointer"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-7 py-3 bg-gray-900 hover:bg-black text-white rounded-lg text-base font-bold shadow disabled:opacity-50 flex items-center gap-2 min-h-[44px] cursor-pointer"
+                  className="px-6 py-3 bg-[#1D1D1F] hover:bg-black text-white rounded-2xl text-sm font-semibold shadow-xs disabled:opacity-50 flex items-center gap-2 min-h-[44px] cursor-pointer"
                 >
                   {saving ? "Guardando..." : "Guardar"}
                 </button>
