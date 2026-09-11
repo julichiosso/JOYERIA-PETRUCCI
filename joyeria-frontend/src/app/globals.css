@@ -80,7 +80,13 @@ body {
   min-height: 100dvh;
 }
 
-/* Tipografía base: encabezados usan sans-serif limpio por defecto */
+/* Eliminar el color azul default del navegador en todos los links */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Tipografía base: encabezados heredan sans-serif limpio del body */
 h1, h2, h3, h4, h5, h6 {
   font-family: inherit;
   font-weight: inherit;

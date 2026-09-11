@@ -68,7 +68,7 @@ export default async function CatalogPage({ searchParams }: ProductsPageProps) {
 
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
                     <div>
-                        <h1 className="font-serif text-3xl md:text-4xl font-normal text-gray-950 tracking-tight">
+                        <h1 className="font-body text-3xl md:text-4xl font-bold text-gray-950 tracking-tight">
                             {activeCategory ? activeCategory.name : "Catálogo de Joyas"}
                         </h1>
                         <p className="font-body text-sm text-gray-500 mt-1">
@@ -102,7 +102,7 @@ export default async function CatalogPage({ searchParams }: ProductsPageProps) {
                             <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
                             <path strokeLinecap="round" d="M12 8v4m0 4h.01" strokeWidth="2" />
                         </svg>
-                        <h2 className="font-serif text-xl font-medium text-gray-900 mb-1">
+                        <h2 className="font-body text-xl font-bold text-gray-900 mb-1">
                             No encontramos productos
                         </h2>
                         <p className="font-body text-sm text-gray-500 mb-6">

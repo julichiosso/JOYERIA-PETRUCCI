@@ -1,4 +1,4 @@
-﻿/**
+/**
  * app/[categorySlug]/[subSlug]/page.tsx
  * Maneja subcategorias y detalle de producto con seccion de relacionados.
  */
@@ -104,7 +104,7 @@ export default async function SubcategoryOrProductPage({ params, searchParams }:
                 <li className="text-petrucci-black" aria-current="page">{subcategory.name}</li>
               </ol>
             </nav>
-            <h1 className="font-display text-3xl md:text-5xl text-petrucci-black font-normal">{subcategory.name}</h1>
+            <h1 className="font-body text-3xl md:text-4xl text-petrucci-black font-bold tracking-tight">{subcategory.name}</h1>
             {subcategory.description && (
               <p className="mt-3 font-body text-sm text-petrucci-gray max-w-xl leading-relaxed">{subcategory.description}</p>
             )}

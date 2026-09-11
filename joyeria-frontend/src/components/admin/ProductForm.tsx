@@ -370,7 +370,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
       {/* ── Encabezado de la página ────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-200 pb-4">
         <div>
-          <h1 className="font-display text-2xl sm:text-3xl text-gray-950 font-normal">
+          <h1 className="font-body text-2xl sm:text-3xl text-gray-950 font-bold tracking-tight">
             {isEditing ? "Editar Joya / Pieza" : "Cargar Nueva Joya o Pieza"}
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 mt-0.5">

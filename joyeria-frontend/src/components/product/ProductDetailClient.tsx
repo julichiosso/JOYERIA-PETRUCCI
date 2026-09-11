@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 /**
  * components/product/ProductDetailClient.tsx
@@ -269,7 +269,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
         {/* Nombre */}
         <div>
-          <h1 className="font-serif text-[2rem] md:text-[2.4rem] leading-[1.15] text-[#111111] font-normal tracking-tight">
+          <h1 className="font-body text-2xl md:text-3xl lg:text-[2.2rem] leading-tight text-gray-950 font-bold tracking-tight">
             {product.name}
           </h1>
           {product.status === "OUT_OF_STOCK" && (

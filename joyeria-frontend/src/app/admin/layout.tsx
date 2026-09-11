@@ -66,7 +66,7 @@ function TopBar({ user }: { user: AdminUser | null }) {
       <Link
         href="/"
         target="_blank"
-        className="font-display text-lg tracking-[0.25em] text-gray-900 hover:text-amber-700 transition-colors"
+        className="font-body text-base font-bold tracking-[0.3em] text-gray-900 hover:text-gray-600 transition-colors"
         aria-label="Ver tienda pública"
       >
         PETRUCCI

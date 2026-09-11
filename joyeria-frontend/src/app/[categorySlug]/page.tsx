@@ -134,7 +134,7 @@ export default async function CategoryRootPage({ params, searchParams }: PagePro
             </ol>
           </nav>
 
-          <h1 className="font-display text-3xl md:text-5xl text-petrucci-black font-normal">
+          <h1 className="font-body text-3xl md:text-4xl text-petrucci-black font-bold tracking-tight">
             {category.name}
           </h1>
           {category.description && (

@@ -40,7 +40,7 @@ export default function ProductGallery({ images, productName }: ProductGalleryPr
           <circle cx="12" cy="12" r="9" strokeWidth="1.5" />
           <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" strokeWidth="1.5" />
         </svg>
-        <p className="font-serif text-sm text-gray-500 uppercase tracking-widest">Petrucci Joyería</p>
+        <p className="font-body text-xs font-semibold text-gray-500 uppercase tracking-widest">Petrucci Joyería</p>
       </div>
     );
   }

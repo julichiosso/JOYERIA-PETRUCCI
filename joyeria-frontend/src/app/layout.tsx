@@ -50,28 +50,103 @@ const proximaNova = localFont({
   display: "swap",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://petruccijoyeria.com";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Petrucci Joyería — Artesanía en Metal y Tiempo",
     template: "%s | Petrucci Joyería",
   },
   description:
-    "Joyería y relojería artesanal. Anillos, aros, cadenas, relojes y trabajos personalizados. Consultá por WhatsApp.",
-  keywords: ["joyería", "relojería", "artesanal", "anillos", "joyas", "petrucci"],
+    "Joyería y relojería artesanal. Anillos, aros, cadenas, relojes de alta gama y piezas personalizadas en oro y plata. San Jorge, Santa Fe.",
+  keywords: [
+    "joyería",
+    "relojería",
+    "joyas oro 18k",
+    "alianzas",
+    "anillos de compromiso",
+    "aros de oro",
+    "cadenas de plata",
+    "relojes casio",
+    "relojes seiko",
+    "trabajos personalizados",
+    "petrucci joyería",
+    "san jorge santa fe"
+  ],
   authors: [{ name: "Petrucci Joyería" }],
   creator: "Petrucci Joyería",
+  alternates: {
+    canonical: "./",
+  },
   openGraph: {
     type: "website",
     locale: "es_AR",
+    url: SITE_URL,
     siteName: "Petrucci Joyería",
     title: "Petrucci Joyería — Artesanía en Metal y Tiempo",
     description:
-      "Joyería y relojería artesanal. Anillos, aros, cadenas, relojes y trabajos personalizados.",
+      "Joyería y relojería artesanal. Anillos, aros, cadenas, relojes de alta gama y trabajos personalizados en oro y plata.",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Petrucci Joyería y Relojería",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Petrucci Joyería — Artesanía en Metal y Tiempo",
+    description: "Joyería y relojería artesanal en oro, plata y alta relojería.",
+  },
+  icons: {
+    icon: [
+      { url: "/logo-petrucci-v2.svg", type: "image/svg+xml" },
+    ],
+    shortcut: "/logo-petrucci-v2.svg",
+    apple: "/logo-petrucci-v2.svg",
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
   },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "JewelryStore",
+  "name": "Petrucci Joyería",
+  "url": SITE_URL,
+  "logo": `${SITE_URL}/logo-petrucci-v2.svg`,
+  "image": `${SITE_URL}/og-image.jpg`,
+  "description": "Joyería y relojería artesanal. Anillos, aros, cadenas, relojes de alta gama y trabajos personalizados en oro y plata.",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "San Jorge",
+    "addressRegion": "Santa Fe",
+    "addressCountry": "AR",
+  },
+  "telephone": "+5493406419736",
+  "priceRange": "$$",
+  "currenciesAccepted": "ARS",
+  "paymentAccepted": "Cash, Credit Card, Bank Transfer",
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+      "opens": "08:30",
+      "closes": "20:00",
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -85,6 +160,14 @@ export default function RootLayout({
       data-scroll-behavior="smooth"
       className={`${cormorant.variable} ${plusJakarta.variable} ${proximaNova.variable}`}
     >
+      <head>
+        <link rel="icon" href="/logo-petrucci-v2.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/logo-petrucci-v2.svg" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body>
         <AppShell>{children}</AppShell>
       </body>

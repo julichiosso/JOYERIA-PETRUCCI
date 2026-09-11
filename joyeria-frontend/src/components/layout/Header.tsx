@@ -17,6 +17,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { cn, formatPrice, getImageUrl } from "@/lib/utils";
 import { api } from "@/lib/api";
 import type { Product } from "@/types/product";
+import MobileMenuDrawer from "./MobileMenuDrawer";
 
 const ANNOUNCEMENTS = [
   "ATENCIÓN PERSONALIZADA Y AL INSTANTE POR WHATSAPP",
@@ -171,7 +172,6 @@ export default function Header() {
   const [announcementIndex, setAnnouncementIndex] = useState(0);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [expandedMobileSection, setExpandedMobileSection] = useState<string | null>(null);
   const [activeMegaMenu, setActiveMegaMenu] = useState<"joyas" | "relojes" | null>(null);
 
   // Estados del Buscador en Vivo
@@ -218,7 +218,6 @@ export default function Header() {
   // Cerrar menú mobile al cambiar de ruta
   useEffect(() => {
     setMenuOpen(false);
-    setExpandedMobileSection(null);
   }, [pathname]);
 
   // Búsqueda en vivo con debounce de 250ms
@@ -282,10 +281,6 @@ export default function Header() {
     setDropdownOpen(false);
     setMobileSearchOpen(false);
     router.push(url);
-  };
-
-  const toggleMobileSection = (section: string) => {
-    setExpandedMobileSection((prev) => (prev === section ? null : section));
   };
 
   const navItemClass = (isActive: boolean) =>
@@ -440,10 +435,13 @@ export default function Header() {
                   className="flex items-center justify-center group"
                   aria-label="Petrucci Joyería — Inicio"
                 >
-                  <img
+                  <Image
                     src="/logo-petrucci-v2.svg"
                     alt="Petrucci Joyería y Relojería"
+                    width={200}
+                    height={72}
                     className="h-12 md:h-16 lg:h-[68px] max-h-[72px] w-auto object-contain transition-transform duration-200"
+                    priority
                   />
                 </Link>
               </div>
@@ -740,264 +738,8 @@ export default function Header() {
         </AnimatePresence>
       </header>
 
-      {/* ── 5. Menú Mobile Lateral Slide-over (Inspirado 1:1 en Joyería El Rubí) ── */}
-      <AnimatePresence>
-        {menuOpen && (
-          <>
-            {/* Backdrop oscuro */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              onClick={() => setMenuOpen(false)}
-              className="fixed inset-0 bg-black/50 z-50 md:hidden backdrop-blur-[2px]"
-              aria-hidden="true"
-            />
-
-            {/* Panel lateral deslizante */}
-            <motion.aside
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed top-0 left-0 bottom-0 w-[82%] max-w-[340px] bg-white z-50 md:hidden flex flex-col shadow-2xl overflow-hidden font-body"
-              aria-label="Menú principal mobile"
-            >
-              {/* Cabecera del drawer con botón de cierre (✕) */}
-              <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                <span className="font-body text-xs font-semibold tracking-wider uppercase text-gray-400">
-                  Menú
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen(false)}
-                  className="p-1.5 text-gray-600 hover:text-black rounded-full hover:bg-gray-100 transition-colors"
-                  aria-label="Cerrar menú"
-                >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M5 5L15 15M15 5L5 15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Lista de navegación vertical */}
-              <div className="flex-1 overflow-y-auto py-2">
-                <nav>
-                  <ul className="divide-y divide-gray-100/80 font-body text-[14px]">
-                    {/* Item Joyas con acordeón */}
-                    <li>
-                      <div className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50/80 transition-colors">
-                        <Link
-                          href="/joyeria"
-                          onClick={() => setMenuOpen(false)}
-                          className="font-medium text-gray-900 flex-1"
-                        >
-                          Joyas
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleMobileSection("joyas");
-                          }}
-                          className="p-1 text-gray-400 hover:text-black transition-transform"
-                          aria-label="Ver categorías de Joyas"
-                        >
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            className={cn(
-                              "transition-transform duration-200",
-                              expandedMobileSection === "joyas" ? "rotate-90 text-black" : ""
-                            )}
-                          >
-                            <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {/* Subcategorías de Joyas */}
-                      <AnimatePresence>
-                        {expandedMobileSection === "joyas" && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="bg-gray-50/70 border-y border-gray-100 px-5 py-3 overflow-hidden"
-                          >
-                            <ul className="space-y-2 text-[13px] text-gray-600">
-                              <li>
-                                <Link href="/joyeria/anillos-2" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-black">
-                                  Anillos
-                                </Link>
-                              </li>
-                              <li>
-                                <Link href="/joyeria/aros" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-black">
-                                  Aros y Aritos
-                                </Link>
-                              </li>
-                              <li>
-                                <Link href="/joyeria/gargantillas" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-black">
-                                  Cadenas y Gargantillas
-                                </Link>
-                              </li>
-                              <li>
-                                <Link href="/joyeria/dijes" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-black">
-                                  Dijes y Colgantes
-                                </Link>
-                              </li>
-                              <li>
-                                <Link href="/joyeria/pulseras" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-black">
-                                  Pulseras
-                                </Link>
-                              </li>
-                              <li>
-                                <Link href="/joyeria/pulseras-bebe" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-black">
-                                  Pulseras Bebé
-                                </Link>
-                              </li>
-                              <li>
-                                <Link href="/trabajos-personalizados" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-black">
-                                  Trabajos Personalizados
-                                </Link>
-                              </li>
-                            </ul>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </li>
-
-                    {/* Item Relojes con acordeón */}
-                    <li>
-                      <div className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50/80 transition-colors">
-                        <Link
-                          href="/relojes"
-                          onClick={() => setMenuOpen(false)}
-                          className="font-medium text-gray-900 flex-1"
-                        >
-                          Relojes
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleMobileSection("relojes");
-                          }}
-                          className="p-1 text-gray-400 hover:text-black transition-transform"
-                          aria-label="Ver marcas de Relojes"
-                        >
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 16 16"
-                            fill="none"
-                            className={cn(
-                              "transition-transform duration-200",
-                              expandedMobileSection === "relojes" ? "rotate-90 text-black" : ""
-                            )}
-                          >
-                            <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      {/* Subcategorías de Relojes */}
-                      <AnimatePresence>
-                        {expandedMobileSection === "relojes" && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="bg-gray-50/70 border-y border-gray-100 px-5 py-3 overflow-hidden"
-                          >
-                            <ul className="space-y-2 text-[13px] text-gray-600">
-                              <li><Link href="/relojes" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-black">Casio & Catterpillar</Link></li>
-                              <li><Link href="/relojes" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-black">Seiko & Orient</Link></li>
-                              <li><Link href="/relojes" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-black">Tommy Hilfiger</Link></li>
-                              <li><Link href="/relojes" onClick={() => setMenuOpen(false)} className="block py-1 hover:text-black">Tressa & Smarts</Link></li>
-                            </ul>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </li>
-
-                    {/* Resto de secciones directas */}
-                    <li>
-                      <Link
-                        href="/trabajos-personalizados"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center justify-between px-5 py-3.5 font-medium text-gray-900 hover:bg-gray-50/80 transition-colors"
-                      >
-                        <span>Personalizados</span>
-                      </Link>
-                    </li>
-
-                    <li>
-                      <Link
-                        href="/marroquineria"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center justify-between px-5 py-3.5 font-medium text-gray-900 hover:bg-gray-50/80 transition-colors"
-                      >
-                        <span>Marroquinería</span>
-                      </Link>
-                    </li>
-
-                    <li>
-                      <Link
-                        href="/mates"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center justify-between px-5 py-3.5 font-medium text-gray-900 hover:bg-gray-50/80 transition-colors"
-                      >
-                        <span>Mates</span>
-                      </Link>
-                    </li>
-
-                    <li>
-                      <Link
-                        href="/nosotros"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center justify-between px-5 py-3.5 font-medium text-gray-900 hover:bg-gray-50/80 transition-colors"
-                      >
-                        <span>Quiénes Somos</span>
-                      </Link>
-                    </li>
-
-                    <li>
-                      <Link
-                        href="/nosotros#contacto"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center justify-between px-5 py-3.5 font-medium text-gray-900 hover:bg-gray-50/80 transition-colors"
-                      >
-                        <span>Contacto</span>
-                      </Link>
-                    </li>
-                  </ul>
-                </nav>
-              </div>
-
-              {/* Footer del Drawer */}
-              <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex flex-col gap-2">
-                <Link
-                  href="/admin/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="text-xs text-gray-500 hover:text-black transition-colors flex items-center gap-2"
-                >
-                  <svg width="14" height="14" viewBox="0 0 18 18" fill="none">
-                    <circle cx="9" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.3" />
-                    <path d="M2 15.5c0-3.038 3.134-5.5 7-5.5s7 2.462 7 5.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-                  </svg>
-                  <span>Panel de Administración</span>
-                </Link>
-              </div>
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
+      {/* ── 5. Menú Mobile Lateral Slide-over ── */}
+      <MobileMenuDrawer isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
     </>
   );
 }

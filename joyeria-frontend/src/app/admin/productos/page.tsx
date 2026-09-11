@@ -280,7 +280,7 @@ export default function AdminProductsPage() {
       {/* ── Encabezado Principal & KPI Cards ──────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200 pb-5">
         <div>
-          <h1 className="font-display text-2xl sm:text-3xl text-gray-950 font-normal tracking-tight">
+          <h1 className="font-body text-2xl sm:text-3xl text-gray-950 font-bold tracking-tight">
             Monitoreo de Joyas y Catálogo
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 mt-1">

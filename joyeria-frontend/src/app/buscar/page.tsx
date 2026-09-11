@@ -50,7 +50,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
             </ol>
           </nav>
 
-          <h1 className="font-display text-2xl md:text-4xl text-gray-950 font-normal">
+          <h1 className="font-body text-2xl md:text-3xl text-gray-950 font-bold tracking-tight">
             {query ? `Resultados para "${query}"` : "Búsqueda de productos"}
           </h1>
           <p className="mt-1 font-body text-xs md:text-sm text-gray-500">

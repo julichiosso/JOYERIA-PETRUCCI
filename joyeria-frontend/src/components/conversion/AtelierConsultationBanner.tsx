@@ -28,7 +28,7 @@ export default function AtelierConsultationBanner({
           SERVICIO BOUTIQUE & ALTA PERSONALIZACIÓN
         </span>
 
-        <h2 className="font-serif text-2xl md:text-4xl text-[#111111] font-normal tracking-tight leading-tight max-w-2xl">
+        <h2 className="font-body text-2xl md:text-3xl text-gray-950 font-bold tracking-tight leading-tight max-w-2xl">
           ¿Desea una personalización de monograma o visita al atelier?
         </h2>
 
