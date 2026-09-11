@@ -113,7 +113,7 @@ function SidebarDesktop({ pathname }: { pathname: string }) {
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3.5 py-2.5 rounded-2xl font-sans text-xs font-semibold tracking-tight transition-all",
+                    "flex items-center gap-3 px-3.5 py-2.5 rounded-2xl font-sans text-xs font-semibold tracking-tight transition-all focus:outline-none focus:ring-0 focus-visible:outline-none select-none",
                     active
                       ? "bg-[#007AFF]/10 text-[#007AFF]"
                       : "text-gray-600 hover:bg-[#F5F5F7] hover:text-[#1D1D1F]"

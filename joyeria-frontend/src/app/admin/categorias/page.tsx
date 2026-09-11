@@ -481,9 +481,9 @@ export default function AdminCategoriasPage() {
                     <button
                       type="button"
                       onClick={() => openCreateSub(cat)}
-                      className="px-3 py-1.5 bg-[#007AFF]/10 text-[#007AFF] hover:bg-[#007AFF]/20 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                      className="px-3.5 py-2 bg-[#007AFF] hover:bg-[#0066CC] text-white text-xs font-semibold rounded-xl shadow-xs transition-all active:scale-[0.98] cursor-pointer flex items-center gap-1"
                     >
-                      + Subrubro
+                      <span>+</span> Subrubro
                     </button>
 
                     <div className="flex items-center gap-1">
