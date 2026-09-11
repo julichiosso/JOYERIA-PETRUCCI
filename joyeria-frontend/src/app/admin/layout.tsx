@@ -62,41 +62,33 @@ function TopBar({ user }: { user: AdminUser | null }) {
   };
 
   return (
-    <div className="h-16 bg-white border-b border-[#E8E4DE] flex items-center justify-between px-4 md:px-8 shrink-0">
+    <div className="h-16 bg-white/80 backdrop-blur-md border-b border-gray-200/80 flex items-center justify-between px-4 md:px-8 shrink-0">
       <Link
         href="/"
         target="_blank"
-        className="flex items-center gap-3 group"
+        className="flex items-center gap-2 group"
         aria-label="Ver tienda pública"
       >
-        <span className="font-serif text-xl font-medium tracking-[0.25em] text-gray-950 group-hover:text-amber-800 transition-colors uppercase">
+        <span className="font-sans text-lg md:text-xl font-bold tracking-tight text-[#1D1D1F] group-hover:text-[#007AFF] transition-colors uppercase">
           Petrucci
         </span>
-        <span className="text-[10px] font-sans font-semibold uppercase tracking-widest text-amber-800/80 bg-amber-50 px-2 py-0.5 rounded border border-amber-200/60">
+        <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#007AFF] bg-[#007AFF]/10 px-2.5 py-0.5 rounded-full border border-[#007AFF]/20">
           Admin
         </span>
       </Link>
 
       <div className="flex items-center gap-3">
-        {/* Acceso directo mobile: Cargar Joya */}
-        <Link
-          href="/admin/productos/nuevo"
-          className="md:hidden inline-flex items-center gap-1.5 px-3 py-1.5 bg-black !text-white text-xs font-extrabold uppercase rounded-lg shadow-sm active:scale-95 cursor-pointer"
-        >
-          <span className="!text-white">➕ CARGAR JOYA</span>
-        </Link>
-
         {user && (
           <span className="hidden md:block font-sans text-xs text-gray-500 tracking-wide">
-            Administrador <strong className="text-gray-900 font-semibold">{user.name}</strong>
+            Administrador <strong className="text-[#1D1D1F] font-semibold">{user.name}</strong>
           </span>
         )}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-1.5 font-sans text-xs text-gray-500 hover:text-red-700 transition-colors px-2 py-1 rounded cursor-pointer"
+          className="flex items-center gap-1.5 font-sans text-xs text-gray-500 hover:text-red-600 transition-colors px-2 py-1 rounded cursor-pointer"
           aria-label="Cerrar sesión"
         >
-          <svg width="15" height="15" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 15 15" fill="none" aria-hidden="true">
             <path d="M6 2H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h4M10 10l3-3-3-3M14 7.5H5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           <span className="hidden md:inline font-medium">Salir</span>
@@ -108,9 +100,9 @@ function TopBar({ user }: { user: AdminUser | null }) {
 
 function SidebarDesktop({ pathname }: { pathname: string }) {
   return (
-    <aside className="hidden md:flex flex-col w-56 bg-white border-r border-[#E8E4DE] shrink-0">
-      <nav className="flex-1 py-8 px-3" aria-label="Navegación Admin">
-        <p className="font-serif text-[11px] tracking-[0.2em] uppercase text-gray-400 px-3 mb-4 font-semibold">
+    <aside className="hidden md:flex flex-col w-56 bg-white border-r border-gray-200/80 shrink-0">
+      <nav className="flex-1 py-6 px-3" aria-label="Navegación Admin">
+        <p className="font-sans text-[11px] tracking-wider uppercase text-gray-400 px-3 mb-3 font-semibold">
           Menú Principal
         </p>
         <ul className="flex flex-col gap-1">
@@ -121,14 +113,14 @@ function SidebarDesktop({ pathname }: { pathname: string }) {
                 <Link
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2.5 rounded-md font-sans text-xs tracking-wide transition-all",
+                    "flex items-center gap-3 px-3.5 py-2.5 rounded-2xl font-sans text-xs font-semibold tracking-tight transition-all",
                     active
-                      ? "border-l-2 border-amber-800 bg-amber-50/50 text-amber-950 font-semibold pl-2.5"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-950 font-medium"
+                      ? "bg-[#007AFF]/10 text-[#007AFF]"
+                      : "text-gray-600 hover:bg-[#F5F5F7] hover:text-[#1D1D1F]"
                   )}
                   aria-current={active ? "page" : undefined}
                 >
-                  <span className={active ? "text-amber-800" : "text-gray-400"}>
+                  <span className={active ? "text-[#007AFF]" : "text-gray-400"}>
                     {item.icon}
                   </span>
                   {item.label}
@@ -140,11 +132,11 @@ function SidebarDesktop({ pathname }: { pathname: string }) {
       </nav>
 
       {/* Link a la tienda */}
-      <div className="p-4 border-t border-[#E8E4DE]">
+      <div className="p-4 border-t border-gray-200/80">
         <Link
           href="/"
           target="_blank"
-          className="flex items-center gap-2 px-3 py-2 font-sans text-xs text-gray-500 hover:text-amber-800 transition-colors"
+          className="flex items-center gap-2 px-3 py-2 font-sans text-xs text-gray-500 hover:text-[#007AFF] transition-colors"
         >
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path d="M6 2H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8M9 1h4v4M13 1l-6 6" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
@@ -159,7 +151,7 @@ function SidebarDesktop({ pathname }: { pathname: string }) {
 function BottomBarMobile({ pathname }: { pathname: string }) {
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-t border-gray-200/80"
       aria-label="Navegación mobile admin"
     >
       <ul className="flex items-center justify-around h-16">
@@ -171,12 +163,12 @@ function BottomBarMobile({ pathname }: { pathname: string }) {
                 href={item.href}
                 className={cn(
                   "flex flex-col items-center gap-1 py-2 transition-colors w-full",
-                  active ? "text-amber-700" : "text-gray-400 hover:text-gray-600"
+                  active ? "text-[#007AFF]" : "text-gray-400 hover:text-gray-600"
                 )}
                 aria-current={active ? "page" : undefined}
               >
                 {item.icon}
-                <span className="font-body text-[9px] tracking-wide">{item.label}</span>
+                <span className="font-sans text-[10px] font-semibold tracking-tight">{item.label}</span>
               </Link>
             </li>
           );
@@ -197,7 +189,6 @@ export default function AdminLayout({
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // Guard: si no hay token y no estamos en /admin/login, redirigir
     if (!isAuthenticated() && pathname !== "/admin/login") {
       router.replace("/admin/login");
       return;
@@ -206,23 +197,21 @@ export default function AdminLayout({
     setChecking(false);
   }, [pathname, router]);
 
-  // Si estamos en la página de login, renderizar solo los children
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
 
-  // Pantalla de carga mientras verifica auth
   if (checking) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-amber-700 border-t-transparent rounded-full animate-spin" aria-label="Cargando" />
+      <div className="min-h-screen bg-[#F5F5F7] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#007AFF] border-t-transparent rounded-full animate-spin" aria-label="Cargando" />
       </div>
     );
   }
 
   return (
     <ToastProvider>
-      <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
+      <div className="h-screen bg-[#F5F5F7] flex flex-col overflow-hidden">
         {/* Topbar */}
         <TopBar user={user} />
 

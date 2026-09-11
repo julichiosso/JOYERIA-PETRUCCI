@@ -25,14 +25,14 @@ interface StoreConfigAdmin {
 
 function FieldLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
-    <label htmlFor={htmlFor} className="block font-body text-xs tracking-wide text-gray-700 font-medium mb-1.5">
+    <label htmlFor={htmlFor} className="block font-sans text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
       {children}
     </label>
   );
 }
 
 const inputClass =
-  "w-full px-3.5 py-2.5 border border-gray-300 rounded-md font-body text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-amber-600 focus:ring-1 focus:ring-amber-600 transition-colors";
+  "w-full px-4 py-3 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl font-sans text-sm font-semibold text-[#1D1D1F] placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF] transition-all";
 
 export default function AdminConfiguracionPage() {
   const router = useRouter();
@@ -117,24 +117,24 @@ export default function AdminConfiguracionPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <div className="w-8 h-8 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" aria-label="Cargando" />
+      <div className="flex items-center justify-center py-20 bg-white rounded-3xl border border-gray-200/80">
+        <div className="w-8 h-8 border-2 border-[#007AFF] border-t-transparent rounded-full animate-spin" aria-label="Cargando" />
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-8 max-w-4xl font-sans pb-16">
       <div>
-        <h1 className="font-body text-xl font-semibold text-gray-900">Configuración de la tienda</h1>
-        <p className="font-body text-xs text-gray-500 mt-1">
-          Estos datos aparecen en el footer, en los links de WhatsApp y en el SEO del sitio.
+        <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#1D1D1F] tracking-tight">Ajustes de la Tienda</h1>
+        <p className="font-sans text-sm text-gray-500 mt-1">
+          Datos públicos visibles en la tienda, links de WhatsApp y redes sociales.
         </p>
       </div>
 
       {/* ── Datos principales ─────────────────────────────────────────────── */}
-      <section className="bg-white border border-gray-200 rounded-lg p-5 md:p-6 flex flex-col gap-5">
-        <h2 className="font-body text-sm font-semibold text-gray-900">Datos del negocio</h2>
+      <section className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-xs flex flex-col gap-5">
+        <h2 className="font-sans text-base font-bold text-[#1D1D1F]">Datos del negocio</h2>
 
         <div>
           <FieldLabel htmlFor="store-name">Nombre de la tienda</FieldLabel>
@@ -153,24 +153,24 @@ export default function AdminConfiguracionPage() {
       </section>
 
       {/* ── WhatsApp ──────────────────────────────────────────────────────── */}
-      <section className="bg-white border border-gray-200 rounded-lg p-5 md:p-6 flex flex-col gap-5">
-        <h2 className="font-body text-sm font-semibold text-gray-900">WhatsApp</h2>
+      <section className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-xs flex flex-col gap-5">
+        <h2 className="font-sans text-base font-bold text-[#1D1D1F]">WhatsApp</h2>
 
         <div>
           <FieldLabel htmlFor="wa-number">Número de WhatsApp</FieldLabel>
           <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-body text-sm text-gray-500">+</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 font-sans text-sm font-semibold text-gray-400">+</span>
             <input
               id="wa-number"
               type="tel"
               value={form.whatsappNumber}
               onChange={set("whatsappNumber")}
               placeholder="5493408000000"
-              className={`${inputClass} pl-7`}
+              className={`${inputClass} pl-8`}
             />
           </div>
-          <p className="mt-1 font-body text-xs text-gray-500">
-            Código de país + número completo sin espacios. Ej: 5493408123456 (Argentina 549 + área + número)
+          <p className="mt-2 font-sans text-xs text-gray-400">
+            Código de país + número completo sin espacios. Ej: 5493408123456
           </p>
         </div>
 
@@ -184,15 +184,15 @@ export default function AdminConfiguracionPage() {
             placeholder="Hola Petrucci Joyería! Quisiera consultar sobre el producto {nombre} (${precio}). {url}"
             className={`${inputClass} resize-none`}
           />
-          <p className="mt-1 font-body text-xs text-gray-500">
-            Variables disponibles: <code className="bg-gray-100 px-1 rounded">{"{nombre}"}</code>, <code className="bg-gray-100 px-1 rounded">{"{precio}"}</code>, <code className="bg-gray-100 px-1 rounded">{"{url}"}</code>
+          <p className="mt-2 font-sans text-xs text-gray-400">
+            Variables disponibles: <code className="bg-[#F5F5F7] px-1.5 py-0.5 rounded-lg text-gray-600 font-mono">{"{nombre}"}</code>, <code className="bg-[#F5F5F7] px-1.5 py-0.5 rounded-lg text-gray-600 font-mono">{"{precio}"}</code>, <code className="bg-[#F5F5F7] px-1.5 py-0.5 rounded-lg text-gray-600 font-mono">{"{url}"}</code>
           </p>
         </div>
       </section>
 
       {/* ── Redes sociales ────────────────────────────────────────────────── */}
-      <section className="bg-white border border-gray-200 rounded-lg p-5 md:p-6 flex flex-col gap-5">
-        <h2 className="font-body text-sm font-semibold text-gray-900">Redes sociales</h2>
+      <section className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-xs flex flex-col gap-5">
+        <h2 className="font-sans text-base font-bold text-[#1D1D1F]">Redes sociales</h2>
 
         <div>
           <FieldLabel htmlFor="instagram">Instagram (URL completa)</FieldLabel>
@@ -206,36 +206,36 @@ export default function AdminConfiguracionPage() {
       </section>
 
       {/* ── Políticas ─────────────────────────────────────────────────────── */}
-      <section className="bg-white border border-gray-200 rounded-lg p-5 md:p-6 flex flex-col gap-5">
-        <h2 className="font-body text-sm font-semibold text-gray-900">Información para clientes</h2>
-
+      <section className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-xs flex flex-col gap-5">
+        <h2 className="font-sans text-base font-bold text-[#1D1D1F]">Información para clientes</h2>
 
         <div>
           <FieldLabel htmlFor="returns">Política de devoluciones</FieldLabel>
           <textarea id="returns" value={form.returnPolicy ?? ""} onChange={set("returnPolicy")} rows={3} placeholder="Para cambios o devoluciones comunicarse dentro de los 7 días…" className={`${inputClass} resize-none`} />
         </div>
       </section>
+
       {error && (
-        <div role="alert" className="bg-red-50 border border-red-200 rounded-md px-4 py-3 font-body text-sm text-red-700">
+        <div role="alert" className="bg-red-50 border border-red-200 rounded-2xl px-5 py-4 font-sans text-xs text-red-700 font-semibold">
           {error}
         </div>
       )}
 
       {saved && (
-        <div role="status" className="bg-green-50 border border-green-200 rounded-md px-4 py-3 font-body text-sm text-green-800 flex items-center gap-2">
+        <div role="status" className="bg-emerald-50 border border-emerald-200 rounded-2xl px-5 py-4 font-sans text-xs text-emerald-800 font-semibold flex items-center gap-2">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.3" />
             <path d="M5 8l2 2 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
-          ¡Configuración guardada con éxito!
+          ¡Ajustes guardados con éxito!
         </div>
       )}
 
-      <div className="pb-2">
+      <div className="pt-2">
         <button
           type="submit"
           disabled={saving}
-          className="w-full md:w-auto px-8 py-3 bg-gray-900 text-white font-body text-sm rounded-md hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+          className="w-full md:w-auto px-8 py-3.5 bg-[#007AFF] hover:bg-[#0062CC] text-white font-sans text-sm font-semibold rounded-2xl transition-all shadow-xs active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
         >
           {saving ? (
             <>
@@ -243,7 +243,7 @@ export default function AdminConfiguracionPage() {
               Guardando…
             </>
           ) : (
-            "Guardar configuración"
+            "Guardar ajustes"
           )}
         </button>
       </div>

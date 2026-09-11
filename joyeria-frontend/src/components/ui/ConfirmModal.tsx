@@ -131,31 +131,31 @@ export function ConfirmModal({
                         aria-modal="true"
                         aria-labelledby="confirm-modal-title"
                         aria-describedby="confirm-modal-description"
-                        className="relative w-full max-w-md bg-white rounded-xl shadow-2xl border border-gray-100 p-6 z-10 font-body overflow-hidden"
+                        className="relative w-full max-w-md bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/80 p-6 z-10 font-sans overflow-hidden"
                     >
-                        <div className="flex items-start gap-4">
-                            <div className={`p-3 rounded-full shrink-0 ${vStyles.iconBg}`}>
+                        <div className="flex items-start gap-4 font-sans">
+                            <div className={`p-3 rounded-2xl shrink-0 ${vStyles.iconBg}`}>
                                 {vStyles.icon}
                             </div>
 
-                            <div className="flex-1 min-w-0 pt-0.5">
-                                <h3 id="confirm-modal-title" className="text-lg font-semibold text-gray-900 leading-snug">
+                            <div className="flex-1 min-w-0 pt-0.5 font-sans">
+                                <h3 id="confirm-modal-title" className="text-lg font-bold text-[#1D1D1F] leading-snug tracking-tight">
                                     {title}
                                 </h3>
-                                <p id="confirm-modal-description" className="mt-2 text-sm text-gray-600 leading-relaxed">
+                                <p id="confirm-modal-description" className="mt-1.5 text-sm text-gray-500 font-medium leading-relaxed">
                                     {message}
                                 </p>
                             </div>
                         </div>
 
                         {/* Actions */}
-                        <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+                        <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 font-sans">
                             <button
                                 ref={cancelButtonRef}
                                 type="button"
                                 disabled={isLoading}
                                 onClick={onCancel}
-                                className="w-full sm:w-auto px-5 py-2.5 min-h-[44px] text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
+                                className="w-full sm:w-auto px-5 py-2.5 min-h-[44px] text-sm font-semibold text-gray-700 bg-[#F5F5F7] hover:bg-gray-200 rounded-2xl transition-colors focus:outline-none disabled:opacity-50 cursor-pointer"
                             >
                                 {cancelLabel}
                             </button>
@@ -164,7 +164,7 @@ export function ConfirmModal({
                                 type="button"
                                 disabled={isLoading}
                                 onClick={onConfirm}
-                                className={`w-full sm:w-auto px-5 py-2.5 min-h-[44px] text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-50 flex items-center justify-center gap-2 ${vStyles.confirmBtn}`}
+                                className={`w-full sm:w-auto px-5 py-2.5 min-h-[44px] text-sm font-semibold rounded-2xl transition-all active:scale-[0.98] focus:outline-none disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer ${vStyles.confirmBtn}`}
                             >
                                 {isLoading ? (
                                     <>

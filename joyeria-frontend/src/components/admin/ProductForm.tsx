@@ -38,9 +38,9 @@ interface ProductFormProps {
 }
 
 const STATUS_OPTIONS: { value: ProductStatus; label: string; desc: string }[] = [
-  { value: "ACTIVE", label: "Activo", desc: "Visible inmediatamente en la tienda pública" },
-  { value: "DRAFT", label: "Borrador", desc: "Oculto, visible solo para el administrador" },
-  { value: "OUT_OF_STOCK", label: "Sin stock", desc: "Visible en la tienda pero con badge de agotado" },
+  { value: "ACTIVE", label: "Activo (Visible en tienda)", desc: "Visible en la tienda" },
+  { value: "DRAFT", label: "Borrador (Oculto)", desc: "Oculto" },
+  { value: "OUT_OF_STOCK", label: "Sin stock (Agotado)", desc: "Badge de agotado" },
 ];
 
 function FieldLabel({ htmlFor, children, required }: { htmlFor: string; children: React.ReactNode; required?: boolean }) {
@@ -491,7 +491,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
-                {opt.label} — {opt.desc}
+                {opt.label}
               </option>
             ))}
           </select>

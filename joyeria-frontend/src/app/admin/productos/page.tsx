@@ -278,19 +278,19 @@ export default function AdminProductsPage() {
     <div className="flex flex-col gap-8 max-w-7xl mx-auto font-sans text-gray-900 pb-16">
 
       {/* ── Encabezado Principal ─────────────────────────────────────────── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-300 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-200/80 pb-6">
         <div>
-          <h1 className="text-3xl sm:text-4xl text-black font-extrabold tracking-tight">
+          <h1 className="text-2xl sm:text-3xl text-[#1D1D1F] font-bold tracking-tight font-sans">
             Joyas en Tienda
           </h1>
-          <p className="text-sm sm:text-base text-gray-700 mt-1 font-medium">
-            Tocá el botón negro para cargar una joya nueva.
+          <p className="text-sm text-gray-500 mt-1 font-normal font-sans">
+            Tocá el botón para cargar una joya nueva.
           </p>
         </div>
 
         <Link
           href="/admin/productos/nuevo"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[#1D1D1F] hover:bg-black !text-white text-sm font-semibold uppercase tracking-wider rounded-2xl shadow-xs transition-all active:scale-[0.98] cursor-pointer min-h-[48px]"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#1D1D1F] hover:bg-black !text-white text-sm font-semibold uppercase tracking-wider rounded-2xl shadow-xs transition-all active:scale-[0.98] cursor-pointer min-h-[44px]"
         >
           <span className="!text-white font-bold text-lg leading-none">+</span>
           <span className="!text-white">CARGAR JOYA</span>
@@ -298,38 +298,38 @@ export default function AdminProductsPage() {
       </div>
 
       {/* ── Resumen Ejecutivo (Tira de métricas clara) ────────────────────── */}
-      <div className="bg-white border border-gray-300 rounded-xl p-5 shadow-2xs">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+      <div className="bg-white border border-gray-200/80 rounded-3xl p-5 shadow-xs">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-gray-200/80">
           <div className="pt-2 md:pt-0 md:px-4 first:pl-0">
-            <p className="font-sans text-xs uppercase tracking-wider text-gray-600 font-bold">Total en Catálogo</p>
-            <p className="font-sans text-3xl font-extrabold text-black mt-1">{stats.total}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-gray-500 font-semibold">Total en Catálogo</p>
+            <p className="font-sans text-3xl font-extrabold text-[#1D1D1F] mt-1">{stats.total}</p>
           </div>
           <div className="pt-2 md:pt-0 md:px-4">
-            <p className="font-sans text-xs uppercase tracking-wider text-emerald-800 font-bold">Publicados en Tienda</p>
-            <p className="font-sans text-3xl font-extrabold text-emerald-900 mt-1">{stats.active}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-emerald-700 font-semibold">Publicados en Tienda</p>
+            <p className="font-sans text-3xl font-extrabold text-emerald-800 mt-1">{stats.active}</p>
           </div>
           <div className="pt-2 md:pt-0 md:px-4">
-            <p className="font-sans text-xs uppercase tracking-wider text-amber-800 font-bold">Borradores Ocultos</p>
-            <p className="font-sans text-3xl font-extrabold text-amber-900 mt-1">{stats.draft}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-amber-700 font-semibold">Borradores Ocultos</p>
+            <p className="font-sans text-3xl font-extrabold text-amber-800 mt-1">{stats.draft}</p>
           </div>
           <div className="pt-2 md:pt-0 md:px-4">
-            <p className="font-sans text-xs uppercase tracking-wider text-rose-800 font-bold">Sin Stock</p>
-            <p className="font-sans text-3xl font-extrabold text-rose-900 mt-1">{stats.outOfStock}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-rose-700 font-semibold">Sin Stock</p>
+            <p className="font-sans text-3xl font-extrabold text-rose-800 mt-1">{stats.outOfStock}</p>
           </div>
         </div>
       </div>
 
-      {/* ── 1. Selector de Secciones Principales (Tabs Sobrios) ────────────── */}
-      <div className="border-b border-[#E8E4DE]">
+      {/* ── 1. Selector de Secciones Principales (Tabs Sobrios Apple) ────────────── */}
+      <div className="border-b border-gray-200/80">
         <div className="flex gap-2 overflow-x-auto scrollbar-hide -mb-px">
           {SECTIONS.map((sec) => (
             <button
               key={sec.id}
               type="button"
               onClick={() => handleSectionChange(sec.id)}
-              className={`px-4 py-3 text-xs uppercase tracking-widest transition-all cursor-pointer font-sans whitespace-nowrap border-b-2 ${activeSection === sec.id
-                ? "border-amber-800 text-amber-950 font-bold"
-                : "border-transparent text-gray-400 hover:text-gray-900 hover:border-gray-300 font-medium"
+              className={`px-4 py-3 text-xs uppercase tracking-wider transition-all cursor-pointer font-sans whitespace-nowrap border-b-2 ${activeSection === sec.id
+                ? "border-[#007AFF] text-[#007AFF] font-bold"
+                : "border-transparent text-gray-500 hover:text-[#1D1D1F] hover:border-gray-300 font-semibold"
                 }`}
             >
               {sec.name}
@@ -339,7 +339,7 @@ export default function AdminProductsPage() {
       </div>
 
       {/* ── 2. Barra de Búsqueda y Filtros de Estado ──────────────────────── */}
-      <div className="bg-white border border-[#E8E4DE] rounded-lg p-4 shadow-2xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+      <div className="bg-white border border-gray-200/80 rounded-3xl p-4 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Buscador de texto */}
         <div className="relative flex-1">
           <svg
@@ -364,7 +364,7 @@ export default function AdminProductsPage() {
               setCurrentPage(1);
             }}
             placeholder="Buscar por nombre, material o modelo..."
-            className="w-full pl-10 pr-4 py-2.5 bg-[#FAF8F5] border border-[#E8E4DE] rounded-md text-xs text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-amber-800 focus:ring-1 focus:ring-amber-800 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl text-xs font-semibold text-[#1D1D1F] placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF] transition-all"
           />
         </div>
 
@@ -377,7 +377,7 @@ export default function AdminProductsPage() {
                 setSelectedCategoryId(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full px-3 py-2.5 bg-[#FAF8F5] border border-[#E8E4DE] rounded-md text-xs text-gray-900 focus:bg-white focus:outline-none focus:border-amber-800"
+              className="w-full px-3 py-2.5 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl text-xs font-semibold text-[#1D1D1F] focus:bg-white focus:outline-none focus:border-[#007AFF]"
             >
               <option value="">Todas las subcategorías</option>
               {sectionSubcategories.map((c) => (
@@ -390,7 +390,7 @@ export default function AdminProductsPage() {
         )}
 
         {/* Filtros de Estado */}
-        <div className="flex gap-1 overflow-x-auto pb-0.5">
+        <div className="flex gap-1.5 overflow-x-auto pb-0.5">
           {[
             { value: "" as const, label: "Todos" },
             { value: "ACTIVE" as const, label: "Activos" },
@@ -404,9 +404,9 @@ export default function AdminProductsPage() {
                 setStatusFilter(opt.value);
                 setCurrentPage(1);
               }}
-              className={`px-3 py-1.5 rounded text-[11px] uppercase tracking-wider font-semibold whitespace-nowrap transition-colors cursor-pointer ${statusFilter === opt.value
-                ? "bg-[#1A1A1A] text-white"
-                : "bg-gray-100/80 text-gray-600 hover:bg-gray-200/80"
+              className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${statusFilter === opt.value
+                ? "bg-[#007AFF] text-white"
+                : "bg-[#F5F5F7] text-gray-600 hover:bg-gray-200/70"
                 }`}
             >
               {opt.label}
@@ -417,15 +417,15 @@ export default function AdminProductsPage() {
 
       {/* ── Estado de Carga / Error ───────────────────────────────────────── */}
       {loading && (
-        <div className="flex flex-col items-center justify-center py-20 bg-white border border-[#E8E4DE] rounded-lg">
-          <div className="w-8 h-8 border-2 border-amber-800 border-t-transparent rounded-full animate-spin mb-3" />
-          <p className="font-serif text-sm text-gray-500 font-normal">Cargando catálogo de joyas...</p>
+        <div className="flex flex-col items-center justify-center py-20 bg-white border border-gray-200/80 rounded-3xl">
+          <div className="w-8 h-8 border-2 border-[#007AFF] border-t-transparent rounded-full animate-spin mb-3" />
+          <p className="font-sans text-sm text-gray-500 font-medium">Cargando catálogo...</p>
         </div>
       )}
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-xs text-red-700 font-medium">
-          ⚠️ {error}
+        <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-xs text-red-700 font-semibold">
+          {error}
         </div>
       )}
 
@@ -496,17 +496,17 @@ export default function AdminProductsPage() {
 
                     {/* Info */}
                     <div className="flex-1 min-w-0">
-                      <p className="font-serif text-base font-medium text-gray-950 truncate leading-tight">
+                      <p className="font-sans text-[#1D1D1F] font-bold text-base truncate leading-tight tracking-tight">
                         {product.name}
                       </p>
                       <p className="text-xs text-gray-400 mt-0.5 truncate font-sans">
                         {product.category?.name || "Sin categoría"}
                       </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${status.badgeClass}`}>
+                      <div className="flex items-center gap-2 mt-2 font-sans">
+                        <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${status.badgeClass}`}>
                           {status.label}
                         </span>
-                        <span className="font-serif text-sm font-bold text-gray-950">
+                        <span className="font-sans text-sm font-bold text-[#1D1D1F]">
                           {product.showPrice && product.price ? formatPrice(product.price) : "A consultar"}
                         </span>
                       </div>
@@ -514,21 +514,21 @@ export default function AdminProductsPage() {
                   </div>
 
                   {/* Acciones móviles */}
-                  <div className="flex items-center justify-between border-t border-[#E8E4DE] pt-3 mt-1 gap-3">
+                  <div className="flex items-center justify-between border-t border-gray-200/80 pt-3 mt-1 gap-3">
                     <select
                       value={product.status}
                       onChange={(e) => handleQuickStatusChange(product, e.target.value as ProductStatus)}
-                      className="text-xs bg-[#FAF8F5] border border-[#E8E4DE] rounded-md px-2 py-1.5 text-gray-700 focus:outline-none min-h-[36px]"
+                      className="text-xs bg-[#F5F5F7] border border-gray-200/80 rounded-xl px-2 py-1.5 font-semibold text-gray-700 focus:outline-none min-h-[36px]"
                     >
                       <option value="ACTIVE">Activo</option>
                       <option value="DRAFT">Borrador</option>
                       <option value="OUT_OF_STOCK">Sin stock</option>
                     </select>
 
-                    <div className="flex items-center gap-0 shrink-0">
+                    <div className="flex items-center gap-1 shrink-0">
                       <Link
                         href={`/admin/productos/${product.id}`}
-                        className="text-xs font-medium text-gray-900 hover:text-amber-800 px-3 py-2 rounded-l-md bg-gray-50 border border-[#E8E4DE] min-h-[36px] flex items-center"
+                        className="text-xs font-semibold text-[#007AFF] hover:bg-[#007AFF]/10 px-3 py-1.5 rounded-xl bg-gray-50 border border-gray-200/80 min-h-[36px] flex items-center transition-colors"
                       >
                         Editar
                       </Link>
@@ -536,7 +536,7 @@ export default function AdminProductsPage() {
                         type="button"
                         onClick={() => handleDeleteClick(product)}
                         disabled={deletingId === product.id}
-                        className="text-xs text-red-700 hover:text-red-900 px-3 py-2 rounded-r-md border border-l-0 border-red-200 bg-red-50/50 hover:bg-red-50 disabled:opacity-40 min-h-[36px] flex items-center cursor-pointer"
+                        className="text-xs font-semibold text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-xl border border-red-200/60 bg-red-50/40 disabled:opacity-40 min-h-[36px] flex items-center cursor-pointer transition-colors"
                       >
                         {deletingId === product.id ? "Borrando..." : "Eliminar"}
                       </button>
@@ -547,29 +547,29 @@ export default function AdminProductsPage() {
             })}
           </div>
 
-          {/* 💻 Desktop: Tabla Lujo Minimalista */}
-          <div className="hidden md:block bg-white border border-[#E8E4DE] rounded-lg overflow-hidden shadow-2xs">
-            <table className="w-full text-left text-xs">
+          {/* 💻 Desktop: Tabla Estilo Apple iOS */}
+          <div className="hidden md:block bg-white border border-gray-200/80 rounded-3xl overflow-hidden shadow-xs">
+            <table className="w-full text-left text-xs font-sans">
               <thead>
-                <tr className="border-b border-[#E8E4DE] bg-[#FAF8F5]">
-                  <th className="px-5 py-4 font-serif text-xs font-normal text-gray-500 uppercase tracking-widest">Joya / Pieza</th>
-                  <th className="px-5 py-4 font-serif text-xs font-normal text-gray-500 uppercase tracking-widest">Categoría</th>
-                  <th className="px-5 py-4 font-serif text-xs font-normal text-gray-500 uppercase tracking-widest">Precio</th>
-                  <th className="px-5 py-4 font-serif text-xs font-normal text-gray-500 uppercase tracking-widest">Estado</th>
-                  <th className="px-5 py-4 font-serif text-xs font-normal text-gray-500 uppercase tracking-widest text-right">Acciones</th>
+                <tr className="border-b border-gray-200/80 bg-[#F5F5F7]">
+                  <th className="px-5 py-4 font-sans text-xs font-semibold text-gray-500 uppercase tracking-wider">Joya / Pieza</th>
+                  <th className="px-5 py-4 font-sans text-xs font-semibold text-gray-500 uppercase tracking-wider">Categoría</th>
+                  <th className="px-5 py-4 font-sans text-xs font-semibold text-gray-500 uppercase tracking-wider">Precio</th>
+                  <th className="px-5 py-4 font-sans text-xs font-semibold text-gray-500 uppercase tracking-wider">Estado</th>
+                  <th className="px-5 py-4 font-sans text-xs font-semibold text-gray-500 uppercase tracking-wider text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E8E4DE]">
+              <tbody className="divide-y divide-gray-200/80 font-sans">
                 {paginatedProducts.map((product) => {
                   const thumb = product.images.find((i) => i.order === 0) ?? product.images[0];
                   const status = STATUS_CONFIG[product.status];
 
                   return (
-                    <tr key={product.id} className="hover:bg-[#FAF8F5]/60 transition-colors group">
+                    <tr key={product.id} className="hover:bg-[#F5F5F7]/60 transition-colors group">
                       {/* Producto */}
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-4">
-                          <div className="relative w-12 h-12 shrink-0 rounded overflow-hidden bg-[#FAF8F5] border border-[#E8E4DE]">
+                          <div className="relative w-12 h-12 shrink-0 rounded-xl overflow-hidden bg-[#F5F5F7] border border-gray-200/80">
                             {thumb ? (
                               <Image
                                 src={thumb.thumbnailUrl ?? thumb.url}
@@ -588,7 +588,7 @@ export default function AdminProductsPage() {
                             )}
                           </div>
                           <div>
-                            <p className="font-serif text-base font-normal text-gray-950 tracking-wide">{product.name}</p>
+                            <p className="font-sans text-sm font-bold text-[#1D1D1F] tracking-tight">{product.name}</p>
                             <p className="text-[11px] text-gray-400 font-sans mt-0.5">/{product.slug}</p>
                           </div>
                         </div>
@@ -596,7 +596,7 @@ export default function AdminProductsPage() {
 
                       {/* Categoría */}
                       <td className="px-5 py-3.5 text-gray-700 font-sans text-xs">
-                        <span className="bg-[#FAF8F5] border border-[#E8E4DE] px-2.5 py-1 rounded text-gray-600 font-medium">
+                        <span className="bg-[#F5F5F7] border border-gray-200/80 px-3 py-1 rounded-full text-gray-600 font-semibold">
                           {product.category?.name || "Sin asignar"}
                         </span>
                       </td>
@@ -604,9 +604,9 @@ export default function AdminProductsPage() {
                       {/* Precio */}
                       <td className="px-5 py-3.5">
                         {product.showPrice && product.price ? (
-                          <span className="font-serif text-base font-normal text-gray-950">{formatPrice(product.price)}</span>
+                          <span className="font-sans text-sm font-bold text-[#1D1D1F]">{formatPrice(product.price)}</span>
                         ) : (
-                          <span className="font-serif text-xs text-amber-800 italic">A consultar</span>
+                          <span className="font-sans text-xs text-gray-400 font-medium">A consultar</span>
                         )}
                       </td>
 
@@ -615,7 +615,7 @@ export default function AdminProductsPage() {
                         <select
                           value={product.status}
                           onChange={(e) => handleQuickStatusChange(product, e.target.value as ProductStatus)}
-                          className={`text-[11px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded cursor-pointer focus:outline-none bg-white ${status.badgeClass}`}
+                          className={`text-[11px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full cursor-pointer focus:outline-none bg-white ${status.badgeClass}`}
                         >
                           <option value="ACTIVE">Activo</option>
                           <option value="DRAFT">Borrador</option>
@@ -625,10 +625,10 @@ export default function AdminProductsPage() {
 
                       {/* Acciones */}
                       <td className="px-5 py-3.5 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5">
                           <Link
                             href={`/admin/productos/${product.id}`}
-                            className="p-1.5 text-gray-500 hover:text-amber-800 hover:bg-amber-50 rounded transition-colors"
+                            className="p-2 text-gray-500 hover:text-[#007AFF] hover:bg-[#007AFF]/10 rounded-xl transition-colors"
                             title="Editar producto"
                           >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -641,7 +641,7 @@ export default function AdminProductsPage() {
                             type="button"
                             onClick={() => handleDeleteClick(product)}
                             disabled={deletingId === product.id}
-                            className="p-1.5 text-gray-400 hover:text-red-700 hover:bg-red-50 rounded transition-colors disabled:opacity-40 cursor-pointer"
+                            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors disabled:opacity-40 cursor-pointer"
                             title="Eliminar producto"
                           >
                             {deletingId === product.id ? (
@@ -664,7 +664,7 @@ export default function AdminProductsPage() {
 
           {/* ── Paginador ─────────────────────────────────────────────────── */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-2xs">
+            <div className="flex items-center justify-between bg-white border border-gray-200/80 rounded-3xl px-5 py-3 shadow-xs font-sans">
               <p className="text-xs text-gray-500">
                 Mostrando {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, totalItems)} de {totalItems} piezas
               </p>
@@ -674,18 +674,18 @@ export default function AdminProductsPage() {
                   type="button"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage <= 1}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3.5 py-1.5 border border-gray-200/80 rounded-full text-xs font-semibold text-gray-700 hover:bg-[#F5F5F7] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Anterior
                 </button>
-                <span className="text-xs text-gray-700 font-semibold px-2">
+                <span className="text-xs text-[#1D1D1F] font-bold px-2">
                   {currentPage} / {totalPages}
                 </span>
                 <button
                   type="button"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage >= totalPages}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  className="px-3.5 py-1.5 border border-gray-200/80 rounded-full text-xs font-semibold text-gray-700 hover:bg-[#F5F5F7] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
                 >
                   Siguiente
                 </button>
@@ -696,12 +696,12 @@ export default function AdminProductsPage() {
       )}
 
       {/* ── Banner informativo de ayuda al pie ────────────────────────────── */}
-      <div className="bg-amber-50/60 border border-amber-200/80 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-amber-900 mt-2">
+      <div className="bg-[#007AFF]/10 border border-[#007AFF]/20 rounded-3xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-[#007AFF] mt-2 font-sans">
         <div className="flex items-center gap-2.5">
           <span className="text-base shrink-0">💡</span>
           <div>
-            <p className="font-semibold">¿Cómo impactan los estados en la joyería?</p>
-            <p className="text-amber-800/90 mt-0.5">
+            <p className="font-bold">¿Cómo impactan los estados en la joyería?</p>
+            <p className="text-[#007AFF]/90 mt-0.5 font-medium">
               &quot;Activo&quot; publica la pieza inmediatamente. &quot;Borrador&quot; la mantiene guardada en el admin sin mostrarla a los clientes. &quot;Sin stock&quot; muestra la pieza con etiqueta de no disponible.
             </p>
           </div>

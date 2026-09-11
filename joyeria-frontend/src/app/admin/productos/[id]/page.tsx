@@ -62,19 +62,20 @@ export default function EditarProductoPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="w-8 h-8 border-2 border-amber-600 border-t-transparent rounded-full animate-spin" aria-label="Cargando producto" />
+      <div className="flex flex-col items-center justify-center py-20 gap-3 font-sans">
+        <div className="w-8 h-8 border-3 border-[#007AFF] border-t-transparent rounded-full animate-spin" aria-label="Cargando producto" />
+        <p className="text-sm text-gray-500 font-medium">Cargando pieza...</p>
       </div>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="text-center py-16">
-        <p className="font-body text-gray-600 mb-4">{error ?? "Producto no encontrado."}</p>
+      <div className="text-center py-16 font-sans">
+        <p className="text-base text-gray-600 mb-4">{error ?? "Producto no encontrado."}</p>
         <button
           onClick={() => router.back()}
-          className="font-body text-sm text-amber-700 hover:underline"
+          className="text-sm font-semibold text-[#007AFF] hover:underline cursor-pointer"
         >
           ← Volver a la lista
         </button>
@@ -95,13 +96,13 @@ export default function EditarProductoPage() {
     }));
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 max-w-4xl mx-auto font-sans text-[#1D1D1F] pb-16">
       {/* Encabezado */}
-      <div>
-        <h1 className="font-body text-xl font-semibold text-gray-900 truncate">
+      <div className="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs">
+        <h1 className="text-2xl font-bold text-[#1D1D1F] tracking-tight truncate">
           Editar: {product.name}
         </h1>
-        <p className="font-body text-xs text-gray-500 mt-1">
+        <p className="text-sm text-gray-500 mt-1 font-normal">
           Los cambios se reflejan en la tienda en cuanto guardás.
         </p>
       </div>
