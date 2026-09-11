@@ -203,32 +203,24 @@ export default function ImageUploader({
     <div className="flex flex-col gap-5">
       {/* Botones de acción — Grandes y de Alto Contraste en Blanco y Negro */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {/* Cámara — Botón Principal Gigante */}
+        {/* Cámara */}
         <button
           type="button"
           onClick={() => cameraInputRef.current?.click()}
           disabled={disabled || compressing}
-          className="flex items-center justify-center gap-4 p-5 bg-black hover:bg-gray-900 active:scale-[0.98] text-white border-2 border-black rounded-2xl transition-all disabled:opacity-50 cursor-pointer shadow-md min-h-[64px]"
+          className="flex items-center justify-center p-4 bg-[#1D1D1F] hover:bg-black active:scale-[0.98] text-white rounded-2xl transition-all disabled:opacity-50 cursor-pointer min-h-[56px] shadow-xs"
         >
-          <span className="text-3xl shrink-0">📷</span>
-          <div className="text-left">
-            <p className="text-lg sm:text-xl font-extrabold uppercase tracking-wide leading-tight">Sacar foto con el celular</p>
-            <p className="text-xs font-semibold text-gray-300">Abre la cámara directo</p>
-          </div>
+          <span className="text-base font-semibold tracking-tight">Tomar Foto con Cámara</span>
         </button>
 
-        {/* Galería — Botón Secundario */}
+        {/* Galería */}
         <button
           type="button"
           onClick={() => galleryInputRef.current?.click()}
           disabled={disabled || compressing}
-          className="flex items-center justify-center gap-4 p-5 bg-white hover:bg-gray-100 active:scale-[0.98] text-black border-2 border-black rounded-2xl transition-all disabled:opacity-50 cursor-pointer shadow-xs min-h-[64px]"
+          className="flex items-center justify-center p-4 bg-[#F5F5F7] hover:bg-gray-200/70 active:scale-[0.98] text-[#1D1D1F] border border-gray-200/80 rounded-2xl transition-all disabled:opacity-50 cursor-pointer min-h-[56px]"
         >
-          <span className="text-3xl shrink-0">🖼️</span>
-          <div className="text-left">
-            <p className="text-lg sm:text-xl font-extrabold uppercase tracking-wide leading-tight">Elegir foto guardada</p>
-            <p className="text-xs font-semibold text-gray-600">De la galería de fotos</p>
-          </div>
+          <span className="text-base font-semibold tracking-tight">Elegir de Galería</span>
         </button>
 
         {/* Inputs ocultos */}

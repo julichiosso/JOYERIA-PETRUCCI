@@ -45,14 +45,14 @@ const STATUS_OPTIONS: { value: ProductStatus; label: string; desc: string }[] = 
 
 function FieldLabel({ htmlFor, children, required }: { htmlFor: string; children: React.ReactNode; required?: boolean }) {
   return (
-    <label htmlFor={htmlFor} className="block text-sm font-extrabold text-black uppercase tracking-wide mb-1.5 font-sans">
-      {children} {required && <span className="text-red-600 font-bold">*</span>}
+    <label htmlFor={htmlFor} className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 font-sans">
+      {children} {required && <span className="text-red-500 font-bold">*</span>}
     </label>
   );
 }
 
 function inputClass(error?: boolean) {
-  return `w-full px-4 py-3 bg-white border-2 ${error ? "border-red-600 bg-red-50/50" : "border-gray-400"} rounded-xl text-base sm:text-lg font-bold text-black placeholder:text-gray-400 placeholder:font-normal focus:bg-white focus:outline-none focus:border-black focus:ring-2 focus:ring-black transition-colors font-sans`;
+  return `w-full px-4 py-3.5 bg-[#F5F5F7] border ${error ? "border-red-500 bg-red-50/40" : "border-gray-200/80"} rounded-2xl text-base font-semibold text-[#1D1D1F] placeholder:text-gray-400 placeholder:font-normal focus:bg-white focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-all font-sans`;
 }
 
 // Función helper para formatear miles visualmente
@@ -348,28 +348,25 @@ export default function ProductForm({ initialData }: ProductFormProps) {
       {/* ── Encabezado Principal ────────────────────────────────────────── */}
       <div className="border-b border-gray-300 pb-4">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-black tracking-tight">
-          {isEditing ? "Editar Joya" : "Publicar Nueva Joya"}
+          {isEditing ? "Editar Joya" : "Publicar Joya"}
         </h1>
-        <p className="text-sm font-medium text-gray-700 mt-1">
-          Paso 1: Sacá o elegí la foto. Paso 2: Ponéle nombre y precio. ¡Listo!
-        </p>
       </div>
 
       {appliedSuggestion && (
-        <div className="p-4 bg-emerald-50 border-2 border-emerald-500 rounded-xl text-sm font-bold text-emerald-950 flex items-center gap-2">
-          <span>✓ Sugerencias de descripción y SEO aplicadas.</span>
+        <div className="p-4 bg-emerald-50 border-2 border-emerald-500 rounded-xl text-sm font-bold text-emerald-950">
+          Sugerencias de descripción y SEO aplicadas.
         </div>
       )}
 
-      {/* ── 1. FOTO DE LA JOYA (TIPO INSTAGRAM — ARRIBA DE TODO) ────────── */}
-      <section className="bg-white border-2 border-black rounded-2xl p-5 flex flex-col gap-4 shadow-md">
-        <div className="flex items-center justify-between border-b-2 border-gray-200 pb-3">
-          <h2 className="text-lg font-extrabold text-black uppercase tracking-wide flex items-center gap-2 font-sans">
-            <span>📷</span> 1. Foto de la Joya (Obligatoria)
+      {/* ── 1. FOTO DE LA JOYA ────────────────────────────────────────── */}
+      <section className="bg-white border border-gray-200/80 rounded-3xl p-6 flex flex-col gap-4 shadow-xs">
+        <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+          <h2 className="text-base font-semibold text-[#1D1D1F] uppercase tracking-wide font-sans">
+            1. Foto de la Joya
           </h2>
           {images.length > 0 && (
-            <span className="text-xs font-bold bg-black text-white px-2.5 py-1 rounded-full uppercase">
-              ✓ Foto Lista
+            <span className="text-xs font-semibold bg-[#1D1D1F] text-white px-3 py-1 rounded-full">
+              Foto lista
             </span>
           )}
         </div>
@@ -382,10 +379,10 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         />
       </section>
 
-      {/* ── 2. DATOS DE LA JOYA (JUSTO DEBAJO DE LA FOTO) ───────────────── */}
-      <section className="bg-white border-2 border-gray-300 rounded-2xl p-5 flex flex-col gap-5 shadow-xs">
-        <h2 className="text-lg font-extrabold text-black uppercase tracking-wide border-b-2 border-gray-200 pb-3 font-sans">
-          📝 2. Datos Básicos
+      {/* ── 2. DATOS DE LA JOYA ───────────────────────────────────────── */}
+      <section className="bg-white border border-gray-200/80 rounded-3xl p-6 flex flex-col gap-5 shadow-xs">
+        <h2 className="text-base font-semibold text-[#1D1D1F] uppercase tracking-wide border-b border-gray-100 pb-3 font-sans">
+          2. Datos Básicos
         </h2>
 
         {/* Nombre de la Joya */}
@@ -522,23 +519,20 @@ export default function ProductForm({ initialData }: ProductFormProps) {
         </div>
       )}
 
-      {/* ── Botón Gigante de Publicar (Alto Contraste Blanco/Negro) ───────── */}
-      <div className="flex flex-col gap-3 pt-4">
+      {/* ── Botón de Publicar (Estilo Apple iOS) ─────────────────────────── */}
+      <div className="flex flex-col gap-3 pt-2">
         <button
           type="submit"
           disabled={submitting}
-          className="w-full py-5 px-6 bg-black hover:bg-gray-900 active:scale-[0.98] text-white text-xl font-extrabold uppercase tracking-wider rounded-2xl shadow-xl transition-all disabled:opacity-50 flex items-center justify-center gap-3 cursor-pointer border-2 border-black min-h-[64px]"
+          className="w-full py-4 px-6 bg-[#1D1D1F] hover:bg-black active:scale-[0.98] text-white text-base font-semibold uppercase tracking-wider rounded-2xl shadow-sm transition-all disabled:opacity-50 flex items-center justify-center gap-3 cursor-pointer min-h-[56px]"
         >
           {submitting ? (
             <>
-              <span className="w-6 h-6 border-3 border-white border-t-transparent rounded-full animate-spin shrink-0" />
-              <span>Publicando Joya en la Tienda...</span>
+              <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
+              <span>Publicando...</span>
             </>
           ) : (
-            <>
-              <span className="text-2xl">✨</span>
-              <span>PUBLICAR JOYA EN LA TIENDA</span>
-            </>
+            <span>PUBLICAR JOYA EN LA TIENDA</span>
           )}
         </button>
 
@@ -546,7 +540,7 @@ export default function ProductForm({ initialData }: ProductFormProps) {
           type="button"
           onClick={() => router.back()}
           disabled={submitting}
-          className="w-full py-3 text-center text-sm font-extrabold text-gray-700 hover:text-black uppercase tracking-wide transition-colors"
+          className="w-full py-3 text-center text-xs font-semibold text-gray-500 hover:text-black uppercase tracking-wider transition-colors"
         >
           Cancelar y Volver
         </button>

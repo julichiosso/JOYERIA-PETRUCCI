@@ -290,10 +290,10 @@ export default function AdminProductsPage() {
 
         <Link
           href="/admin/productos/nuevo"
-          className="inline-flex items-center justify-center gap-3 px-6 py-4 bg-black hover:bg-gray-900 !text-white text-base sm:text-lg font-extrabold uppercase tracking-wider rounded-xl shadow-md transition-all active:scale-[0.98] cursor-pointer min-h-[52px]"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-[#1D1D1F] hover:bg-black !text-white text-sm font-semibold uppercase tracking-wider rounded-2xl shadow-xs transition-all active:scale-[0.98] cursor-pointer min-h-[48px]"
         >
-          <span className="text-2xl font-black leading-none !text-white">+</span>
-          <span className="!text-white">CARGAR NUEVA JOYA</span>
+          <span className="!text-white font-bold text-lg leading-none">+</span>
+          <span className="!text-white">CARGAR JOYA</span>
         </Link>
       </div>
 
@@ -712,10 +712,9 @@ export default function AdminProductsPage() {
       <div className="md:hidden fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-gray-300 z-40 shadow-lg">
         <Link
           href="/admin/productos/nuevo"
-          className="w-full flex items-center justify-center gap-2 py-3.5 px-5 bg-black active:bg-gray-900 !text-white rounded-xl font-extrabold text-base uppercase tracking-wide shadow-md active:scale-[0.98] transition-all min-h-[52px]"
+          className="w-full flex items-center justify-center gap-2 py-3.5 px-5 bg-[#1D1D1F] active:bg-black !text-white rounded-2xl font-semibold text-sm uppercase tracking-wide shadow-xs active:scale-[0.98] transition-all min-h-[48px]"
         >
-          <span className="text-xl leading-none !text-white">➕</span>
-          <span className="!text-white">CARGAR NUEVA JOYA</span>
+          <span className="!text-white">CARGAR JOYA</span>
         </Link>
       </div>
 
