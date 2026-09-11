@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { adminFetch } from "@/lib/auth";
 import type { Category } from "@/types/category";
-import CategoryMenuPreview from "@/components/admin/CategoryMenuPreview";
 import { useToast } from "@/hooks/useToast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 
@@ -320,14 +319,14 @@ export default function AdminCategoriasPage() {
     Boolean(originalName);
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl mx-auto font-sans text-[#1D1D1F] pb-16">
+    <div className="flex flex-col gap-6 w-full font-sans text-[#1D1D1F] pb-16">
       {/* ── Encabezado Principal ─────────────────────────────────────────────── */}
-      <div className="bg-white p-6 rounded-3xl border border-gray-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-5 sm:p-6 rounded-3xl border border-gray-200/80 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[#1D1D1F] tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-[#1D1D1F] tracking-tight">
             Categorías del Menú
           </h1>
-          <p className="text-sm text-gray-500 mt-1 font-normal">
+          <p className="text-xs sm:text-sm text-gray-500 mt-1 font-normal">
             Organización de secciones principales y subrubros de la joyería.
           </p>
         </div>
@@ -340,8 +339,6 @@ export default function AdminCategoriasPage() {
           <span>+ Nueva Sección Principal</span>
         </button>
       </div>
-
-      {!loading && !error && <CategoryMenuPreview categories={categories} />}
 
       {error && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-800 font-semibold text-sm">
@@ -356,189 +353,162 @@ export default function AdminCategoriasPage() {
         </div>
       )}
 
-      {/* ── Listado de Secciones ─────────────────────────────────────────────── */}
+      {/* ── Listado de Secciones (Bento Box Estilo Apple — Cajas Japonesas) ────── */}
       {!loading && !error && (
-        <div className="flex flex-col gap-3.5">
+        <div>
           {categories.length === 0 ? (
-            <div className="text-center py-12 bg-white border border-gray-200/80 rounded-3xl p-6">
-              <p className="text-base text-gray-600 mb-3">
+            <div className="text-center py-12 bg-white border border-gray-200/80 rounded-3xl p-6 font-sans">
+              <p className="text-base text-gray-600 mb-4 font-medium">
                 No hay categorías creadas.
               </p>
               <button
                 type="button"
                 onClick={openCreateRoot}
-                className="px-5 py-2.5 bg-[#1D1D1F] hover:bg-black text-white rounded-2xl text-sm font-semibold min-h-[44px]"
+                className="px-6 py-3 bg-[#1D1D1F] hover:bg-black text-white rounded-2xl text-sm font-semibold min-h-[44px] cursor-pointer"
               >
-                Crear primera sección
+                + Crear primera sección
               </button>
             </div>
           ) : (
-            categories.map((cat, rootIndex) => (
-              <div
-                key={cat.id}
-                className="bg-white border border-gray-200/80 rounded-3xl shadow-xs overflow-hidden transition-all"
-              >
-                {/* ── Cabecera de Categoría Principal ── */}
-                <div className="p-4 bg-[#F5F5F7] border-b border-gray-200/60 flex flex-col md:flex-row md:items-center justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-1 shrink-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 font-sans">
+              {categories.map((cat, rootIndex) => (
+                <div
+                  key={cat.id}
+                  className="bg-white border border-gray-200/80 rounded-3xl p-5 shadow-xs flex flex-col justify-between hover:border-gray-300 transition-all gap-4"
+                >
+                  {/* Cabecera del Bento Box */}
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between gap-2 border-b border-gray-100 pb-3">
+                      <div className="flex items-center gap-2">
+                        {/* Botones para reordenar arriba/abajo */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => moveOrder(cat, "up", categories)}
+                            disabled={rootIndex === 0}
+                            title="Subir"
+                            className="w-7 h-7 flex items-center justify-center bg-[#F5F5F7] border border-gray-200/80 hover:bg-gray-200 rounded-lg text-xs text-gray-700 disabled:opacity-20 font-bold transition-all cursor-pointer"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => moveOrder(cat, "down", categories)}
+                            disabled={rootIndex === categories.length - 1}
+                            title="Bajar"
+                            className="w-7 h-7 flex items-center justify-center bg-[#F5F5F7] border border-gray-200/80 hover:bg-gray-200 rounded-lg text-xs text-gray-700 disabled:opacity-20 font-bold transition-all cursor-pointer"
+                          >
+                            ↓
+                          </button>
+                        </div>
+
+                        <h2 className="text-base font-bold text-[#1D1D1F] tracking-tight truncate">
+                          {cat.name}
+                        </h2>
+                      </div>
+
                       <button
                         type="button"
-                        onClick={() => moveOrder(cat, "up", categories)}
-                        disabled={rootIndex === 0}
-                        title="Subir"
-                        className="w-8 h-8 flex items-center justify-center bg-white border border-gray-200/80 hover:bg-gray-100 rounded-xl text-xs text-gray-900 disabled:opacity-20 font-bold active:scale-95 transition-all cursor-pointer"
+                        onClick={() => toggleActive(cat)}
+                        className="px-2.5 py-1 bg-[#F5F5F7] border border-gray-200/80 text-gray-700 hover:bg-gray-200 text-[11px] font-semibold rounded-lg transition-colors cursor-pointer shrink-0"
                       >
-                        Subir
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => moveOrder(cat, "down", categories)}
-                        disabled={rootIndex === categories.length - 1}
-                        title="Bajar"
-                        className="w-8 h-8 flex items-center justify-center bg-white border border-gray-200/80 hover:bg-gray-100 rounded-xl text-xs text-gray-900 disabled:opacity-20 font-bold active:scale-95 transition-all cursor-pointer"
-                      >
-                        Bajar
+                        {cat.isActive ? "Visible" : "Oculta"}
                       </button>
                     </div>
 
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[10px] font-sans font-semibold uppercase tracking-wider bg-gray-200/70 text-gray-700 px-2 py-0.5 rounded-full">
-                          #{rootIndex + 1}
-                        </span>
-                        <h2 className="text-base font-bold text-[#1D1D1F] tracking-tight">
-                          {cat.name}
-                        </h2>
-                        {cat.isProtected && (
-                          <span className="bg-amber-100/70 text-amber-900 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full">
-                            Básica
-                          </span>
-                        )}
-                        {!cat.isActive && (
-                          <span className="bg-gray-200 text-gray-700 text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full">
-                            Oculta
-                          </span>
-                        )}
-                      </div>
+                    {/* Lista compacta de Subrubros */}
+                    <div className="flex flex-col gap-1.5 min-h-[80px]">
+                      {cat.children && cat.children.length > 0 ? (
+                        cat.children.map((sub, subIndex) => (
+                          <div
+                            key={sub.id}
+                            className="flex items-center justify-between px-3 py-2 bg-[#F5F5F7]/80 hover:bg-[#F5F5F7] rounded-xl transition-colors gap-2"
+                          >
+                            <div className="flex items-center gap-2 truncate">
+                              <div className="flex items-center gap-0.5 shrink-0">
+                                <button
+                                  type="button"
+                                  onClick={() => moveOrder(sub as unknown as Category, "up", cat.children)}
+                                  disabled={subIndex === 0}
+                                  className="w-5 h-5 flex items-center justify-center text-[10px] text-gray-500 hover:text-black bg-white rounded border border-gray-200 disabled:opacity-20 font-bold cursor-pointer"
+                                  title="Subir"
+                                >
+                                  ↑
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => moveOrder(sub as unknown as Category, "down", cat.children)}
+                                  disabled={subIndex === cat.children.length - 1}
+                                  className="w-5 h-5 flex items-center justify-center text-[10px] text-gray-500 hover:text-black bg-white rounded border border-gray-200 disabled:opacity-20 font-bold cursor-pointer"
+                                  title="Bajar"
+                                >
+                                  ↓
+                                </button>
+                              </div>
+                              <span className="text-xs font-semibold text-[#1D1D1F] truncate">
+                                {sub.name}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                type="button"
+                                onClick={() => openEdit(sub as unknown as Category, cat.name)}
+                                className="px-2 py-1 text-[11px] font-medium text-gray-700 bg-white border border-gray-200 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
+                              >
+                                Editar
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setDeleteTarget(sub as unknown as Category)}
+                                className="px-1.5 py-1 text-[11px] font-medium text-gray-400 hover:text-black transition-colors cursor-pointer"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-xs text-gray-400 font-medium py-3 text-center">
+                          Sin subrubros aún.
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  {/* Acciones */}
-                  <div className="flex items-center gap-2 flex-wrap self-end md:self-auto">
+                  {/* Acciones de pie del Bento Box */}
+                  <div className="pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
                     <button
                       type="button"
                       onClick={() => openCreateSub(cat)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-[#1D1D1F] py-2 px-3 bg-white hover:bg-gray-100 border border-gray-200/80 rounded-xl transition-colors min-h-[36px] cursor-pointer"
+                      className="px-3 py-1.5 bg-[#007AFF]/10 text-[#007AFF] hover:bg-[#007AFF]/20 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
                     >
-                      <span>+ Subrubro</span>
+                      + Subrubro
                     </button>
 
-                    <button
-                      type="button"
-                      onClick={() => toggleActive(cat)}
-                      className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-colors min-h-[36px] cursor-pointer ${cat.isActive
-                        ? "bg-emerald-50 border-emerald-200 text-emerald-800 hover:bg-emerald-100"
-                        : "bg-gray-100 border-gray-200 text-gray-600 hover:bg-gray-200"
-                        }`}
-                    >
-                      {cat.isActive ? "Visible" : "Oculta"}
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => openEdit(cat)}
-                      className="px-3 py-2 bg-white border border-gray-200/80 text-gray-800 hover:bg-gray-100 text-xs font-semibold rounded-xl transition-colors min-h-[36px] cursor-pointer"
-                    >
-                      Editar
-                    </button>
-
-                    {!cat.isProtected && (
+                    <div className="flex items-center gap-1">
                       <button
                         type="button"
-                        onClick={() => setDeleteTarget(cat)}
-                        className="px-3 py-2 bg-white border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold rounded-xl transition-colors min-h-[36px] cursor-pointer"
+                        onClick={() => openEdit(cat)}
+                        className="px-3 py-1.5 bg-white border border-gray-200/80 text-gray-700 hover:bg-gray-100 text-xs font-medium rounded-xl transition-colors cursor-pointer"
                       >
-                        Borrar
+                        Editar
                       </button>
-                    )}
+
+                      {!cat.isProtected && (
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(cat)}
+                          className="px-2.5 py-1.5 text-gray-400 hover:text-[#1D1D1F] text-xs font-medium transition-colors cursor-pointer"
+                        >
+                          Borrar
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
-
-                {/* ── Subcategorías (Guardrail 4: empty-state amigable) ── */}
-                <div className="p-3 md:p-4 bg-white">
-                  {cat.children && cat.children.length > 0 ? (
-                    <div className="flex flex-col gap-2 pl-3 border-l-2 border-amber-300">
-                      {cat.children.map((sub, subIndex) => (
-                        <div
-                          key={sub.id}
-                          className="flex items-center justify-between p-2.5 bg-gray-50/80 border border-gray-200 rounded-lg hover:bg-gray-100/70 transition-colors gap-2"
-                        >
-                          <div className="flex items-center gap-2.5">
-                            <div className="flex items-center gap-1">
-                              <button
-                                type="button"
-                                onClick={() => moveOrder(sub as unknown as Category, "up", cat.children)}
-                                disabled={subIndex === 0}
-                                className="w-8 h-8 flex items-center justify-center text-xs text-gray-800 hover:text-black bg-white border border-gray-300 rounded-md disabled:opacity-20 shadow-2xs font-bold active:scale-95 transition-all cursor-pointer"
-                                title="Subir"
-                              >
-                                ▲
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => moveOrder(sub as unknown as Category, "down", cat.children)}
-                                disabled={subIndex === cat.children.length - 1}
-                                className="w-8 h-8 flex items-center justify-center text-xs text-gray-800 hover:text-black bg-white border border-gray-300 rounded-md disabled:opacity-20 shadow-2xs font-bold active:scale-95 transition-all cursor-pointer"
-                                title="Bajar"
-                              >
-                                ▼
-                              </button>
-                            </div>
-
-                            <span className="text-xs md:text-sm font-semibold text-gray-950">
-                              {sub.name}
-                            </span>
-                          </div>
-
-                          <div className="flex items-center gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => openEdit(sub as unknown as Category, cat.name)}
-                              className="px-2.5 py-1.5 text-xs font-semibold text-gray-700 bg-white border border-gray-300 hover:bg-gray-100 rounded-md transition-colors cursor-pointer min-h-[32px]"
-                            >
-                              Modificar
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setDeleteTarget(sub as unknown as Category)}
-                              className="px-2.5 py-1.5 text-xs font-semibold text-red-600 bg-white border border-red-200 hover:bg-red-50 rounded-md transition-colors cursor-pointer min-h-[32px]"
-                            >
-                              Borrar
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    /* Guardrail 4: Empty state amigable (no tabla vacía pelada) */
-                    <div className="flex flex-col sm:flex-row items-center justify-between gap-3 py-2 pl-3 border-l-2 border-gray-200">
-                      <p className="text-xs text-gray-500">
-                        Esta sección no tiene sub-rubros todavía. Los productos se pueden asociar directo a <strong>{cat.name}</strong>.
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => openCreateSub(cat)}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-900 hover:text-amber-950 py-2 px-4 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg transition-colors min-h-[36px] cursor-pointer whitespace-nowrap shrink-0"
-                      >
-                        <span className="text-sm font-bold">+</span>
-                        Agregar la primera subcategoría
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
       )}

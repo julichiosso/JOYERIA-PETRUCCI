@@ -69,23 +69,23 @@ function TopBar({ user }: { user: AdminUser | null }) {
         className="flex items-center gap-2 group"
         aria-label="Ver tienda pública"
       >
-        <span className="font-sans text-lg md:text-xl font-bold tracking-tight text-[#1D1D1F] group-hover:text-[#007AFF] transition-colors uppercase">
+        <span className="font-sans text-lg md:text-xl font-bold tracking-tight text-[#1D1D1F] uppercase">
           Petrucci
         </span>
-        <span className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#007AFF] bg-[#007AFF]/10 px-2.5 py-0.5 rounded-full border border-[#007AFF]/20">
-          Admin
+        <span className="text-xs font-sans font-medium uppercase tracking-widest text-gray-400">
+          / Admin
         </span>
       </Link>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 font-sans">
         {user && (
-          <span className="hidden md:block font-sans text-xs text-gray-500 tracking-wide">
-            Administrador <strong className="text-[#1D1D1F] font-semibold">{user.name}</strong>
+          <span className="hidden md:block text-xs text-gray-500 font-medium">
+            Víctor
           </span>
         )}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-1.5 font-sans text-xs text-gray-500 hover:text-red-600 transition-colors px-2 py-1 rounded cursor-pointer"
+          className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#1D1D1F] transition-colors px-2 py-1 rounded cursor-pointer font-medium"
           aria-label="Cerrar sesión"
         >
           <svg width="16" height="16" viewBox="0 0 15 15" fill="none" aria-hidden="true">

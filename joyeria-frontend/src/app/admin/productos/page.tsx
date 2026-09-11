@@ -58,9 +58,9 @@ const SECTIONS = [
 ];
 
 const STATUS_CONFIG: Record<ProductStatus, { label: string; badgeClass: string }> = {
-  ACTIVE: { label: "Activo", badgeClass: "bg-emerald-50 text-emerald-800 border border-emerald-200" },
-  DRAFT: { label: "Borrador", badgeClass: "bg-amber-50 text-amber-800 border border-amber-200" },
-  OUT_OF_STOCK: { label: "Sin stock", badgeClass: "bg-rose-50 text-rose-800 border border-rose-200" },
+  ACTIVE: { label: "Activo", badgeClass: "bg-[#F5F5F7] text-[#1D1D1F] border border-gray-300 font-semibold" },
+  DRAFT: { label: "Borrador", badgeClass: "bg-[#F5F5F7] text-gray-500 border border-gray-200 font-medium" },
+  OUT_OF_STOCK: { label: "Sin stock", badgeClass: "bg-[#F5F5F7] text-gray-400 border border-gray-200 font-medium" },
 };
 
 export default function AdminProductsPage() {
@@ -77,6 +77,7 @@ export default function AdminProductsPage() {
   // Filtros
   const [activeSection, setActiveSection] = useState<string>("ALL");
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
+  const [isSubcategoryDropdownOpen, setIsSubcategoryDropdownOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<ProductStatus | "">("");
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -297,24 +298,24 @@ export default function AdminProductsPage() {
         </Link>
       </div>
 
-      {/* ── Resumen Ejecutivo (Tira de métricas clara) ────────────────────── */}
+      {/* ── Resumen Ejecutivo (Tira de métricas sobria Apple) ────────────────────── */}
       <div className="bg-white border border-gray-200/80 rounded-3xl p-5 shadow-xs">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-gray-200/80">
           <div className="pt-2 md:pt-0 md:px-4 first:pl-0">
-            <p className="font-sans text-xs uppercase tracking-wider text-gray-500 font-semibold">Total en Catálogo</p>
-            <p className="font-sans text-3xl font-extrabold text-[#1D1D1F] mt-1">{stats.total}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-gray-400 font-semibold">Total en Catálogo</p>
+            <p className="font-sans text-3xl font-bold text-[#1D1D1F] mt-1">{stats.total}</p>
           </div>
           <div className="pt-2 md:pt-0 md:px-4">
-            <p className="font-sans text-xs uppercase tracking-wider text-emerald-700 font-semibold">Publicados en Tienda</p>
-            <p className="font-sans text-3xl font-extrabold text-emerald-800 mt-1">{stats.active}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-gray-400 font-semibold">Publicados en Tienda</p>
+            <p className="font-sans text-3xl font-bold text-[#007AFF] mt-1">{stats.active}</p>
           </div>
           <div className="pt-2 md:pt-0 md:px-4">
-            <p className="font-sans text-xs uppercase tracking-wider text-amber-700 font-semibold">Borradores Ocultos</p>
-            <p className="font-sans text-3xl font-extrabold text-amber-800 mt-1">{stats.draft}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-gray-400 font-semibold">Borradores Ocultos</p>
+            <p className="font-sans text-3xl font-bold text-gray-700 mt-1">{stats.draft}</p>
           </div>
           <div className="pt-2 md:pt-0 md:px-4">
-            <p className="font-sans text-xs uppercase tracking-wider text-rose-700 font-semibold">Sin Stock</p>
-            <p className="font-sans text-3xl font-extrabold text-rose-800 mt-1">{stats.outOfStock}</p>
+            <p className="font-sans text-xs uppercase tracking-wider text-gray-400 font-semibold">Sin Stock</p>
+            <p className="font-sans text-3xl font-bold text-gray-400 mt-1">{stats.outOfStock}</p>
           </div>
         </div>
       </div>
@@ -340,7 +341,7 @@ export default function AdminProductsPage() {
 
       {/* ── 2. Barra de Búsqueda y Filtros de Estado ──────────────────────── */}
       <div className="bg-white border border-gray-200/80 rounded-3xl p-4 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        {/* Buscador de texto */}
+        {/* Buscador de texto (Estilo Apple: sin outline/ring azul nativo) */}
         <div className="relative flex-1">
           <svg
             width="16"
@@ -364,28 +365,67 @@ export default function AdminProductsPage() {
               setCurrentPage(1);
             }}
             placeholder="Buscar por nombre, material o modelo..."
-            className="w-full pl-10 pr-4 py-2.5 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl text-xs font-semibold text-[#1D1D1F] placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF] transition-all"
+            className="w-full pl-10 pr-4 py-2.5 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl text-xs font-semibold text-[#1D1D1F] placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-0 focus:border-gray-400 transition-all font-sans"
           />
         </div>
 
-        {/* Filtro de Subcategoría (si aplica) */}
+        {/* Filtro de Subcategoría (Pop-up Estilo Apple en lugar de select nativo) */}
         {sectionSubcategories.length > 0 && (
-          <div className="w-full md:w-56">
-            <select
-              value={selectedCategoryId}
-              onChange={(e) => {
-                setSelectedCategoryId(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full px-3 py-2.5 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl text-xs font-semibold text-[#1D1D1F] focus:bg-white focus:outline-none focus:border-[#007AFF]"
+          <div className="relative w-full md:w-auto">
+            <button
+              type="button"
+              onClick={() => setIsSubcategoryDropdownOpen(!isSubcategoryDropdownOpen)}
+              className="w-full md:w-auto min-w-[180px] px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200/70 border border-gray-200/80 rounded-2xl text-xs font-semibold text-[#1D1D1F] flex items-center justify-between gap-3 transition-colors cursor-pointer"
             >
-              <option value="">Todas las subcategorías</option>
-              {sectionSubcategories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
+              <span>
+                {selectedCategoryId
+                  ? sectionSubcategories.find((c) => c.id === selectedCategoryId)?.name || "Subcategoría"
+                  : "Todas las subcategorías"}
+              </span>
+              <span className="text-[10px] text-gray-400">▾</span>
+            </button>
+
+            {isSubcategoryDropdownOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsSubcategoryDropdownOpen(false)}
+                />
+                <div className="absolute right-0 top-full mt-1.5 w-full md:w-56 bg-white border border-gray-200/80 shadow-xl rounded-2xl py-1.5 z-50 animate-in fade-in duration-100 font-sans">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedCategoryId("");
+                      setCurrentPage(1);
+                      setIsSubcategoryDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 text-xs font-semibold transition-colors cursor-pointer ${selectedCategoryId === ""
+                      ? "bg-[#007AFF]/10 text-[#007AFF]"
+                      : "text-gray-700 hover:bg-[#F5F5F7]"
+                      }`}
+                  >
+                    Todas las subcategorías
+                  </button>
+                  {sectionSubcategories.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => {
+                        setSelectedCategoryId(c.id);
+                        setCurrentPage(1);
+                        setIsSubcategoryDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 text-xs font-semibold transition-colors cursor-pointer ${selectedCategoryId === c.id
+                        ? "bg-[#007AFF]/10 text-[#007AFF]"
+                        : "text-gray-700 hover:bg-[#F5F5F7]"
+                        }`}
+                    >
+                      {c.name}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -695,18 +735,6 @@ export default function AdminProductsPage() {
         </>
       )}
 
-      {/* ── Banner informativo de ayuda al pie ────────────────────────────── */}
-      <div className="bg-[#007AFF]/10 border border-[#007AFF]/20 rounded-3xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-[#007AFF] mt-2 font-sans">
-        <div className="flex items-center gap-2.5">
-          <span className="text-base shrink-0">💡</span>
-          <div>
-            <p className="font-bold">¿Cómo impactan los estados en la joyería?</p>
-            <p className="text-[#007AFF]/90 mt-0.5 font-medium">
-              &quot;Activo&quot; publica la pieza inmediatamente. &quot;Borrador&quot; la mantiene guardada en el admin sin mostrarla a los clientes. &quot;Sin stock&quot; muestra la pieza con etiqueta de no disponible.
-            </p>
-          </div>
-        </div>
-      </div>
 
       {/* ── Botón Fijo Mobile: "+ CARGAR NUEVA JOYA" (Súper fácil de ver y tocar) ────────────────── */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-gray-300 z-40 shadow-lg">

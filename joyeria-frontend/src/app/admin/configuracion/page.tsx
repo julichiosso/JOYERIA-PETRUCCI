@@ -32,7 +32,7 @@ function FieldLabel({ htmlFor, children }: { htmlFor: string; children: React.Re
 }
 
 const inputClass =
-  "w-full px-4 py-3 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl font-sans text-sm font-semibold text-[#1D1D1F] placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-[#007AFF] focus:ring-1 focus:ring-[#007AFF] transition-all";
+  "w-full px-4 py-3 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl font-sans text-sm font-semibold text-[#1D1D1F] placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-0 focus:border-gray-400 transition-all";
 
 export default function AdminConfiguracionPage() {
   const router = useRouter();

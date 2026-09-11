@@ -514,8 +514,8 @@ export default function ProductForm({ initialData }: ProductFormProps) {
       </section>
       {/* ── Error Global ───────────────────────────────────────────────────── */}
       {submitError && (
-        <div role="alert" className="p-4 bg-red-100 border-2 border-red-600 rounded-xl text-base font-extrabold text-red-950">
-          ⚠️ {submitError}
+        <div role="alert" className="p-4 bg-red-50 border border-red-200 rounded-2xl text-sm font-semibold text-red-800">
+          {submitError}
         </div>
       )}
 
