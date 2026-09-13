@@ -46,8 +46,9 @@ describe('Product SEO & JSON-LD (productService.getBySlug)', () => {
         },
       },
       images: [
-  { id: 'img-1', url: 'https://cdn.example.com/img1.jpg', thumbnailUrl: null, altText: null, order: 0 },
-],
+        { id: 'img-1', url: 'https://cdn.example.com/img1.jpg', thumbnailUrl: null, altText: null, order: 0 },
+      ],
+      variants: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -105,6 +106,7 @@ describe('Product SEO & JSON-LD (productService.getBySlug)', () => {
         parent: null,
       },
       images: [],
+      variants: [],
       createdAt: new Date(),
       updatedAt: new Date(),
     });
