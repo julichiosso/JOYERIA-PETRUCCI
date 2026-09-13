@@ -65,14 +65,14 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
 
         {/* Badge "ENVÍO GRATIS" en rojo sólido */}
         {!isOutOfStock && (
-          <span className="absolute bottom-2.5 left-2.5 bg-[#b91c1c] text-white font-body text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-xs shadow-xs">
+          <span className="absolute bottom-2.5 left-2.5 bg-[#b91c1c] text-white font-body text-[9px] sm:text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-xs shadow-xs">
             Envío gratis
           </span>
         )}
 
         {/* Badge sin stock */}
         {isOutOfStock && (
-          <span className="absolute top-2.5 left-2.5 bg-black text-white font-body text-[9px] uppercase px-2 py-0.5 rounded-xs">
+          <span className="absolute top-2.5 left-2.5 bg-black text-white font-body text-[9px] font-medium uppercase px-2 py-0.5 rounded-xs">
             Sin stock
           </span>
         )}
@@ -96,12 +96,12 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
               </p>
               {transferPrice && (
                 <p className="font-body text-[11px] text-gray-600 font-normal mt-0.5 leading-tight">
-                  <span className="font-semibold text-gray-800">{transferPrice}</span> con Transferencia
+                  <span className="font-medium text-gray-800">{transferPrice}</span> con Transferencia
                 </p>
               )}
             </>
           ) : (
-            <p className="font-body text-sm sm:text-base font-bold text-gray-900 leading-tight">
+            <p className="font-body text-xs sm:text-sm font-medium text-gray-600 leading-tight">
               Consultar precio por WhatsApp
             </p>
           )}

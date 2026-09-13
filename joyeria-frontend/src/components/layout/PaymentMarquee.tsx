@@ -13,7 +13,7 @@ export default function PaymentMarquee() {
         
         {/* Grupo 1: Tarjetas de Crédito y Débito */}
         <div className="flex items-center gap-2 flex-wrap justify-center">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">
+          <span className="text-[10px] uppercase font-semibold tracking-wider text-gray-400">
             Tarjetas
           </span>
           <div className="flex items-center gap-1.5">
@@ -34,17 +34,17 @@ export default function PaymentMarquee() {
 
             {/* American Express */}
             <div className="h-6 px-2 bg-[#006FCF] border border-[#006FCF] rounded-xs flex items-center justify-center shadow-2xs" title="American Express">
-              <span className="text-[8px] font-black text-white tracking-tighter uppercase">AMEX</span>
+              <span className="text-[8px] font-bold text-white tracking-tighter uppercase">AMEX</span>
             </div>
 
             {/* Tarjeta Naranja */}
             <div className="h-6 px-2 bg-[#FF6600] border border-[#FF6600] rounded-xs flex items-center justify-center shadow-2xs" title="Tarjeta Naranja">
-              <span className="text-[8px] font-bold text-white uppercase tracking-tight">Naranja</span>
+              <span className="text-[8px] font-medium text-white uppercase tracking-tight">Naranja</span>
             </div>
 
             {/* Cabal */}
             <div className="h-6 px-2 bg-white border border-gray-200 rounded-xs flex items-center justify-center shadow-2xs" title="Cabal">
-              <span className="text-[8px] font-bold text-[#D02B2B] uppercase tracking-tight">CABAL</span>
+              <span className="text-[8px] font-medium text-[#D02B2B] uppercase tracking-tight">CABAL</span>
             </div>
           </div>
         </div>
@@ -53,7 +53,7 @@ export default function PaymentMarquee() {
 
         {/* Grupo 2: Digitales & Transferencia */}
         <div className="flex items-center gap-2 flex-wrap justify-center">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-gray-400">
+          <span className="text-[10px] uppercase font-semibold tracking-wider text-gray-400">
             Medios Digitales &amp; Bancarios
           </span>
           <div className="flex items-center gap-1.5">

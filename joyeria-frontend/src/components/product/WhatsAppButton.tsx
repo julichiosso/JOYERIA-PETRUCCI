@@ -62,7 +62,7 @@ export default function WhatsAppButton({
       type="button"
       onClick={handleClick}
       disabled={loading}
-      className={`w-full py-4 px-6 bg-[#111111] text-white text-[12px] tracking-[0.18em] uppercase font-semibold flex items-center justify-center gap-3 hover:bg-[#222] transition-colors cursor-pointer disabled:opacity-70 ${className}`}
+      className={`w-full py-4 px-6 bg-[#111111] text-white text-[12px] tracking-[0.18em] uppercase font-medium flex items-center justify-center gap-3 hover:bg-[#222] transition-colors cursor-pointer disabled:opacity-70 ${className}`}
     >
       {loading ? (
         <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

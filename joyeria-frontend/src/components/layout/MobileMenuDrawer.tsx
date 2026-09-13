@@ -86,7 +86,7 @@ export default function MobileMenuDrawer({ isOpen, onClose, categories }: Mobile
           >
             {/* Header del menú */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white">
-              <span className="font-body text-xs font-bold tracking-[0.18em] uppercase text-gray-400">
+              <span className="font-body text-xs font-semibold tracking-[0.18em] uppercase text-gray-400">
                 Menú
               </span>
               <button
@@ -119,7 +119,7 @@ export default function MobileMenuDrawer({ isOpen, onClose, categories }: Mobile
                             aria-expanded={isExpanded}
                             className="w-full flex items-center justify-between px-5 py-3.5 font-medium text-left text-gray-900 hover:bg-gray-50 active:bg-gray-100 transition-colors cursor-pointer"
                           >
-                            <span className={cn("transition-colors", isExpanded ? "font-semibold text-black" : "text-gray-900")}>
+                            <span className={cn("transition-colors", isExpanded ? "font-medium text-black" : "text-gray-900")}>
                               {cat.name}
                             </span>
                             <ChevronIcon expanded={isExpanded} />
@@ -140,7 +140,7 @@ export default function MobileMenuDrawer({ isOpen, onClose, categories }: Mobile
                                     <Link
                                       href={`/${cat.slug}`}
                                       onClick={onClose}
-                                      className="flex items-center justify-between py-2 text-black font-semibold tracking-tight hover:underline border-b border-gray-200/60 mb-1"
+                                      className="flex items-center justify-between py-2 text-black font-medium tracking-tight hover:underline border-b border-gray-200/60 mb-1"
                                     >
                                       <span>Ver todo en {cat.name}</span>
                                       <span className="text-gray-400 text-xs">→</span>
@@ -151,7 +151,7 @@ export default function MobileMenuDrawer({ isOpen, onClose, categories }: Mobile
                                       <Link
                                         href={`/${cat.slug}/${sub.slug}`}
                                         onClick={onClose}
-                                        className="block py-1.5 hover:text-black transition-colors"
+                                        className="block py-1.5 hover:text-black transition-colors font-normal"
                                       >
                                         {sub.name}
                                       </Link>
@@ -173,7 +173,7 @@ export default function MobileMenuDrawer({ isOpen, onClose, categories }: Mobile
                           onClick={onClose}
                           className={cn(
                             "block px-5 py-3.5 font-medium hover:bg-gray-50 active:bg-gray-100 transition-colors",
-                            pathname.startsWith(`/${cat.slug}`) ? "text-black font-semibold" : "text-gray-900"
+                            pathname.startsWith(`/${cat.slug}`) ? "text-black font-medium" : "text-gray-900 font-normal"
                           )}
                         >
                           {cat.name}
@@ -189,8 +189,8 @@ export default function MobileMenuDrawer({ isOpen, onClose, categories }: Mobile
                         href={link.href}
                         onClick={onClose}
                         className={cn(
-                          "block px-5 py-3.5 font-medium hover:bg-gray-50 active:bg-gray-100 transition-colors",
-                          pathname === link.href ? "text-black font-semibold" : "text-gray-900"
+                          "block px-5 py-3.5 hover:bg-gray-50 active:bg-gray-100 transition-colors",
+                          pathname === link.href ? "text-black font-medium" : "text-gray-900 font-normal"
                         )}
                       >
                         {link.label}
@@ -207,7 +207,7 @@ export default function MobileMenuDrawer({ isOpen, onClose, categories }: Mobile
                 href="https://wa.me/5493406419736?text=Hola%20Petrucci,%20quisiera%20hacer%20una%20consulta."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold tracking-wide transition-colors"
+                className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-medium tracking-wide transition-colors"
               >
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-white">
                   <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />

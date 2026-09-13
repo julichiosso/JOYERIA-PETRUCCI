@@ -568,7 +568,7 @@ export default function Header({ categories = [] }: HeaderProps) {
                           <Link
                             href={col.href}
                             onClick={() => setActiveMegaMenu(null)}
-                            className="font-sans font-bold text-xs text-[#1D1D1F] tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
+                            className="font-sans font-semibold text-xs text-[#1D1D1F] tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
                           >
                             {col.title}
                           </Link>
@@ -578,7 +578,7 @@ export default function Header({ categories = [] }: HeaderProps) {
                                 <Link
                                   href={item.href}
                                   onClick={() => setActiveMegaMenu(null)}
-                                  className="font-sans text-xs text-gray-600 hover:text-black hover:underline transition-colors block py-0.5"
+                                  className="font-sans text-xs text-gray-600 hover:text-black hover:underline transition-colors block py-0.5 font-normal"
                                 >
                                   {item.label}
                                 </Link>
@@ -592,7 +592,7 @@ export default function Header({ categories = [] }: HeaderProps) {
                             <Link
                               href={col.secondaryHref}
                               onClick={() => setActiveMegaMenu(null)}
-                              className="font-sans font-bold text-xs text-[#1D1D1F] tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
+                              className="font-sans font-semibold text-xs text-[#1D1D1F] tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
                             >
                               {col.secondaryTitle}
                             </Link>
@@ -603,7 +603,7 @@ export default function Header({ categories = [] }: HeaderProps) {
                                     <Link
                                       href={secItem.href}
                                       onClick={() => setActiveMegaMenu(null)}
-                                      className="font-sans text-xs text-gray-600 hover:text-black hover:underline transition-colors block py-0.5"
+                                      className="font-sans text-xs text-gray-600 hover:text-black hover:underline transition-colors block py-0.5 font-normal"
                                     >
                                       {secItem.label}
                                     </Link>
@@ -641,7 +641,7 @@ export default function Header({ categories = [] }: HeaderProps) {
                         <Link
                           href={col.href}
                           onClick={() => setActiveMegaMenu(null)}
-                          className="font-sans font-bold text-xs text-[#1D1D1F] tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
+                          className="font-sans font-semibold text-xs text-[#1D1D1F] tracking-wider uppercase block mb-3 hover:text-black hover:underline transition-colors"
                         >
                           {col.title}
                         </Link>
