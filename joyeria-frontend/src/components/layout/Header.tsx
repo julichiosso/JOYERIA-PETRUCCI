@@ -94,7 +94,7 @@ const JOYAS_MEGA_MENU = [
   },
   {
     title: "HOMBRES",
-    href: "/joyeria?q=hombre",
+    href: "/joyeria/hombres",
     items: [
       { label: "Pulseras (Plata y Oro)", href: "/joyeria/pulseras?q=plata+y+oro" },
       { label: "Anillos (Plata & Plata y Oro)", href: "/joyeria/anillos?q=plata+y+oro" },
@@ -102,14 +102,14 @@ const JOYAS_MEGA_MENU = [
     secondaryTitle: "PERSONALIZADOS",
     secondaryHref: "/trabajos-personalizados",
     secondaryItems: [
-      { label: "Diseños exclusivos", href: "/trabajos-personalizados" },
+      { label: "Diseños exclusivos", href: "/trabajos-personalizados/disenos-exclusivos" },
     ],
   },
   {
     title: "DESPERTADORES",
-    href: "/relojes?q=despertador",
+    href: "/joyeria/despertadores",
     items: [
-      { label: "Ver disponibles", href: "/relojes?q=despertador" },
+      { label: "Ver disponibles", href: "/joyeria/despertadores" },
     ],
   },
 ];
@@ -118,20 +118,20 @@ const JOYAS_MEGA_MENU = [
 const RELOJES_MEGA_MENU = [
   {
     title: "DEPORTIVOS & TÉCNICOS",
-    href: "/relojes/casio-catterpillar",
+    href: "/relojes",
     items: [
-      { label: "Casio", href: "/relojes/casio-catterpillar?q=casio" },
-      { label: "Catterpillar", href: "/relojes/casio-catterpillar?q=catterpillar" },
-      { label: "Nockout", href: "/relojes/casio-catterpillar?q=nockout" },
+      { label: "Casio", href: "/relojes/casio" },
+      { label: "Catterpillar", href: "/relojes/catterpillar" },
+      { label: "Nockout", href: "/relojes/nockout" },
     ],
   },
   {
     title: "CLÁSICOS & JAPÓN",
-    href: "/relojes/seiko-orient",
+    href: "/relojes",
     items: [
-      { label: "Seiko", href: "/relojes/seiko-orient?q=seiko" },
-      { label: "Orient", href: "/relojes/seiko-orient?q=orient" },
-      { label: "Citizen", href: "/relojes/seiko-orient?q=citizen" },
+      { label: "Seiko", href: "/relojes/seiko" },
+      { label: "Orient", href: "/relojes/orient" },
+      { label: "Citizen", href: "/relojes/citizen" },
     ],
   },
   {
@@ -143,10 +143,10 @@ const RELOJES_MEGA_MENU = [
   },
   {
     title: "ECONÓMICOS & CASUAL",
-    href: "/relojes/tressa-smarts",
+    href: "/relojes",
     items: [
-      { label: "Tressa", href: "/relojes/tressa-smarts?q=tressa" },
-      { label: "Smarts", href: "/relojes/tressa-smarts?q=smart" },
+      { label: "Tressa", href: "/relojes/tressa" },
+      { label: "Smarts", href: "/relojes/smarts" },
     ],
   },
 ];

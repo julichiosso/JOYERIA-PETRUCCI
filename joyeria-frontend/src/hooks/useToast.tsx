@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from "react";
 
 export type ToastType = "success" | "error" | "info" | "undo";
 
@@ -12,14 +12,17 @@ export interface ToastItem {
     duration?: number;
 }
 
-interface ToastContextValue {
-    toasts: ToastItem[];
+interface ToastActions {
     addToast: (toast: Omit<ToastItem, "id">) => string;
     removeToast: (id: string) => void;
     success: (message: string, duration?: number) => string;
     error: (message: string, duration?: number) => string;
     info: (message: string, duration?: number) => string;
     undo: (message: string, onUndo: () => void, duration?: number) => string;
+}
+
+interface ToastContextValue extends ToastActions {
+    toasts: ToastItem[];
 }
 
 const ToastContext = createContext<ToastContextValue | null>(null);
@@ -45,17 +48,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 duration: itemDuration,
             };
 
-            setToasts((prev) => [...prev.slice(-2), newToast]); // Mantener máximo 3 toasts activos
+            setToasts((prev) => [...prev.slice(-2), newToast]);
 
             if (itemDuration > 0) {
                 setTimeout(() => {
-                    removeToast(id);
+                    setToasts((prev) => prev.filter((t) => t.id !== id));
                 }, itemDuration);
             }
 
             return id;
         },
-        [removeToast]
+        []
     );
 
     const success = useCallback(
@@ -79,18 +82,21 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         [addToast]
     );
 
+    const value = useMemo<ToastContextValue>(
+        () => ({
+            toasts,
+            addToast,
+            removeToast,
+            success,
+            error,
+            info,
+            undo,
+        }),
+        [toasts, addToast, removeToast, success, error, info, undo]
+    );
+
     return (
-        <ToastContext.Provider
-            value={{
-                toasts,
-                addToast,
-                removeToast,
-                success,
-                error,
-                info,
-                undo,
-            }}
-        >
+        <ToastContext.Provider value={value}>
             {children}
         </ToastContext.Provider>
     );

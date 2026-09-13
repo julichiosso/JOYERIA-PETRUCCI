@@ -65,9 +65,9 @@ export async function buildApp() {
     },
   });
 
-  // Rate limit global: 200 req/min. Las rutas sensibles tienen su propio override.
+  // Rate limit global: 500 req/min en producción, 5000 en desarrollo
   await app.register(rateLimit, {
-    max: 200,
+    max: env.NODE_ENV === 'production' ? 500 : 5000,
     timeWindow: '1 minute',
     errorResponseBuilder: (_req, context) => ({
       error: `Demasiadas solicitudes — intentá de nuevo en ${Math.ceil(context.ttl / 1000)}s`,
@@ -91,12 +91,18 @@ export async function buildApp() {
     return { status: 'ok' };
   });
 
-  app.setErrorHandler((error, request, reply) => {
+  app.setErrorHandler((error: any, request, reply) => {
     if (error instanceof AppError) {
       return reply.status(error.statusCode).send({
         error: error.message,
         ...(error.reason ? { reason: error.reason } : {}),
         ...(error.meta ? { ...error.meta } : {}),
+      });
+    }
+
+    if (error?.statusCode) {
+      return reply.status(error.statusCode).send({
+        error: error.message || 'Error en la solicitud',
       });
     }
 
