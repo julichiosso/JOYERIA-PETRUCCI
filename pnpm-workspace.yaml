@@ -1,3 +1,7 @@
+packages:
+  - 'joyeria-backend'
+  - 'joyeria-frontend'
+
 allowBuilds:
   '@prisma/engines': true
   bcrypt: true

@@ -106,7 +106,6 @@ export default function AdminCategoriasPage() {
     loadCategories();
   }, [loadCategories]);
 
-  // ── Nombres planos para detección de duplicados ─────────────────────────────
   const allNames = useMemo(() => {
     const names: string[] = [];
     categories.forEach((c) => {
