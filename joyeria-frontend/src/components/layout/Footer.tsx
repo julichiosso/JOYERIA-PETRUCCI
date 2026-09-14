@@ -74,7 +74,7 @@ export default function Footer() {
                 href={`https://wa.me/${rawWhatsapp.replace(/\D/g, "")}?text=Hola%20Petrucci,%20quisiera%20hacer%20una%20consulta%20personalizada.`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-emerald-800 font-semibold hover:text-emerald-950 transition-colors"
+                className="flex items-center gap-2 text-emerald-800 font-medium hover:text-emerald-950 transition-colors"
               >
                 <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
                 WhatsApp: +{rawWhatsapp}
@@ -91,7 +91,7 @@ export default function Footer() {
 
           {/* ── Columna 3: Compromiso Petrucci ─────────────────────────────── */}
           <div className="flex flex-col gap-3 lg:pl-4">
-            <h3 className="text-[11px] sm:text-xs font-bold text-gray-900 tracking-[0.2em] uppercase font-body">
+            <h3 className="text-[11px] sm:text-xs font-semibold text-gray-900 tracking-[0.2em] uppercase font-body">
               COMPROMISO PETRUCCI
             </h3>
             <nav aria-label="Compromiso y manufactura" className="flex flex-col gap-2 text-xs text-gray-600 font-body">
@@ -112,7 +112,7 @@ export default function Footer() {
 
           {/* ── Columna 4: Sanctuary Legal ─────────────────────────────────── */}
           <div className="flex flex-col gap-3 lg:pl-4">
-            <h3 className="text-[11px] sm:text-xs font-bold text-gray-900 tracking-[0.2em] uppercase font-body">
+            <h3 className="text-[11px] sm:text-xs font-semibold text-gray-900 tracking-[0.2em] uppercase font-body">
               INFORMACIÓN &amp; LEGALES
             </h3>
             <nav aria-label="Enlaces legales y términos" className="flex flex-col gap-2 text-xs text-gray-600 font-body">
@@ -149,7 +149,7 @@ export default function Footer() {
               href="https://webya-landing.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 font-bold text-gray-800 hover:text-black transition-colors"
+              className="flex items-center gap-1 font-medium text-gray-800 hover:text-black transition-colors"
             >
               <svg width="14" height="10" viewBox="0 0 24 16" fill="currentColor">
                 <path d="M7 13a5 5 0 0 1-2-9.6A7 7 0 0 1 18 6a4 4 0 0 1 0 7z" />

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo, ReactNode } from "react";
 
 export type ToastType = "success" | "error" | "info" | "undo";
 
@@ -12,8 +12,7 @@ export interface ToastItem {
     duration?: number;
 }
 
-interface ToastContextValue {
-    toasts: ToastItem[];
+export interface ToastActions {
     addToast: (toast: Omit<ToastItem, "id">) => string;
     removeToast: (id: string) => void;
     success: (message: string, duration?: number) => string;
@@ -22,7 +21,12 @@ interface ToastContextValue {
     undo: (message: string, onUndo: () => void, duration?: number) => string;
 }
 
-const ToastContext = createContext<ToastContextValue | null>(null);
+export interface ToastContextValue extends ToastActions {
+    toasts?: ToastItem[];
+}
+
+const ToastStateContext = createContext<ToastItem[]>([]);
+const ToastActionsContext = createContext<ToastActions | null>(null);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
     const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -45,17 +49,17 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 duration: itemDuration,
             };
 
-            setToasts((prev) => [...prev.slice(-2), newToast]); // Mantener máximo 3 toasts activos
+            setToasts((prev) => [...prev.slice(-2), newToast]);
 
             if (itemDuration > 0) {
                 setTimeout(() => {
-                    removeToast(id);
+                    setToasts((prev) => prev.filter((t) => t.id !== id));
                 }, itemDuration);
             }
 
             return id;
         },
-        [removeToast]
+        []
     );
 
     const success = useCallback(
@@ -79,27 +83,42 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         [addToast]
     );
 
+    const actions = useMemo<ToastActions>(
+        () => ({
+            addToast,
+            removeToast,
+            success,
+            error,
+            info,
+            undo,
+        }),
+        [addToast, removeToast, success, error, info, undo]
+    );
+
     return (
-        <ToastContext.Provider
-            value={{
-                toasts,
-                addToast,
-                removeToast,
-                success,
-                error,
-                info,
-                undo,
-            }}
-        >
-            {children}
-        </ToastContext.Provider>
+        <ToastActionsContext.Provider value={actions}>
+            <ToastStateContext.Provider value={toasts}>
+                {children}
+            </ToastStateContext.Provider>
+        </ToastActionsContext.Provider>
     );
 }
 
-export function useToast(): ToastContextValue {
-    const context = useContext(ToastContext);
-    if (!context) {
+/**
+ * useToast: devuelve acciones estables (success, error, info, undo, addToast, removeToast)
+ * cuya referencia NUNCA cambia al actualizar el estado de toasts, evitando re-renders infinitos.
+ */
+export function useToast(): ToastActions {
+    const actions = useContext(ToastActionsContext);
+    if (!actions) {
         throw new Error("useToast debe ser usado dentro de un ToastProvider");
     }
-    return context;
+    return actions;
+}
+
+/**
+ * useToastList: hook exclusivo para el contenedor visual de toasts.
+ */
+export function useToastList(): ToastItem[] {
+    return useContext(ToastStateContext);
 }

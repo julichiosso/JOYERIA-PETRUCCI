@@ -24,7 +24,6 @@ const nextConfig: NextConfig = {
     ],
     // Formatos modernos: Next.js convierte automáticamente a AVIF/WebP
     formats: ["image/avif", "image/webp"],
-    qualities: [60, 65, 80, 85, 92],
   },
 
   // Encabezados de seguridad HTTP (Lighthouse Best Practices)

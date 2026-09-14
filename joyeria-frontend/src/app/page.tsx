@@ -10,6 +10,7 @@
 import { Suspense } from "react";
 import Hero from "@/components/sections/Hero";
 import FeaturedProducts from "@/components/sections/FeaturedProducts";
+import FeaturedCategoryBanner from "@/components/sections/FeaturedCategoryBanner";
 import ProductCardSkeleton from "@/components/catalog/ProductCardSkeleton";
 import type { Metadata } from "next";
 
@@ -42,6 +43,18 @@ export default function HomePage() {
       >
         <FeaturedProducts />
       </Suspense>
+
+      {/* 3. Banner de Categoría Destacada — Trabajos Personalizados (Inspirado en El Rubí) */}
+      <FeaturedCategoryBanner
+        kicker="TRABAJOS PERSONALIZADOS"
+        title="Piezas con tu nombre"
+        subtitle="Diseños únicos forjados a mano en oro y plata. Grabados, alianzas y piezas que cuentan tu propia historia."
+        ctaText="Consultar un diseño"
+        ctaHref="/trabajos-personalizados"
+        imageUrl="/hero-2.jpg"
+        imageAlt="Trabajos personalizados y alianzas exclusivas — Petrucci Joyería"
+        align="right"
+      />
     </>
   );
 }

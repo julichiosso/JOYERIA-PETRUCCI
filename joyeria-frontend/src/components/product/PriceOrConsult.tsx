@@ -44,7 +44,7 @@ export default function PriceOrConsult({
         return (
             <div className={`inline-flex items-center gap-1.5 ${className}`}>
                 <span className="inline-block w-2 h-2 rounded-full bg-rose-500" />
-                <span className="font-body text-xs md:text-sm font-semibold text-rose-800 uppercase tracking-wider">
+                <span className="font-body text-xs md:text-sm font-medium text-rose-800 uppercase tracking-wider">
                     Sin Stock
                 </span>
             </div>
@@ -64,7 +64,7 @@ export default function PriceOrConsult({
         return (
             <div className={`flex items-baseline gap-1.5 ${className}`}>
                 <span className={sizeClasses}>{formatted}</span>
-                <span className="text-[10px] uppercase font-semibold text-gray-400">ARS</span>
+                <span className="text-[10px] uppercase font-medium text-gray-400">ARS</span>
             </div>
         );
     }
@@ -85,7 +85,7 @@ export default function PriceOrConsult({
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className={`inline-flex items-center gap-1.5 font-body text-xs md:text-sm font-semibold text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100/80 px-2.5 py-1 rounded-md border border-emerald-200/80 transition-colors group cursor-pointer ${className}`}
+            className={`inline-flex items-center gap-1.5 font-body text-xs md:text-sm font-medium text-emerald-800 hover:text-emerald-950 bg-emerald-50 hover:bg-emerald-100/80 px-2.5 py-1 rounded-md border border-emerald-200/80 transition-colors group cursor-pointer ${className}`}
             title="Consultar precio por WhatsApp"
         >
             <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />

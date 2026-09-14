@@ -303,7 +303,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
 
         {/* Nombre */}
         <div>
-          <h1 className="font-body text-2xl md:text-3xl lg:text-[2.2rem] leading-tight text-gray-950 font-bold tracking-tight">
+          <h1 className="font-serif text-2xl md:text-3xl lg:text-[2.2rem] leading-tight text-gray-950 font-normal tracking-tight">
             {product.name}
           </h1>
           {product.status === "OUT_OF_STOCK" && (
@@ -316,7 +316,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         {/* Precio */}
         {product.showPrice && formattedPrice && (
           <div className="border-t border-b border-[#E5E5E5] py-4">
-            <span className="text-2xl md:text-3xl font-semibold text-[#111111]">
+            <span className="text-2xl md:text-3xl font-bold text-[#111111]">
               {formattedPrice}
             </span>
           </div>
@@ -327,7 +327,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           <div className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <span className="text-[11px] tracking-[0.15em] uppercase text-gray-600 font-medium">Variante</span>
-              <span className="text-[12px] font-semibold text-[#111111]">{selectedVariant}</span>
+              <span className="text-[12px] font-medium text-[#111111]">{selectedVariant}</span>
             </div>
             <div className="flex items-center gap-2.5 flex-wrap">
               {variants.map((variant) => {
@@ -341,7 +341,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
                     title={variant}
                     className={`flex items-center gap-2 px-3 py-2 text-[12px] border transition-all duration-150 cursor-pointer ${
                       isSelected
-                        ? "border-[#111111] text-[#111111] shadow-sm"
+                        ? "border-[#111111] text-[#111111] shadow-sm font-medium"
                         : "border-[#E0E0E0] text-gray-600 hover:border-[#111111]"
                     }`}
                   >
@@ -363,7 +363,7 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             type="button"
             onClick={handleWhatsAppClick}
             disabled={inquiryLoading}
-            className="w-full py-4 px-6 bg-[#111111] text-white text-[12px] tracking-[0.18em] uppercase font-semibold flex items-center justify-center gap-3 hover:bg-[#222] active:scale-[0.99] transition-all duration-200 cursor-pointer disabled:opacity-70"
+            className="w-full py-4 px-6 bg-[#111111] text-white text-[12px] tracking-[0.18em] uppercase font-medium flex items-center justify-center gap-3 hover:bg-[#222] active:scale-[0.99] transition-all duration-200 cursor-pointer disabled:opacity-70"
           >
             {inquiryLoading ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

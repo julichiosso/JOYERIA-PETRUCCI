@@ -78,7 +78,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                 {/* Badges de estado */}
                 <div className="absolute top-2.5 left-2.5 z-10 flex flex-col gap-1">
                     {product.status === "OUT_OF_STOCK" && (
-                        <span className="bg-rose-900/90 text-white font-body text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded backdrop-blur-xs">
+                        <span className="bg-rose-900/90 text-white font-body text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded backdrop-blur-xs">
                             Sin Stock
                         </span>
                     )}
@@ -90,14 +90,14 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
                 <div>
                     {/* Categoría superior */}
                     {product.category && (
-                        <span className="font-body text-[10px] md:text-xs font-semibold tracking-widest uppercase text-gray-400 block mb-1">
+                        <span className="font-body text-[10px] md:text-xs font-medium tracking-widest uppercase text-gray-400 block mb-1">
                             {product.category.name}
                         </span>
                     )}
 
                     {/* Nombre del producto */}
                     <Link href={`/productos/${product.slug}`} className="block">
-                        <h3 className="font-body text-[14px] md:text-[15px] font-semibold text-gray-950 group-hover:text-black transition-colors line-clamp-2 leading-snug">
+                        <h3 className="font-body text-[14px] md:text-[15px] font-medium text-gray-950 group-hover:text-black transition-colors line-clamp-2 leading-snug">
                             {product.name}
                         </h3>
                     </Link>

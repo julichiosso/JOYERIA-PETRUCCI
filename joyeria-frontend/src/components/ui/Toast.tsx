@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { useToast, ToastItem } from "@/hooks/useToast";
+import { useToast, useToastList, ToastItem } from "@/hooks/useToast";
 
 function ToastSingleItem({ toast, onClose }: { toast: ToastItem; onClose: (id: string) => void }) {
     const prefersReduced = useReducedMotion();
@@ -107,7 +107,8 @@ function ToastSingleItem({ toast, onClose }: { toast: ToastItem; onClose: (id: s
 }
 
 export function ToastContainer() {
-    const { toasts, removeToast } = useToast();
+    const toasts = useToastList();
+    const { removeToast } = useToast();
 
     return (
         <div
