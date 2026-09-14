@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * components/layout/PaymentMarquee.tsx
  * Barra horizontal de medios de pago agrupados por tipo (Tarjetas / Digitales y Transferencia).
@@ -8,7 +6,7 @@
 
 export default function PaymentMarquee() {
   return (
-    <div className="bg-[#FAF9F7] border-b border-gray-200/70 py-3.5 px-4">
+    <div className="bg-[#FAF9F7] border-b border-gray-200/70 py-3.5 px-4" suppressHydrationWarning>
       <div className="mx-auto max-w-7xl flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs text-gray-500 font-body">
         
         {/* Grupo 1: Tarjetas de Crédito y Débito */}
@@ -54,7 +52,7 @@ export default function PaymentMarquee() {
         {/* Grupo 2: Digitales & Transferencia */}
         <div className="flex items-center gap-2 flex-wrap justify-center">
           <span className="text-[10px] uppercase font-semibold tracking-wider text-gray-400">
-            Medios Digitales &amp; Bancarios
+            Medios Digitales y Bancarios
           </span>
           <div className="flex items-center gap-1.5">
             {/* Mercado Pago */}
