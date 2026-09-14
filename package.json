@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently \"pnpm --dir joyeria-backend dev\" \"pnpm --dir joyeria-frontend dev\""
+    "dev": "concurrently \"pnpm --filter joyeria-backend dev\" \"pnpm --filter joyeria-frontend dev\""
   },
   "devDependencies": {
     "concurrently": "^9.0.0"
