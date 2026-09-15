@@ -28,7 +28,16 @@ interface NavItem {
 
 const BASE_NAV_ITEMS: NavItem[] = [
   {
-    label: "Productos",
+    label: "Inicio",
+    href: "/admin",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M2.5 8.5L10 2.5L17.5 8.5V17.5C17.5 17.7652 17.3946 18.0196 17.2071 18.2071C17.0196 18.3946 16.7652 18.5 16.5 18.5H3.5C3.23478 18.5 2.98043 18.3946 2.79289 18.2071C2.60536 18.0196 2.5 17.7652 2.5 17.5V8.5Z" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  {
+    label: "Vidriera",
     href: "/admin/productos",
     icon: (
       <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -144,7 +153,7 @@ function SidebarDesktop({ pathname, navItems }: { pathname: string; navItems: Na
         </p>
         <ul className="flex flex-col gap-1">
           {navItems.map((item) => {
-            const active = pathname.startsWith(item.href);
+            const active = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
             return (
               <li key={item.href}>
                 <Link
@@ -185,32 +194,94 @@ function SidebarDesktop({ pathname, navItems }: { pathname: string; navItems: Na
   );
 }
 
-function BottomBarMobile({ pathname, navItems }: { pathname: string; navItems: NavItem[] }) {
+function BottomBarMobile({ pathname }: { pathname: string }) {
+  const isAddProductActive = pathname === "/admin/productos/nuevo";
+
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-t border-[#E5E5EA]"
-      aria-label="Navegación mobile admin"
+      className="md:hidden fixed bottom-3 left-3 right-3 z-50 max-w-md mx-auto bg-white/90 backdrop-blur-xl border border-[#E5E5EA]/90 rounded-3xl shadow-xl px-2 py-1.5 transition-all select-none"
+      aria-label="Navegación mobile zona del pulgar"
     >
-      <ul className="flex items-center justify-around h-14">
-        {navItems.map((item) => {
-          const active = pathname.startsWith(item.href);
-          return (
-            <li key={item.href} className="flex-1">
-              <Link
-                href={item.href}
-                className={cn(
-                  "flex flex-col items-center gap-1 py-1.5 transition-colors w-full",
-                  active ? "text-[#007AFF]" : "text-[#86868B] hover:text-[#1D1D1F]"
-                )}
-                aria-current={active ? "page" : undefined}
-              >
-                {item.icon}
-                <span className="font-sans text-[10px] font-medium tracking-tight">{item.label}</span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+      <div className="flex items-center justify-around relative">
+        {/* 1. Inicio (Dashboard) */}
+        <Link
+          href="/admin"
+          className={cn(
+            "flex flex-col items-center gap-0.5 py-1 px-3 transition-colors rounded-2xl active:scale-95",
+            pathname === "/admin" ? "text-[#007AFF]" : "text-[#86868B]"
+          )}
+        >
+          <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M2.5 8.5L10 2.5L17.5 8.5V17.5C17.5 17.7652 17.3946 18.0196 17.2071 18.2071C17.0196 18.3946 16.7652 18.5 16.5 18.5H3.5C3.23478 18.5 2.98043 18.3946 2.79289 18.2071C2.60536 18.0196 2.5 17.7652 2.5 17.5V8.5Z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span className="font-sans text-[10px] font-medium tracking-tight">Inicio</span>
+        </Link>
+
+        {/* 2. Vidriera (Productos) */}
+        <Link
+          href="/admin/productos"
+          className={cn(
+            "flex flex-col items-center gap-0.5 py-1 px-3 transition-colors rounded-2xl active:scale-95",
+            pathname.startsWith("/admin/productos") && !isAddProductActive
+              ? "text-[#007AFF]"
+              : "text-[#86868B]"
+          )}
+        >
+          <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <rect x="2.5" y="2.5" width="6.5" height="6.5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+            <rect x="11" y="2.5" width="6.5" height="6.5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+            <rect x="2.5" y="11" width="6.5" height="6.5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+            <rect x="11" y="11" width="6.5" height="6.5" rx="1.5" stroke="currentColor" strokeWidth="1.4" />
+          </svg>
+          <span className="font-sans text-[10px] font-medium tracking-tight">Vidriera</span>
+        </Link>
+
+        {/* 3. FAB CENTRAL DESTACADO (+ Cargar Joya) */}
+        <div className="relative -top-3.5 px-1">
+          <Link
+            href="/admin/productos/nuevo"
+            className={cn(
+              "w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-all active:scale-90 ring-4 ring-[#F5F5F7]",
+              isAddProductActive
+                ? "bg-[#007AFF] shadow-[#007AFF]/40"
+                : "bg-[#1D1D1F] hover:bg-black shadow-black/30"
+            )}
+            aria-label="Cargar nueva joya"
+            title="Cargar nueva joya"
+          >
+            <span className="text-2xl font-bold leading-none select-none text-white">+</span>
+          </Link>
+        </div>
+
+        {/* 4. Consultas / Mensajes */}
+        <Link
+          href="/admin/metricas?tab=consultas"
+          className={cn(
+            "flex flex-col items-center gap-0.5 py-1 px-3 transition-colors rounded-2xl active:scale-95",
+            pathname.includes("consultas") ? "text-[#007AFF]" : "text-[#86868B]"
+          )}
+        >
+          <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M16.5 10c0 3.314-2.91 6-6.5 6a7.48 7.48 0 0 1-2.484-.422L4 16.5l1.031-2.578A5.722 5.722 0 0 1 3.5 10c0-3.314 2.91-6 6.5-6s6.5 2.686 6.5 6z" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          <span className="font-sans text-[10px] font-medium tracking-tight">Consultas</span>
+        </Link>
+
+        {/* 5. Ajustes */}
+        <Link
+          href="/admin/configuracion"
+          className={cn(
+            "flex flex-col items-center gap-0.5 py-1 px-3 transition-colors rounded-2xl active:scale-95",
+            pathname.startsWith("/admin/configuracion") ? "text-[#007AFF]" : "text-[#86868B]"
+          )}
+        >
+          <svg width="19" height="19" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="10" cy="10" r="2.5" stroke="currentColor" strokeWidth="1.4" />
+            <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+          </svg>
+          <span className="font-sans text-[10px] font-medium tracking-tight">Ajustes</span>
+        </Link>
+      </div>
     </nav>
   );
 }
@@ -287,8 +358,8 @@ export default function AdminLayout({
       const label = features.metricsModule && features.auditModule
         ? "Métricas & Auditoría"
         : features.auditModule
-        ? "Auditoría"
-        : "Métricas";
+          ? "Auditoría"
+          : "Métricas";
 
       const href = !features.metricsModule && features.auditModule
         ? "/admin/metricas?tab=auditoria"
@@ -339,7 +410,7 @@ export default function AdminLayout({
           </main>
         </div>
 
-        <BottomBarMobile pathname={pathname} navItems={navItems} />
+        <BottomBarMobile pathname={pathname} />
       </div>
       <ToastContainer />
     </ToastProvider>

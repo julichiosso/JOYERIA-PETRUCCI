@@ -23,6 +23,7 @@ import { formatPrice } from "@/lib/utils";
 import type { Category } from "@/types/category";
 import { useToast } from "@/hooks/useToast";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import FilterBottomSheet, { FilterState } from "@/components/admin/FilterBottomSheet";
 
 type ProductStatus = "ACTIVE" | "DRAFT" | "OUT_OF_STOCK";
 
@@ -62,22 +63,22 @@ const STATUS_CONFIG: Record<
   { label: string; dotClass: string; containerClass: string; textClass: string }
 > = {
   ACTIVE: {
-    label: "Publicado",
-    dotClass: "bg-green-500",
-    containerClass: "bg-green-50 border border-green-200",
-    textClass: "text-green-700",
+    label: "✨ En Vidriera",
+    dotClass: "bg-[#34C759]",
+    containerClass: "bg-emerald-50 border border-emerald-200/80",
+    textClass: "text-emerald-800",
   },
   DRAFT: {
-    label: "Borrador",
+    label: "🔒 Oculto",
     dotClass: "bg-gray-400",
-    containerClass: "bg-gray-100 border border-gray-200",
-    textClass: "text-gray-500",
+    containerClass: "bg-gray-100 border border-gray-200/80",
+    textClass: "text-gray-600",
   },
   OUT_OF_STOCK: {
-    label: "Sin stock",
+    label: "⚠️ Sin stock",
     dotClass: "bg-amber-500",
-    containerClass: "bg-amber-50 border border-amber-200",
-    textClass: "text-amber-700",
+    containerClass: "bg-amber-50 border border-amber-200/80",
+    textClass: "text-amber-800",
   },
 };
 
@@ -152,11 +153,10 @@ function StatusChanger({
                     onStatusChange(product, s);
                     setPopupId(null);
                   }}
-                  className={`w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold transition-colors cursor-pointer ${
-                    isSelected
-                      ? "bg-[#007AFF]/10 text-[#007AFF]"
-                      : "text-gray-700 hover:bg-[#F5F5F7]"
-                  }`}
+                  className={`w-full text-left flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold transition-colors cursor-pointer ${isSelected
+                    ? "bg-[#007AFF]/10 text-[#007AFF]"
+                    : "text-gray-700 hover:bg-[#F5F5F7]"
+                    }`}
                 >
                   <span className={`w-2 h-2 rounded-full shrink-0 ${c.dotClass}`} aria-hidden="true" />
                   {c.label}
@@ -200,6 +200,10 @@ export default function AdminProductsPage() {
   // Estado del popup de cambio rápido de estado (id del producto con popup abierto)
   const [statusPopupId, setStatusPopupId] = useState<string | null>(null);
   const [deleteModalProduct, setDeleteModalProduct] = useState<AdminProduct | null>(null);
+
+  // Estado de Filtro Flotante Ergonómico (FilterBottomSheet)
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
+  const [sortBy, setSortBy] = useState<string>("recent");
 
   // Filtros
   const [activeSection, setActiveSection] = useState<string>("ALL");
@@ -309,8 +313,21 @@ export default function AdminProductsPage() {
       }
 
       return true;
+    }).sort((a, b) => {
+      if (sortBy === "price_asc") {
+        const pA = parseFloat(a.price || "0");
+        const pB = parseFloat(b.price || "0");
+        return pA - pB;
+      }
+      if (sortBy === "price_desc") {
+        const pA = parseFloat(a.price || "0");
+        const pB = parseFloat(b.price || "0");
+        return pB - pA;
+      }
+      // recent default
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     });
-  }, [products, activeSection, selectedCategoryId, statusFilter, searchQuery]);
+  }, [products, activeSection, selectedCategoryId, statusFilter, searchQuery, sortBy]);
 
   // Paginación
   const totalItems = filteredProducts.length;
@@ -427,7 +444,7 @@ export default function AdminProductsPage() {
       </div>
 
       {/* ── Resumen Ejecutivo (Tira de métricas sobria Apple) ────────────────────── */}
-     {/*  <div className="bg-white border border-gray-200/80 rounded-3xl p-5 shadow-xs">
+      {/*  <div className="bg-white border border-gray-200/80 rounded-3xl p-5 shadow-xs">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-gray-200/80">
           <div className="pt-2 md:pt-0 md:px-4 first:pl-0">
             <p className="font-sans text-xs uppercase tracking-wider text-gray-400 font-semibold">Total en Catálogo</p>
@@ -469,41 +486,68 @@ export default function AdminProductsPage() {
 
       {/* ── 2. Barra de Búsqueda y Filtros de Estado ──────────────────────── */}
       <div className="bg-white border border-gray-200/80 rounded-3xl p-4 shadow-xs flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-        {/* Buscador de texto (Estilo Apple: sin outline/ring azul nativo) */}
-        <div className="relative flex-1">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+
+        <div className="flex items-center gap-2 flex-1">
+          {/* Buscador de texto (Estilo Apple) */}
+          <div className="relative flex-1">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
+              placeholder="Buscar por nombre, material o modelo..."
+              className="w-full pl-10 pr-4 py-2.5 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl text-xs font-semibold text-[#1D1D1F] placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-0 focus:border-gray-400 transition-all font-sans min-h-[44px]"
+            />
+          </div>
+
+          {/* Botón de Filtros Ergonómicos para Mobile (Abre Bottom Sheet en Zona del Pulgar) */}
+          <button
+            type="button"
+            onClick={() => setIsFilterSheetOpen(true)}
+            className="md:hidden px-3.5 py-2.5 bg-[#1D1D1F] text-white hover:bg-black rounded-2xl text-xs font-semibold flex items-center gap-1.5 shrink-0 active:scale-95 transition-all min-h-[44px] cursor-pointer shadow-2xs"
+            aria-label="Abrir filtros"
           >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-          <input
-            type="search"
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1);
-            }}
-            placeholder="Buscar por nombre, material o modelo..."
-            className="w-full pl-10 pr-4 py-2.5 bg-[#F5F5F7] border border-gray-200/80 rounded-2xl text-xs font-semibold text-[#1D1D1F] placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-0 focus:border-gray-400 transition-all font-sans"
-          />
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <line x1="4" y1="21" x2="4" y2="14" />
+              <line x1="4" y1="10" x2="4" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12" y2="3" />
+              <line x1="20" y1="21" x2="20" y2="16" />
+              <line x1="20" y1="12" x2="20" y2="3" />
+              <line x1="1" y1="14" x2="7" y2="14" />
+              <line x1="9" y1="8" x2="15" y2="8" />
+              <line x1="17" y1="16" x2="23" y2="16" />
+            </svg>
+            <span>Filtros</span>
+            {(selectedCategoryId || statusFilter) && (
+              <span className="w-2 h-2 rounded-full bg-[#007AFF] inline-block" />
+            )}
+          </button>
         </div>
 
-        {/* Filtro de Subcategoría (Pop-up Estilo Apple en lugar de select nativo) */}
+        {/* Filtro de Subcategoría para Desktop */}
         {sectionSubcategories.length > 0 && (
-          <div className="relative w-full md:w-auto">
+          <div className="relative hidden md:block w-auto">
             <button
               type="button"
               onClick={() => setIsSubcategoryDropdownOpen(!isSubcategoryDropdownOpen)}
-              className="w-full md:w-auto min-w-[180px] px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200/70 border border-gray-200/80 rounded-2xl text-xs font-semibold text-[#1D1D1F] flex items-center justify-between gap-3 transition-colors cursor-pointer"
+              className="w-auto min-w-[180px] px-4 py-2.5 bg-[#F5F5F7] hover:bg-gray-200/70 border border-gray-200/80 rounded-2xl text-xs font-semibold text-[#1D1D1F] flex items-center justify-between gap-3 transition-colors cursor-pointer"
             >
               <span>
                 {selectedCategoryId
@@ -519,7 +563,7 @@ export default function AdminProductsPage() {
                   className="fixed inset-0 z-40"
                   onClick={() => setIsSubcategoryDropdownOpen(false)}
                 />
-                <div className="absolute right-0 top-full mt-1.5 w-full md:w-56 bg-white border border-gray-200/80 shadow-xl rounded-2xl py-1.5 z-50 animate-in fade-in duration-100 font-sans">
+                <div className="absolute right-0 top-full mt-1.5 w-56 bg-white border border-gray-200/80 shadow-xl rounded-2xl py-1.5 z-50 animate-in fade-in duration-100 font-sans">
                   <button
                     type="button"
                     onClick={() => {
@@ -557,12 +601,12 @@ export default function AdminProductsPage() {
           </div>
         )}
 
-        {/* Filtros de Estado */}
-        <div className="flex gap-1.5 overflow-x-auto pb-0.5">
+        {/* Filtros de Estado en Desktop */}
+        <div className="hidden md:flex gap-1.5 overflow-x-auto pb-0.5">
           {[
             { value: "" as const, label: "Todos" },
-            { value: "ACTIVE" as const, label: "Activos" },
-            { value: "DRAFT" as const, label: "Borradores" },
+            { value: "ACTIVE" as const, label: "En Vidriera" },
+            { value: "DRAFT" as const, label: "Ocultos" },
             { value: "OUT_OF_STOCK" as const, label: "Sin stock" },
           ].map((opt) => (
             <button
@@ -684,21 +728,51 @@ export default function AdminProductsPage() {
                     </div>
                   </div>
 
-                  {/* Acciones móviles */}
-                  <div className="flex items-center justify-between border-t border-gray-200/80 pt-3 mt-1 gap-3">
-                    <StatusChanger
-                      product={product}
-                      onStatusChange={handleQuickStatusChange}
-                      popupId={statusPopupId}
-                      setPopupId={setStatusPopupId}
-                    />
+                  {/* Acciones móviles con Zona del Pulgar (1-tap quick action) */}
+                  <div className="flex flex-col gap-2 border-t border-gray-200/80 pt-3 mt-1 font-sans">
+                    {/* Botón directo de 1-TAP para cambiar stock sin abrir menús */}
+                    <div className="flex items-center gap-2">
+                      {product.status === "ACTIVE" ? (
+                        <button
+                          type="button"
+                          onClick={() => handleQuickStatusChange(product, "OUT_OF_STOCK")}
+                          className="flex-1 py-2 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer min-h-[40px] flex items-center justify-center gap-1.5"
+                        >
+                          <span>⚠️ Marcar Sin Stock</span>
+                        </button>
+                      ) : product.status === "OUT_OF_STOCK" ? (
+                        <button
+                          type="button"
+                          onClick={() => handleQuickStatusChange(product, "ACTIVE")}
+                          className="flex-1 py-2 px-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer min-h-[40px] flex items-center justify-center gap-1.5"
+                        >
+                          <span>✨ Marcar En Vidriera</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleQuickStatusChange(product, "ACTIVE")}
+                          className="flex-1 py-2 px-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[#007AFF] rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer min-h-[40px] flex items-center justify-center gap-1.5"
+                        >
+                          <span>🚀 Publicar en Tienda</span>
+                        </button>
+                      )}
 
-                    <div className="flex items-center gap-1 shrink-0">
+                      {/* Selector de estado completo por si necesita ocultar u otro estado */}
+                      <StatusChanger
+                        product={product}
+                        onStatusChange={handleQuickStatusChange}
+                        popupId={statusPopupId}
+                        setPopupId={setStatusPopupId}
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
                       <Link
                         href={`/admin/productos/${product.id}`}
                         className="text-xs font-semibold text-[#007AFF] hover:bg-[#007AFF]/10 px-3 py-1.5 rounded-xl bg-gray-50 border border-gray-200/80 min-h-[36px] flex items-center transition-colors"
                       >
-                        Editar
+                        Editar datos
                       </Link>
                       <button
                         type="button"
@@ -861,15 +935,24 @@ export default function AdminProductsPage() {
       )}
 
 
-      {/* ── Botón Fijo Mobile: "+ CARGAR NUEVA JOYA" (Súper fácil de ver y tocar) ────────────────── */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 p-3 bg-white/95 backdrop-blur-md border-t border-gray-300 z-40 shadow-lg">
-        <Link
-          href="/admin/productos/nuevo"
-          className="w-full flex items-center justify-center gap-2 py-3.5 px-5 bg-[#1D1D1F] active:bg-black !text-white rounded-2xl font-semibold text-sm uppercase tracking-wide shadow-xs active:scale-[0.98] transition-all min-h-[48px]"
-        >
-          <span className="!text-white">CARGAR JOYA</span>
-        </Link>
-      </div>
+      {/* ── Bottom Sheet de Filtros (Zona del Pulgar) ──────────────────────── */}
+      <FilterBottomSheet
+        isOpen={isFilterSheetOpen}
+        onClose={() => setIsFilterSheetOpen(false)}
+        categories={categories}
+        filters={{
+          categoryId: selectedCategoryId || "ALL",
+          status: statusFilter || "ALL",
+          sortBy: sortBy,
+        }}
+        onApplyFilters={(newFilters) => {
+          setSelectedCategoryId(newFilters.categoryId === "ALL" ? "" : newFilters.categoryId);
+          setStatusFilter(newFilters.status === "ALL" ? "" : (newFilters.status as ProductStatus));
+          setSortBy(newFilters.sortBy);
+          setCurrentPage(1);
+        }}
+        totalResultsCount={filteredProducts.length}
+      />
 
       {/* ── Modal de Confirmación de Eliminación ──────────────────────────── */}
       <ConfirmModal
