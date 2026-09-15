@@ -329,8 +329,13 @@ export default function ImageUploader({
 
       {/* Error de compresión */}
       {compressError && (
-        <div className="p-4 bg-amber-50 border border-amber-300 rounded-2xl text-amber-900 text-xs font-semibold">
-          ⚠️ {compressError}
+        <div className="p-4 bg-amber-50 border border-amber-300 rounded-2xl text-amber-900 text-xs font-semibold flex items-center gap-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="shrink-0">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <span>{compressError}</span>
         </div>
       )}
 
@@ -357,9 +362,8 @@ export default function ImageUploader({
             return (
               <div
                 key={img.id ?? img._localPreview ?? index}
-                className={`relative flex flex-col bg-white border rounded-2xl overflow-hidden shadow-2xs group transition-all ${
-                  isDeleting ? "opacity-30 pointer-events-none" : "border-gray-200/80 hover:border-gray-300"
-                }`}
+                className={`relative flex flex-col bg-white border rounded-2xl overflow-hidden shadow-2xs group transition-all ${isDeleting ? "opacity-30 pointer-events-none" : "border-gray-200/80 hover:border-gray-300"
+                  }`}
               >
                 <div className="relative aspect-square w-full bg-[#F5F5F7]">
                   <Image

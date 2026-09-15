@@ -163,8 +163,8 @@ export default function AdminDashboardPage() {
             <Link
               href="/admin/productos?status=OUT_OF_STOCK"
               className={`border active:scale-[0.98] p-4 rounded-3xl shadow-2xs flex flex-col justify-between transition-all cursor-pointer ${stats.outOfStockCount > 0
-                  ? "bg-amber-50/60 border-amber-200 hover:border-amber-300"
-                  : "bg-white border-[#E5E5EA]"
+                ? "bg-amber-50/60 border-amber-200 hover:border-amber-300"
+                : "bg-white border-[#E5E5EA]"
                 }`}
             >
               <div className="flex items-center justify-between">
@@ -173,8 +173,8 @@ export default function AdminDashboardPage() {
                 </span>
                 <span
                   className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-sm ${stats.outOfStockCount > 0
-                      ? "bg-amber-500 text-white"
-                      : "bg-gray-100 text-gray-500"
+                    ? "bg-amber-500 text-white"
+                    : "bg-gray-100 text-gray-500"
                     }`}
                 >
                   {stats.outOfStockCount}
@@ -264,7 +264,12 @@ export default function AdminDashboardPage() {
           href="/admin/categorias"
           className="bg-white border border-[#E5E5EA] p-4 rounded-2xl shadow-2xs hover:border-gray-300 active:scale-[0.98] transition-all flex items-center gap-3 cursor-pointer"
         >
-          <span className="text-xl">🏷️</span>
+          <div className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center text-[#1D1D1F]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+              <line x1="7" y1="7" x2="7.01" y2="7" />
+            </svg>
+          </div>
           <div>
             <span className="text-xs font-bold text-[#1D1D1F] block">Categorías</span>
             <span className="text-[10px] text-[#86868B]">Organizar menú</span>
@@ -275,7 +280,12 @@ export default function AdminDashboardPage() {
           href="/admin/configuracion"
           className="bg-white border border-[#E5E5EA] p-4 rounded-2xl shadow-2xs hover:border-gray-300 active:scale-[0.98] transition-all flex items-center gap-3 cursor-pointer"
         >
-          <span className="text-xl">⚙️</span>
+          <div className="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center text-[#1D1D1F]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+          </div>
           <div>
             <span className="text-xs font-bold text-[#1D1D1F] block">Ajustes</span>
             <span className="text-[10px] text-[#86868B]">Datos y tienda</span>

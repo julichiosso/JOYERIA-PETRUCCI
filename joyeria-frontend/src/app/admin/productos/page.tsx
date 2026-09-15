@@ -63,21 +63,21 @@ const STATUS_CONFIG: Record<
   { label: string; dotClass: string; containerClass: string; textClass: string }
 > = {
   ACTIVE: {
-    label: "✨ En Vidriera",
+    label: "En Vidriera",
     dotClass: "bg-[#34C759]",
-    containerClass: "bg-emerald-50 border border-emerald-200/80",
+    containerClass: "bg-emerald-50/80 border border-emerald-200/60",
     textClass: "text-emerald-800",
   },
   DRAFT: {
-    label: "🔒 Oculto",
+    label: "Oculto",
     dotClass: "bg-gray-400",
     containerClass: "bg-gray-100 border border-gray-200/80",
     textClass: "text-gray-600",
   },
   OUT_OF_STOCK: {
-    label: "⚠️ Sin stock",
+    label: "Sin stock",
     dotClass: "bg-amber-500",
-    containerClass: "bg-amber-50 border border-amber-200/80",
+    containerClass: "bg-amber-50/80 border border-amber-200/60",
     textClass: "text-amber-800",
   },
 };
@@ -683,82 +683,82 @@ export default function AdminProductsPage() {
               return (
                 <div
                   key={product.id}
-                  className="bg-white border border-[#E8E4DE] rounded-lg p-4 flex flex-col gap-3 shadow-2xs"
+                  className="bg-white border border-[#E5E5EA] rounded-2xl p-3 flex flex-col gap-2.5 shadow-2xs"
                 >
-                  <div className="flex items-start gap-3">
-                    {/* Thumbnail */}
-                    <div className="relative w-16 h-16 shrink-0 rounded overflow-hidden bg-[#FAF8F5] border border-[#E8E4DE]">
+                  <div className="flex items-center gap-3">
+                    {/* Thumbnail compacto */}
+                    <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden bg-[#F5F5F7] border border-[#E5E5EA]">
                       {thumb ? (
                         <Image
                           src={thumb.thumbnailUrl ?? thumb.url}
                           alt={thumb.altText ?? product.name}
                           fill
                           className="object-contain p-1"
-                          sizes="64px"
+                          sizes="56px"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300" aria-hidden="true">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" className="text-gray-300">
                             <path d="M12 2L2 9l10 13L22 9 12 2z" />
-                            <path d="M2 9h20" />
                           </svg>
                         </div>
                       )}
                     </div>
 
-                    {/* Info */}
+                    {/* Info de Producto */}
                     <div className="flex-1 min-w-0">
-                      <p className="font-sans text-[#1D1D1F] font-bold text-base truncate leading-tight tracking-tight">
-                        {product.name}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-0.5 truncate font-sans">
-                        {product.category?.name || "Sin categoría"}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2 font-sans">
+                      <div className="flex items-start justify-between gap-1">
+                        <p className="font-sans text-[#1D1D1F] font-bold text-sm truncate leading-tight">
+                          {product.name}
+                        </p>
+                        <span className="font-sans text-xs font-bold text-[#1D1D1F] shrink-0">
+                          {product.showPrice && product.price ? formatPrice(product.price) : "A consultar"}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[11px] text-[#86868B] truncate font-sans">
+                          {product.category?.name || "Sin categoría"}
+                        </span>
                         <span
                           className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${status.containerClass} ${status.textClass}`}
                         >
                           <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${status.dotClass}`} aria-hidden="true" />
                           {status.label}
                         </span>
-                        <span className="font-sans text-sm font-bold text-[#1D1D1F]">
-                          {product.showPrice && product.price ? formatPrice(product.price) : "A consultar"}
-                        </span>
                       </div>
                     </div>
                   </div>
 
-                  {/* Acciones móviles con Zona del Pulgar (1-tap quick action) */}
-                  <div className="flex flex-col gap-2 border-t border-gray-200/80 pt-3 mt-1 font-sans">
-                    {/* Botón directo de 1-TAP para cambiar stock sin abrir menús */}
-                    <div className="flex items-center gap-2">
+                  {/* Acciones de 1-Tap (Fila Compacta Estilo Apple) */}
+                  <div className="flex items-center justify-between gap-2 border-t border-[#F5F5F7] pt-2 font-sans">
+                    <div className="flex items-center gap-1.5 flex-1">
                       {product.status === "ACTIVE" ? (
                         <button
                           type="button"
                           onClick={() => handleQuickStatusChange(product, "OUT_OF_STOCK")}
-                          className="flex-1 py-2 px-3 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer min-h-[40px] flex items-center justify-center gap-1.5"
+                          className="flex-1 py-1.5 px-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-200/80 text-amber-900 rounded-xl text-[11px] font-bold transition-all active:scale-95 cursor-pointer min-h-[36px] flex items-center justify-center gap-1"
                         >
-                          <span>⚠️ Marcar Sin Stock</span>
+                          <span>Marcar Sin Stock</span>
                         </button>
                       ) : product.status === "OUT_OF_STOCK" ? (
                         <button
                           type="button"
                           onClick={() => handleQuickStatusChange(product, "ACTIVE")}
-                          className="flex-1 py-2 px-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-900 rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer min-h-[40px] flex items-center justify-center gap-1.5"
+                          className="flex-1 py-1.5 px-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 text-emerald-900 rounded-xl text-[11px] font-bold transition-all active:scale-95 cursor-pointer min-h-[36px] flex items-center justify-center gap-1"
                         >
-                          <span>✨ Marcar En Vidriera</span>
+                          <span>Poner en Vidriera</span>
                         </button>
                       ) : (
                         <button
                           type="button"
                           onClick={() => handleQuickStatusChange(product, "ACTIVE")}
-                          className="flex-1 py-2 px-3 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[#007AFF] rounded-xl text-xs font-bold transition-all active:scale-95 cursor-pointer min-h-[40px] flex items-center justify-center gap-1.5"
+                          className="flex-1 py-1.5 px-2.5 bg-blue-50 hover:bg-blue-100 border border-blue-200 text-[#007AFF] rounded-xl text-[11px] font-bold transition-all active:scale-95 cursor-pointer min-h-[36px] flex items-center justify-center gap-1"
                         >
-                          <span>🚀 Publicar en Tienda</span>
+                          <span>Publicar</span>
                         </button>
                       )}
 
-                      {/* Selector de estado completo por si necesita ocultar u otro estado */}
                       <StatusChanger
                         product={product}
                         onStatusChange={handleQuickStatusChange}
@@ -767,20 +767,28 @@ export default function AdminProductsPage() {
                       />
                     </div>
 
-                    <div className="flex items-center justify-between pt-1">
+                    <div className="flex items-center gap-1">
                       <Link
                         href={`/admin/productos/${product.id}`}
-                        className="text-xs font-semibold text-[#007AFF] hover:bg-[#007AFF]/10 px-3 py-1.5 rounded-xl bg-gray-50 border border-gray-200/80 min-h-[36px] flex items-center transition-colors"
+                        className="text-xs font-semibold text-[#007AFF] hover:bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100 min-h-[36px] flex items-center transition-colors"
                       >
-                        Editar datos
+                        Editar
                       </Link>
                       <button
                         type="button"
                         onClick={() => handleDeleteClick(product)}
                         disabled={deletingId === product.id}
-                        className="text-xs font-semibold text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-xl border border-red-200/60 bg-red-50/40 disabled:opacity-40 min-h-[36px] flex items-center cursor-pointer transition-colors"
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors disabled:opacity-40 min-h-[36px] min-w-[36px] flex items-center justify-center cursor-pointer"
+                        title="Eliminar producto"
                       >
-                        {deletingId === product.id ? "Borrando..." : "Eliminar"}
+                        {deletingId === product.id ? (
+                          <div className="w-3.5 h-3.5 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                        ) : (
+                          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                          </svg>
+                        )}
                       </button>
                     </div>
                   </div>

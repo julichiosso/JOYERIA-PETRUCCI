@@ -91,9 +91,9 @@ export default function FilterBottomSheet({
                         <div className="grid grid-cols-2 gap-2">
                             {[
                                 { id: "ALL", label: "Todas las piezas" },
-                                { id: "ACTIVE", label: "✨ En Vidriera" },
-                                { id: "DRAFT", label: "🔒 Oculto / Borrador" },
-                                { id: "OUT_OF_STOCK", label: "⚠️ Sin Stock" },
+                                { id: "ACTIVE", label: "En Vidriera" },
+                                { id: "DRAFT", label: "Oculto / Borrador" },
+                                { id: "OUT_OF_STOCK", label: "Sin Stock" },
                             ].map((opt) => {
                                 const isSelected = filters.status === opt.id;
                                 return (
@@ -102,8 +102,8 @@ export default function FilterBottomSheet({
                                         type="button"
                                         onClick={() => onApplyFilters({ ...filters, status: opt.id })}
                                         className={`py-3 px-3.5 rounded-2xl text-xs font-semibold text-left transition-all cursor-pointer active:scale-95 min-h-[44px] flex items-center justify-between border ${isSelected
-                                                ? "bg-[#007AFF]/10 border-[#007AFF] text-[#007AFF]"
-                                                : "bg-[#F5F5F7] border-transparent text-[#1D1D1F] hover:bg-gray-200/70"
+                                            ? "bg-[#007AFF]/10 border-[#007AFF] text-[#007AFF]"
+                                            : "bg-[#F5F5F7] border-transparent text-[#1D1D1F] hover:bg-gray-200/70"
                                             }`}
                                     >
                                         <span>{opt.label}</span>
@@ -124,8 +124,8 @@ export default function FilterBottomSheet({
                                 type="button"
                                 onClick={() => onApplyFilters({ ...filters, categoryId: "ALL" })}
                                 className={`py-2.5 px-4 rounded-full text-xs font-semibold transition-all cursor-pointer active:scale-95 min-h-[40px] border ${filters.categoryId === "ALL"
-                                        ? "bg-[#1D1D1F] text-white border-[#1D1D1F]"
-                                        : "bg-[#F5F5F7] border-transparent text-[#1D1D1F] hover:bg-gray-200/70"
+                                    ? "bg-[#1D1D1F] text-white border-[#1D1D1F]"
+                                    : "bg-[#F5F5F7] border-transparent text-[#1D1D1F] hover:bg-gray-200/70"
                                     }`}
                             >
                                 Todas las categorías
@@ -138,8 +138,8 @@ export default function FilterBottomSheet({
                                         type="button"
                                         onClick={() => onApplyFilters({ ...filters, categoryId: cat.id })}
                                         className={`py-2.5 px-4 rounded-full text-xs font-semibold transition-all cursor-pointer active:scale-95 min-h-[40px] border ${isSelected
-                                                ? "bg-[#1D1D1F] text-white border-[#1D1D1F]"
-                                                : "bg-[#F5F5F7] border-transparent text-[#1D1D1F] hover:bg-gray-200/70"
+                                            ? "bg-[#1D1D1F] text-white border-[#1D1D1F]"
+                                            : "bg-[#F5F5F7] border-transparent text-[#1D1D1F] hover:bg-gray-200/70"
                                             }`}
                                     >
                                         {cat.name}
@@ -167,8 +167,8 @@ export default function FilterBottomSheet({
                                         type="button"
                                         onClick={() => onApplyFilters({ ...filters, sortBy: opt.id })}
                                         className={`py-2.5 px-2 rounded-2xl text-[11px] font-semibold text-center transition-all cursor-pointer active:scale-95 min-h-[44px] flex items-center justify-center border ${isSelected
-                                                ? "bg-[#007AFF] text-white border-[#007AFF]"
-                                                : "bg-[#F5F5F7] border-transparent text-[#1D1D1F] hover:bg-gray-200/70"
+                                            ? "bg-[#007AFF] text-white border-[#007AFF]"
+                                            : "bg-[#F5F5F7] border-transparent text-[#1D1D1F] hover:bg-gray-200/70"
                                             }`}
                                     >
                                         {opt.label}
