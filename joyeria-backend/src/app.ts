@@ -45,17 +45,16 @@ export async function buildApp() {
     'http://localhost:3001',
   ].filter(Boolean) as string[];
 
-  await app.register(cors, {
-    origin: (origin, cb) => {
-      // Requests sin origen (curl, Postman, server-to-server) son aceptados
-      if (!origin) return cb(null, true);
-      if (allowedOrigins.some((o) => origin.startsWith(o))) return cb(null, true);
-      cb(new Error(`Origen no permitido por CORS: ${origin}`), false);
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept', 'X-Requested-With'],
-  });
+await app.register(cors, {
+  origin: (origin, cb) => {
+    if (!origin) return cb(null, true);
+    if (allowedOrigins.some((o) => origin.startsWith(o))) return cb(null, true);
+    return cb(null, false); // en vez de cb(new Error(...), false)
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Origin', 'Accept', 'X-Requested-With'],
+});
   await app.register(cookie);
 
   await app.register(multipart, {
