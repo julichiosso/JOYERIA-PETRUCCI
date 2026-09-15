@@ -14,7 +14,7 @@ import { useRouter } from "next/navigation";
 import { adminFetch } from "@/lib/auth";
 
 interface DashboardStats {
-  inquiriesCount: number;
+  categoriesCount: number;
   outOfStockCount: number;
   totalProductsCount: number;
   activeProductsCount: number;
@@ -24,7 +24,7 @@ interface DashboardStats {
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [stats, setStats] = useState<DashboardStats>({
-    inquiriesCount: 0,
+    categoriesCount: 0,
     outOfStockCount: 0,
     totalProductsCount: 0,
     activeProductsCount: 0,
@@ -35,19 +35,19 @@ export default function AdminDashboardPage() {
   const loadDashboardData = useCallback(async () => {
     setLoading(true);
     try {
-      const [productsRes, inquiriesRes] = await Promise.all([
+      const [productsRes, categoriesRes] = await Promise.all([
         adminFetch<{ items: Array<{ id: string; status: string }> }>("/admin/products?limit=100").catch(() => ({ items: [] })),
-        adminFetch<{ pagination?: { total?: number } }>("/admin/inquiries?limit=1").catch(() => ({ pagination: { total: 0 } })),
+        adminFetch<Array<{ id: string }>>("/admin/categories").catch(() => []),
       ]);
 
       const items = productsRes.items || [];
       const outOfStock = items.filter((p) => p.status === "OUT_OF_STOCK").length;
       const active = items.filter((p) => p.status === "ACTIVE").length;
       const draft = items.filter((p) => p.status === "DRAFT").length;
-      const inquiries = inquiriesRes.pagination?.total || 0;
+      const categories = Array.isArray(categoriesRes) ? categoriesRes.length : 0;
 
       setStats({
-        inquiriesCount: inquiries,
+        categoriesCount: categories,
         outOfStockCount: outOfStock,
         totalProductsCount: items.length,
         activeProductsCount: active,
@@ -123,10 +123,10 @@ export default function AdminDashboardPage() {
         </div>
       </Link>
 
-      {/* ── 2. SECCIÓN: "¿QUÉ NECESITO HACER YA?" (Tarjetas de Atención Inmediata) ─ */}
+      {/* ── 2. SECCIÓN: ATENCIÓN Y ORGANIZACIÓN DEL COMERCIO ──────────── */}
       <div className="flex flex-col gap-3">
         <h2 className="text-xs font-semibold text-[#86868B] uppercase tracking-wider px-1">
-          Atención Inmediata
+          Organización y Stock
         </h2>
 
         {loading ? (
@@ -136,25 +136,25 @@ export default function AdminDashboardPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Card 1: Consultas de clientes */}
+            {/* Card 1: Categorías (Cajas Japonesas) */}
             <Link
-              href="/admin/metricas?tab=consultas"
+              href="/admin/categorias"
               className="bg-white border border-[#E5E5EA] hover:border-[#007AFF]/40 active:scale-[0.98] p-4 rounded-3xl shadow-2xs flex flex-col justify-between transition-all cursor-pointer"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-[#86868B]">
-                  Consultas WhatsApp
+                  Menú y Secciones
                 </span>
                 <span className="w-8 h-8 rounded-xl bg-blue-50 text-[#007AFF] flex items-center justify-center font-bold text-sm">
-                  {stats.inquiriesCount}
+                  {stats.categoriesCount}
                 </span>
               </div>
               <div className="mt-3">
                 <span className="text-2xl font-bold text-[#1D1D1F] tracking-tight block">
-                  {stats.inquiriesCount} {stats.inquiriesCount === 1 ? "consulta" : "consultas"}
+                  {stats.categoriesCount} {stats.categoriesCount === 1 ? "sección" : "secciones"}
                 </span>
                 <span className="text-[11px] text-[#007AFF] font-semibold mt-0.5 inline-flex items-center gap-1">
-                  Ver clientes interesados →
+                  Ordenar en Cajas Japonesas →
                 </span>
               </div>
             </Link>
